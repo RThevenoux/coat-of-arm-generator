@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Coat of Arm Generator</title>
+  <script type="text/javascript" src="data.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+
+<body>
+  <h1>Coat of Arm Generator</h1>
+  <div>
+    <h2>Definition</h2>
+    <select id="color-selector">
+      <option value="or" style="background-color:yellow">Or</option>
+      <option value="argent" style="background-color:white">Argent</option>
+      <option value="azur" style="background-color:blue">Azur</option>
+      <option value="gueules" style="background-color:red">Gueules</option>
+      <option value="sinople" style="background-color:green">Sinople</option>
+      <option value="sable" style="background-color:black">Sable</option>
+    </select>
+  </div>
+  <div>
+    <h2>Visual</h2>
+    <div>
+      <h3>Configuration</h3>
+      <select id="form-selector"></select>
+    </div>
+    <div>
+      <h3>Result</h3>
+      <div id="visual-area"></div>
+    </div>
+  </div>
+  <div>
+    <h2>Textual</h2>
+    <div id="textual-area"></div>
+  </div>
+</body>
+
+</html>
