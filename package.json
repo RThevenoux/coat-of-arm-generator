@@ -1,0 +1,30 @@
+{
+  "name": "coat-of-arm-generator",
+  "version": "1.0.0",
+  "description": "A tool that allow to create SVG image of coat of arm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RThevenoux/coat-of-arm-generator.git"
+  },
+  "keywords": [
+    "Coat",
+    "Arm",
+    "heraldic",
+    "svg"
+  ],
+  "author": "Rémi THEVENOUX",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RThevenoux/coat-of-arm-generator/issues"
+  },
+  "homepage": "https://github.com/RThevenoux/coat-of-arm-generator#readme",
+  "devDependencies": {
+    "webpack": "^4.28.3",
+    "webpack-cli": "^3.2.0"
+  }
+}
