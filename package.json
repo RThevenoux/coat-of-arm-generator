@@ -2,7 +2,6 @@
   "name": "coat-of-arm-generator",
   "version": "1.0.0",
   "description": "A tool that allow to create SVG image of coat of arm",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack"
@@ -26,5 +25,8 @@
   "devDependencies": {
     "webpack": "^4.28.3",
     "webpack-cli": "^3.2.0"
+  },
+  "dependencies": {
+    "xmlbuilder": "^10.1.1"
   }
 }
