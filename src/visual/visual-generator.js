@@ -3,24 +3,24 @@ import builder from 'xmlbuilder';
 export default function generateVisual(description, configuration) {
   let borderSize = 3;
 
-  let form = configuration.form;
+  let shape = configuration.shape;
 
   let viewBoxSize = {
     x: -borderSize,
     y: -borderSize,
-    width: parseInt(form.width) + borderSize * 2,
-    height: parseInt(form.height) + borderSize * 2,
+    width: parseInt(shape.width) + borderSize * 2,
+    height: parseInt(shape.height) + borderSize * 2,
   };
 
   let svg = builder.create('svg', { headless: true })
     .att("xmlns", "http://www.w3.org/2000/svg")
-    .att("width", form.width)
-    .att("height", form.height)
+    .att("width", shape.width)
+    .att("height", shape.height)
     .att("viewBox", viewBoxSize.x + " " + viewBoxSize.y + " " + viewBoxSize.width + " " + viewBoxSize.height);
 
-  buildDefs(form, svg);
+  buildDefs(shape, svg);
 
-  let color = configuration.colors[description.color].rgb;
+  let color = configuration.palette[description.color];
   svg.ele("use")
     .att("xlink:href", "#shape")
     .att("style", "fill:#" + color);
@@ -34,12 +34,12 @@ export default function generateVisual(description, configuration) {
   return svg.end();
 }
 
-function buildDefs(form, svg) {
+function buildDefs(shape, svg) {
   let defs = svg.ele("defs");
 
-  let cx = form.width / 3;
-  let cy = form.height / 3;
-  let radius = form.width * 2 / 3;
+  let cx = shape.width / 3;
+  let cy = shape.height / 3;
+  let radius = shape.width * 2 / 3;
 
   let gradient = defs.ele("radialGradient")
     .att("id", "gradient-reflect")
@@ -54,5 +54,5 @@ function buildDefs(form, svg) {
   defs.ele("clipPath").att("id", "shape_cut")
     .ele("path")
     .att("id", "shape")
-    .att("d", form.shape);
+    .att("d", shape.path);
 }

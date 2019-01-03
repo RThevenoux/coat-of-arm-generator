@@ -1,0 +1,22 @@
+[
+  {
+    "label": "basic",
+    "or": "ff0",
+    "argent": "fff",
+    "sable": "000",
+    "azur": "00f",
+    "sinople": "0f0",
+    "gueules": "f00",
+    "pourpre": "f0f"
+  },
+  {
+    "label": "fr-wikipedia",
+    "or": "FCEF3C",
+    "argent": "FFFFFF",
+    "sable": "000000",
+    "azur": "2B5DF2",
+    "sinople": "5AB532",
+    "gueules": "E20909",
+    "pourpre": "D576AD"
+  }
+]

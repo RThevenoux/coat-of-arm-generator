@@ -9,32 +9,32 @@
 </head>
 
 <body>
-  <h1>Coat of Arm Generator</h1>
-  <div>
-    <h2>Definition</h2>
-    <select id="color-selector">
-      <option value="or" style="background-color:yellow">Or</option>
-      <option value="argent" style="background-color:white">Argent</option>
-      <option value="azur" style="background-color:blue">Azur</option>
-      <option value="gueules" style="background-color:red">Gueules</option>
-      <option value="sinople" style="background-color:green">Sinople</option>
-      <option value="sable" style="background-color:black">Sable</option>
-    </select>
-  </div>
-  <div>
-    <h2>Visual</h2>
-    <div>
-      <h3>Configuration</h3>
-      <select id="form-selector"></select>
+  <div class="flex-container">
+    <div class="column50">
+      <h1>Coat of Arm Generator</h1>
+      <div>
+        <h2>Definition</h2>
+        <select id="color-selector"></select>
+      </div>
     </div>
-    <div>
-      <h3>Result</h3>
-      <div id="visual-area"></div>
+    <div class="column50">
+      <div>
+        <h2>Blazon</h2>
+        <div id="textual-area"></div>
+      </div>
+      <div>
+        <h2>Visual</h2>
+        <div class="flex-container">
+          <div>
+            <h3>Configuration</h3>
+            <select id="shape-selector"></select>
+            <select id="palette-selector"></select>
+          </div>
+
+          <div id="visual-area"></div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div>
-    <h2>Textual</h2>
-    <div id="textual-area"></div>
   </div>
 </body>
 

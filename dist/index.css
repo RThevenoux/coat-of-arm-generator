@@ -2,3 +2,18 @@ h1 {
     color: navy;
     margin-left: 20px;
 }
+
+h2 {
+    text-align: center;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.column50 {
+    float: left;
+    width: 50%;
+}
+
