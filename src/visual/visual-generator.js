@@ -6,7 +6,7 @@ export default function generateVisual(description, configuration) {
 
   let builder = create(shape, configuration);
 
-  addField(builder, description);
+  addField(builder, description, shape);
   addBorder(builder, configuration.borderSize);
   if (configuration.reflect) {
     addReflect(builder, shape);
@@ -15,10 +15,82 @@ export default function generateVisual(description, configuration) {
   return builder.container.end();
 }
 
-function addField(builder, description) {
-  builder.container.ele("use")
-    .att("xlink:href", "#main-shape")
-    .att("style", builder.fillColor(description.color));
+function addField(builder, description, shape) {
+  switch (description.type) {
+    case "plein": {
+      builder.container.ele("use")
+        .att("xlink:href", "#main-shape")
+        .att("style", builder.fillColor(description.color));
+    }; break;
+    case "echiquete": {
+      let id = "pattern1"
+      let c = scaleCoef(shape.width, 10, 3);
+
+      let pattern = builder.defs.ele("pattern")
+        .att("id", id)
+        .att("x", 0).att("y", 0).att("width", 10).att("height", 10)
+        .att("patternUnits", "userSpaceOnUse")
+        .att("patternTransform", "scale(" + c + "," + c + ")");
+      pattern.ele("rect").att("x", 0).att("y", 0).att("width", 10).att("height", 10).att("style", builder.fillColor(description.color2));
+      pattern.ele("rect").att("x", 0).att("y", 0).att("width", 5).att("height", 5).att("style", builder.fillColor(description.color1));
+      pattern.ele("rect").att("x", 5).att("y", 5).att("width", 5).att("height", 5).att("style", builder.fillColor(description.color1));
+
+      builder.container.ele("use")
+        .att("xlink:href", "#main-shape")
+        .att("fill", "url(#" + id + ")");
+
+    }; break;
+    case "losange": {
+      let id = "pattern1"
+      let c = scaleCoef(shape.width, 10, 4);
+
+      let pattern = builder.defs.ele("pattern")
+        .att("id", id)
+        .att("x", 0).att("y", 0).att("width", 10).att("height", 10)
+        .att("patternUnits", "userSpaceOnUse")
+        .att("patternTransform", "scale(" + c + "," + c + ")");
+      pattern.ele("rect").att("x", 0).att("y", 0).att("width", 10).att("height", 10).att("style", builder.fillColor(description.color1));
+      pattern.ele("path").att("d", "M 0,0 L 10,10 L 10,0 L 0,10 z").att("style", builder.fillColor(description.color2));
+
+      builder.container.ele("use")
+        .att("xlink:href", "#main-shape")
+        .att("fill", "url(#" + id + ")");
+    }; break;
+    case "fusele": {
+      let id = "pattern1"
+
+      let width = 20;
+      let height = 50;
+      let c = scaleCoef(shape.width, width, 5);
+
+      let rotation = 0;
+      switch (description.angle) {
+        case "bande": rotation = -45; break;
+        case "barre": rotation = 45; break;
+        case "defaut": break;
+        default: console.log("Invalid angle" + description.angle);
+      }
+
+      let pattern = builder.defs.ele("pattern")
+        .att("id", id)
+        .att("x", 0).att("y", 0).att("width", width).att("height", height)
+        .att("patternUnits", "userSpaceOnUse")
+        .att("patternTransform", "scale(" + c + "," + c + ") rotate(" + rotation + ")");
+      pattern.ele("rect").att("x", 0).att("y", 0).att("width", width).att("height", height).att("style", builder.fillColor(description.color1));
+      pattern.ele("path").att("d", "M 10,0 L 0,25 L 10,50 L 20,25 z").att("style", builder.fillColor(description.color2));
+
+      builder.container.ele("use")
+        .att("xlink:href", "#main-shape")
+        .att("fill", "url(#" + id + ")");
+    }; break;
+    default: {
+      console.log("unsupported-type:" + description.type);
+    }
+  }
+}
+
+function scaleCoef(shapeWidth, patternWidth, patternCount) {
+  return shapeWidth / (patternWidth * patternCount);
 }
 
 function addBorder(builder, borderSize) {
