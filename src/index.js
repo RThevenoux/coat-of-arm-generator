@@ -7,7 +7,9 @@ var palettes = require("./palettes.json");
 var model = {
   'visual': {
     'shape': 'none',
-    'palette': 'none'
+    'palette': 'none',
+    'borderSize': 3,
+    'reflect': 'none'
   },
   'description': {
     'color': 'none'
@@ -23,6 +25,16 @@ function init() {
   initColorSelector();
   initShapeSelector();
   initPaletteSelector();
+  initReflectCheckbox();
+}
+
+function initReflectCheckbox() {
+  let checkbox = document.getElementById("reflect-checkbox");
+  checkbox.addEventListener("change", () => {
+    model.visual.reflect = checkbox.checked;
+    updateVisual();
+  });
+  model.visual.reflect = checkbox.value;
 }
 
 function initColorSelector() {
@@ -84,8 +96,11 @@ function update() {
 function updateVisual() {
   let configuration = {
     shape: shapes[model.visual.shape],
-    palette: palettes[model.visual.paletteIndex]
+    palette: palettes[model.visual.paletteIndex],
+    borderSize: model.visual.borderSize,
+    reflect: model.visual.reflect
   };
+
   let svg = generateVisual(model.description, configuration);
   let visual = document.getElementById("visual-area");
   visual.innerHTML = svg;
