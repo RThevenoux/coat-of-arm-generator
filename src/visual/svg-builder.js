@@ -27,10 +27,31 @@ export default class SvgBuilder {
       .att("d", shape.path);
 
     this.patternCount = 0;
+    this.definedSolidFiller = {};
   }
 
   fillColor(key) {
-    return "fill:#" + this.configuration.palette[key]
+    return "fill:#" + this.getColor(key);
+  }
+
+  getColor(key) {
+    return this.configuration.palette[key];
+  }
+
+  getSolidFiller(key) {
+    let id = this.definedSolidFiller[key];
+
+    if (!id) {
+      id = "solid-" + key;
+      this.defs.ele("linearGradient")
+        .att("id", id)
+        .ele("stop")
+        .att("stop-color", "#" + this.getColor(key));
+
+      this.definedSolidFiller[key] = id;
+    }
+
+    return id;
   }
 
   addPattern(pattern, parameters) {

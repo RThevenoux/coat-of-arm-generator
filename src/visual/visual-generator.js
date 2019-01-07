@@ -37,23 +37,29 @@ export default function generateVisual(description, configuration) {
 }
 
 function addField(builder, description, shape) {
+  let fillerId = getFiller(builder, description, shape);
+
+  if (fillerId) {
+    builder.container.ele("use")
+      .att("xlink:href", "#main-shape")
+      .att("fill", "url(#" + fillerId + ")");
+  }
+}
+
+function getFiller(builder, description, shape) {
   switch (description.type) {
     case "plein": {
-      builder.container.ele("use")
-        .att("xlink:href", "#main-shape")
-        .att("style", builder.fillColor(description.color));
-    }; break;
+      return builder.getSolidFiller(description.color);
+    };
     case "pattern": {
       let pattern = patterns[description.patternName];
       let parameters = getPatternParameters(description, shape);
-      let patternId = builder.addPattern(pattern, parameters);
-
-      builder.container.ele("use")
-        .att("xlink:href", "#main-shape")
-        .att("fill", "url(#" + patternId + ")");
+      return builder.addPattern(pattern, parameters);
     };
     default: {
+      //TODO should use Promise ?
       console.log("unsupported-type:" + description.type);
+      return null;
     }
   }
 }
@@ -73,7 +79,7 @@ function getPatternParameters(description, shape) {
       default: console.log("Invalid angle" + description.angle);
     }
   }
-  
+
   return param;
 }
 
