@@ -1,10 +1,31 @@
-import builder from 'xmlbuilder';
+import SvgBuilder from './svg-builder';
+
+var patterns = {
+  echiquete: {
+    patternWidth: 10,
+    patternHeight: 10,
+    patternRepetition: 3,
+    path: "M 5,0 L 10,0 10,5 0,5 0,10 5,10 z"
+  },
+  losange: {
+    patternWidth: 10,
+    patternHeight: 10,
+    patternRepetition: 4,
+    path: "M 0,0 L 10,10 L 10,0 L 0,10 z"
+  },
+  fusele: {
+    patternWidth: 20,
+    patternHeight: 50,
+    patternRepetition: 5,
+    path: "M 10,0 L 0,25 L 10,50 L 20,25 z"
+  }
+}
 
 export default function generateVisual(description, configuration) {
 
   let shape = configuration.shape;
 
-  let builder = create(shape, configuration);
+  let builder = new SvgBuilder(shape, configuration);
 
   addField(builder, description, shape);
   addBorder(builder, configuration.borderSize);
@@ -22,75 +43,38 @@ function addField(builder, description, shape) {
         .att("xlink:href", "#main-shape")
         .att("style", builder.fillColor(description.color));
     }; break;
-    case "echiquete": {
-      let id = "pattern1"
-      let c = scaleCoef(shape.width, 10, 3);
-
-      let pattern = builder.defs.ele("pattern")
-        .att("id", id)
-        .att("x", 0).att("y", 0).att("width", 10).att("height", 10)
-        .att("patternUnits", "userSpaceOnUse")
-        .att("patternTransform", "scale(" + c + "," + c + ")");
-      pattern.ele("rect").att("x", 0).att("y", 0).att("width", 10).att("height", 10).att("style", builder.fillColor(description.color2));
-      pattern.ele("rect").att("x", 0).att("y", 0).att("width", 5).att("height", 5).att("style", builder.fillColor(description.color1));
-      pattern.ele("rect").att("x", 5).att("y", 5).att("width", 5).att("height", 5).att("style", builder.fillColor(description.color1));
+    case "pattern": {
+      let pattern = patterns[description.patternName];
+      let parameters = getPatternParameters(description, shape);
+      let patternId = builder.addPattern(pattern, parameters);
 
       builder.container.ele("use")
         .att("xlink:href", "#main-shape")
-        .att("fill", "url(#" + id + ")");
-
-    }; break;
-    case "losange": {
-      let id = "pattern1"
-      let c = scaleCoef(shape.width, 10, 4);
-
-      let pattern = builder.defs.ele("pattern")
-        .att("id", id)
-        .att("x", 0).att("y", 0).att("width", 10).att("height", 10)
-        .att("patternUnits", "userSpaceOnUse")
-        .att("patternTransform", "scale(" + c + "," + c + ")");
-      pattern.ele("rect").att("x", 0).att("y", 0).att("width", 10).att("height", 10).att("style", builder.fillColor(description.color1));
-      pattern.ele("path").att("d", "M 0,0 L 10,10 L 10,0 L 0,10 z").att("style", builder.fillColor(description.color2));
-
-      builder.container.ele("use")
-        .att("xlink:href", "#main-shape")
-        .att("fill", "url(#" + id + ")");
-    }; break;
-    case "fusele": {
-      let id = "pattern1"
-
-      let width = 20;
-      let height = 50;
-      let c = scaleCoef(shape.width, width, 5);
-
-      let rotation = 0;
-      switch (description.angle) {
-        case "bande": rotation = -45; break;
-        case "barre": rotation = 45; break;
-        case "defaut": break;
-        default: console.log("Invalid angle" + description.angle);
-      }
-
-      let pattern = builder.defs.ele("pattern")
-        .att("id", id)
-        .att("x", 0).att("y", 0).att("width", width).att("height", height)
-        .att("patternUnits", "userSpaceOnUse")
-        .att("patternTransform", "scale(" + c + "," + c + ") rotate(" + rotation + ")");
-      pattern.ele("rect").att("x", 0).att("y", 0).att("width", width).att("height", height).att("style", builder.fillColor(description.color1));
-      pattern.ele("path").att("d", "M 10,0 L 0,25 L 10,50 L 20,25 z").att("style", builder.fillColor(description.color2));
-
-      builder.container.ele("use")
-        .att("xlink:href", "#main-shape")
-        .att("fill", "url(#" + id + ")");
-    }; break;
+        .att("fill", "url(#" + patternId + ")");
+    };
     default: {
       console.log("unsupported-type:" + description.type);
     }
   }
 }
 
-function scaleCoef(shapeWidth, patternWidth, patternCount) {
-  return shapeWidth / (patternWidth * patternCount);
+function getPatternParameters(description, shape) {
+  let param = {
+    backgroundColor: description.color1,
+    patternColor: description.color2,
+    shapeWidth: shape.width
+  }
+
+  if (description.angle) {
+    switch (description.angle) {
+      case "bande": param.rotation = -45; break;
+      case "barre": param.rotation = 45; break;
+      case "defaut": break;
+      default: console.log("Invalid angle" + description.angle);
+    }
+  }
+  
+  return param;
 }
 
 function addBorder(builder, borderSize) {
@@ -117,34 +101,4 @@ function addReflect(builder, shape) {
   builder.container.ele("use")
     .att("xlink:href", "#main-shape")
     .att("fill", "url(#gradient-reflect)");
-}
-
-function create(shape, configuration) {
-  let borderSize = configuration.borderSize;
-  let viewBoxSize = {
-    x: -borderSize,
-    y: -borderSize,
-    width: parseInt(shape.width) + borderSize * 2,
-    height: parseInt(shape.height) + borderSize * 2,
-  };
-
-  let svg = builder.create('svg', { headless: true })
-    .att("xmlns", "http://www.w3.org/2000/svg")
-    .att("width", shape.width)
-    .att("height", shape.height)
-    .att("viewBox", viewBoxSize.x + " " + viewBoxSize.y + " " + viewBoxSize.width + " " + viewBoxSize.height);
-
-  // Create "defs" section with "main-shape"
-  let defs = svg.ele("defs");
-
-  defs
-    .ele("path")
-    .att("id", "main-shape")
-    .att("d", shape.path);
-
-  return {
-    container: svg,
-    defs: defs,
-    fillColor: (key) => "fill:#" + configuration.palette[key]
-  }
 }

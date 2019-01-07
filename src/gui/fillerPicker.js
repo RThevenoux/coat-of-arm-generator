@@ -25,18 +25,21 @@ Vue.component('filler-picker', {
       get: function () {
         switch (this.type) {
           case "echiquete": return {
-            type: "echiquete",
+            type: "pattern",
+            patternName: "echiquete",
             color1: this.echiquete.color1,
             color2: this.echiquete.color2
           }
           case "fusele": return {
-            type: "fusele",
+            type: "pattern",
+            patternName: "fusele",
             angle: this.fusele.angle,
             color1: this.fusele.color1,
             color2: this.fusele.color2
           }
           case "losange": return {
-            type: "losange",
+            type: "pattern",
+            patternName: "losange",
             color1: this.losange.color1,
             color2: this.losange.color2
           }
