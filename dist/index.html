@@ -4,42 +4,59 @@
 <head>
   <meta charset="utf-8">
   <title>Coat of Arm Generator</title>
-  <script type="text/javascript" src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
 <body>
-  <div class="flex-container">
-    <div class="column50">
-      <h1>Coat of Arm Generator</h1>
-      <div>
-        <h2>Definition</h2>
-        <div id="filler-selector"></div>
+  <div id="app">
+    <div class="flex-container">
+      <div class="column50">
+        <h1>Coat of Arm Generator</h1>
+        <div>
+          <h2>Definition</h2>
+          <filler-picker v-model="model"></filler-picker>
+        </div>
       </div>
-    </div>
-    <div class="column50">
-      <div>
-        <h2>Blazon</h2>
-        <div id="textual-area"></div>
-      </div>
-      <div>
-        <h2>Visual</h2>
-        <div class="flex-container">
-          <div>
-            <h3>Configuration</h3>
-            <select id="shape-selector"></select>
-            <select id="palette-selector"></select>
-            <div>
-              <input type="checkbox" id="reflect-checkbox" name="reflect" checked>
-              <label for="reflect">Reflect effect</label>
-            </div>
-          </div>
 
-          <div id="visual-area"></div>
+      <div class="column50">
+
+        <div>
+          <h2>Blazon</h2>
+          <div>{{ blazon }}</div>
+        </div>
+
+        <div>
+          <h2>Visual</h2>
+          <div class="flex-container">
+            <div>
+              <h3>Configuration</h3>
+              <select v-model="visual.shape">
+                <option v-for="shape in visual.options.shapes" :value="shape.id">
+                  {{ shape.label }}
+                </option>
+              </select>
+
+              <select v-model="visual.palette">
+                <option v-for="palette in visual.options.palettes" :value="palette.id">
+                  {{ palette.label }}
+                </option>
+              </select>
+
+              <div>
+                <input type="checkbox" name="reflect" v-model="visual.reflect">
+                <label for="reflect">Reflect effect</label>
+              </div>
+
+            </div>
+            <div v-html="image"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script type="text/javascript" src="main.js"></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 [
   {
+    "id": "0",
     "label": "basic",
     "or": "ff0",
     "argent": "fff",
@@ -10,6 +11,7 @@
     "pourpre": "f0f"
   },
   {
+    "id": "1",
     "label": "fr-wikipedia",
     "or": "FCEF3C",
     "argent": "FFFFFF",
