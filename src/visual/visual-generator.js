@@ -24,36 +24,68 @@ var patterns = {
 export default function generateVisual(description, configuration) {
 
   let shape = configuration.shape;
+  let borderSize = configuration.borderSize;
+  let palette = configuration.palette;
 
-  let builder = new SvgBuilder(shape, configuration);
+  let viewBoxSize = {
+    x: -borderSize,
+    y: -borderSize,
+    width: parseInt(shape.width) + borderSize * 2,
+    height: parseInt(shape.height) + borderSize * 2,
+  };
 
-  addField(builder, description, shape);
-  addBorder(builder, configuration.borderSize);
-  if (configuration.reflect) {
-    addReflect(builder, shape);
+  let shapeBox = {
+    width: shape.width,
+    height: shape.height
   }
 
-  return builder.container.end();
+  let builder = new SvgBuilder(viewBoxSize, palette);
+
+  let mainShapeId = definePath(builder, shape.path);
+
+  addField(builder, description, mainShapeId, shapeBox);
+  addBorder(builder, borderSize, mainShapeId);
+
+  if (configuration.reflect) {
+    addReflect(builder, shapeBox, mainShapeId);
+  }
+
+  // Static size of 300x300 for the image
+  // Should be more dynamic
+  return builder.container
+    .att("width", 300)
+    .att("height", 300)
+    .end();
 }
 
-function addField(builder, description, shape) {
-  let fillerId = getFiller(builder, description, shape);
+function definePath(builder, path) {
+  let id = "main-shape";
+  builder.defs
+    .ele("path")
+    .att("id", id)
+    .att("d", path);
+  return id;
+}
+
+function addField(builder, description, mainShapeId, shapeBox) {
+
+  let fillerId = getFiller(builder, description, shapeBox);
 
   if (fillerId) {
     builder.container.ele("use")
-      .att("xlink:href", "#main-shape")
+      .att("xlink:href", "#" + mainShapeId)
       .att("fill", "url(#" + fillerId + ")");
   }
 }
 
-function getFiller(builder, description, shape) {
+function getFiller(builder, description, shapeBox) {
   switch (description.type) {
     case "plein": {
       return builder.getSolidFiller(description.color);
     };
     case "pattern": {
       let pattern = patterns[description.patternName];
-      let parameters = getPatternParameters(description, shape);
+      let parameters = getPatternParameters(description, shapeBox);
       return builder.addPattern(pattern, parameters);
     };
     default: {
@@ -64,11 +96,11 @@ function getFiller(builder, description, shape) {
   }
 }
 
-function getPatternParameters(description, shape) {
+function getPatternParameters(description, shapeBox) {
   let param = {
     backgroundColor: description.color1,
     patternColor: description.color2,
-    shapeWidth: shape.width
+    shapeWidth: shapeBox.width
   }
 
   if (description.angle) {
@@ -83,19 +115,21 @@ function getPatternParameters(description, shape) {
   return param;
 }
 
-function addBorder(builder, borderSize) {
+function addBorder(builder, borderSize, mainShapeId) {
   builder.container.ele("use")
-    .att("xlink:href", "#main-shape")
+    .att("xlink:href", "#" + mainShapeId)
     .att("style", "fill:none;stroke:#000;stroke-width:" + borderSize);
 }
 
-function addReflect(builder, shape) {
-  let cx = shape.width / 3;
-  let cy = shape.height / 3;
-  let radius = shape.width * 2 / 3;
+function addReflect(builder, shapeBox, mainShapeId) {
+  let gradienId = "gradient-reflect";
+
+  let cx = shapeBox.width / 3;
+  let cy = shapeBox.height / 3;
+  let radius = shapeBox.width * 2 / 3;
 
   let gradient = builder.defs.ele("radialGradient")
-    .att("id", "gradient-reflect")
+    .att("id", gradienId)
     .att("gradientUnits", "userSpaceOnUse")
     .att("cx", cx).att("cy", cy).att("r", radius);
 
@@ -105,6 +139,6 @@ function addReflect(builder, shape) {
   gradient.ele("stop").att("style", "stop-color:#000;stop-opacity:0.125").att("offset", 1);
 
   builder.container.ele("use")
-    .att("xlink:href", "#main-shape")
-    .att("fill", "url(#gradient-reflect)");
+    .att("xlink:href", "#" + mainShapeId)
+    .att("fill", "url(#" + gradienId + ")");
 }

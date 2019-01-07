@@ -1,41 +1,26 @@
 import xmlBuilder from 'xmlbuilder';
 
 export default class SvgBuilder {
-  constructor(shape, configuration) {
-    this.configuration = configuration;
-
-    let borderSize = configuration.borderSize;
-    let viewBoxSize = {
-      x: -borderSize,
-      y: -borderSize,
-      width: parseInt(shape.width) + borderSize * 2,
-      height: parseInt(shape.height) + borderSize * 2,
-    };
+  constructor(viewBoxSize, palette) {
+    this.palette = palette;
 
     this.container = xmlBuilder.create('svg', { headless: true })
       .att("xmlns", "http://www.w3.org/2000/svg")
-      .att("width", shape.width)
-      .att("height", shape.height)
       .att("viewBox", viewBoxSize.x + " " + viewBoxSize.y + " " + viewBoxSize.width + " " + viewBoxSize.height);
 
-    // Create "defs" section with "main-shape"
+    // Create "defs" section
     this.defs = this.container.ele("defs");
-
-    this.defs
-      .ele("path")
-      .att("id", "main-shape")
-      .att("d", shape.path);
 
     this.patternCount = 0;
     this.definedSolidFiller = {};
   }
 
-  fillColor(key) {
-    return "fill:#" + this.getColor(key);
+  _fillColor(key) {
+    return "fill:#" + this._getColor(key);
   }
 
-  getColor(key) {
-    return this.configuration.palette[key];
+  _getColor(key) {
+    return this.palette[key];
   }
 
   getSolidFiller(key) {
@@ -46,7 +31,7 @@ export default class SvgBuilder {
       this.defs.ele("linearGradient")
         .att("id", id)
         .ele("stop")
-        .att("stop-color", "#" + this.getColor(key));
+        .att("stop-color", "#" + this._getColor(key));
 
       this.definedSolidFiller[key] = id;
     }
@@ -72,9 +57,9 @@ export default class SvgBuilder {
     patternNode.ele("rect")
       .att("x", 0).att("y", 0)
       .att("width", pattern.patternWidth).att("height", pattern.patternHeight)
-      .att("style", this.fillColor(parameters.backgroundColor));
+      .att("style", this._fillColor(parameters.backgroundColor));
 
-    patternNode.ele("path").att("d", pattern.path).att("style", this.fillColor(parameters.patternColor));
+    patternNode.ele("path").att("d", pattern.path).att("style", this._fillColor(parameters.patternColor));
 
     return id;
   }
