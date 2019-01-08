@@ -1,25 +1,6 @@
 import SvgBuilder from './svg-builder';
 
-var patterns = {
-  echiquete: {
-    patternWidth: 10,
-    patternHeight: 10,
-    patternRepetition: 3,
-    path: "M 5,0 L 10,0 10,5 0,5 0,10 5,10 z"
-  },
-  losange: {
-    patternWidth: 10,
-    patternHeight: 10,
-    patternRepetition: 4,
-    path: "M 0,0 L 10,10 L 10,0 L 0,10 z"
-  },
-  fusele: {
-    patternWidth: 20,
-    patternHeight: 50,
-    patternRepetition: 5,
-    path: "M 10,0 L 0,25 L 10,50 L 20,25 z"
-  }
-}
+let patterns = require("./patterns.json");
 
 export default function generateVisual(description, configuration) {
 

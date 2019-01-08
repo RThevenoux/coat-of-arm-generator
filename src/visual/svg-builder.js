@@ -50,7 +50,9 @@ export default class SvgBuilder {
 
     let patternNode = this.defs.ele("pattern")
       .att("id", id)
-      .att("x", 0).att("y", 0).att("width", pattern.patternWidth).att("height", pattern.patternHeight)
+      .att("x", 0).att("y", 0)
+      .att("width", pattern.patternWidth)
+      .att("height", pattern.patternHeight)
       .att("patternUnits", "userSpaceOnUse")
       .att("patternTransform", transform);
 
@@ -59,8 +61,21 @@ export default class SvgBuilder {
       .att("width", pattern.patternWidth).att("height", pattern.patternHeight)
       .att("style", this._fillColor(parameters.backgroundColor));
 
-    patternNode.ele("path").att("d", pattern.path).att("style", this._fillColor(parameters.patternColor));
+    let originalId = id + "_original";
+    patternNode.ele("path")
+      .att("d", pattern.path)
+      .att("id", originalId)
+      .att("style", this._fillColor(parameters.patternColor));
+
+    if (pattern.copies) {
+      for (let copyTransform of pattern.copies) {
+        patternNode.ele("use")
+          .att("xlink:href", "#" + originalId)
+          .att("transform", copyTransform)
+      }
+    }
 
     return id;
   }
+
 }

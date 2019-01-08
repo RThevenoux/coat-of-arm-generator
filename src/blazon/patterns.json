@@ -1,0 +1,53 @@
+{
+  "echiquete": "échiqueté",
+  "losange": "losangé",
+  "fusele": "fuselé",
+  "vair": {
+    "cases": [
+      {
+        "colors": [
+          "argent",
+          "azur"
+        ],
+        "label": "de vair"
+      }
+    ],
+    "else": "vairé"
+  },
+  "vair_en_pointe": {
+    "cases": [
+      {
+        "colors": [
+          "argent",
+          "azur"
+        ],
+        "label": "de vair en pointe"
+      }
+    ],
+    "else": "vairé en pointe"
+  },
+  "vair_en_pal": {
+    "cases": [
+      {
+        "colors": [
+          "argent",
+          "azur"
+        ],
+        "label": "de vair en pal"
+      }
+    ],
+    "else": "vairé en pal"
+  },
+  "contrevair": {
+    "cases": [
+      {
+        "colors": [
+          "argent",
+          "azur"
+        ],
+        "label": "de contre-vair"
+      }
+    ],
+    "else": "contre-vairé"
+  }
+}
