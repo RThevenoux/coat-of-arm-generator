@@ -13,6 +13,7 @@ export default class SvgBuilder {
 
     this.patternCount = 0;
     this.definedSolidFiller = {};
+    this.defaultFillerId = null;
   }
 
   _fillColor(key) {
@@ -21,6 +22,38 @@ export default class SvgBuilder {
 
   _getColor(key) {
     return this.palette[key];
+  }
+
+  getDefaultFiller() {
+    if (!this.defaultFillerId) {
+      this.defaultFillerId = "default-filler";
+
+      let size = 50;
+      let half = size / 2;
+      let color1 = "white";
+      let color2 = "grey";
+
+      let patternNode = this.defs.ele("pattern")
+        .att("id", this.defaultFillerId)
+        .att("x", 0).att("y", 0)
+        .att("width", size)
+        .att("height", size)
+        .att("patternUnits", "userSpaceOnUse");
+
+      patternNode.ele("rect")
+        .att("x", 0).att("y", 0)
+        .att("width", size).att("height", size)
+        .att("fill", color1);
+      patternNode.ele("rect")
+        .att("x", half).att("y", 0)
+        .att("width", half).att("height", half)
+        .att("fill", color2);
+      patternNode.ele("rect")
+        .att("x", 0).att("y", half)
+        .att("width", half).att("height", half)
+        .att("fill", color2);
+    }
+    return this.defaultFillerId;
   }
 
   getSolidFiller(key) {

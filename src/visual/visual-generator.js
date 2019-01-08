@@ -70,9 +70,8 @@ function getFiller(builder, description, shapeBox) {
       return builder.addPattern(pattern, parameters);
     };
     default: {
-      //TODO should use Promise ?
       console.log("unsupported-type:" + description.type);
-      return null;
+      return builder.getDefaultFiller();
     }
   }
 }
