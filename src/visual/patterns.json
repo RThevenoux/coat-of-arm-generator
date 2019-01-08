@@ -17,6 +17,16 @@
     "patternRepetition": 5,
     "path": "M 10,0 L 0,25 L 10,50 L 20,25 z"
   },
+  "triangle": {
+    "patternWidth": 60,
+    "patternHeight": 104,
+    "patternRepetition": 5,
+    "path": "M 30,0 L 0,52 60,52 z",
+    "copies": [
+      "translate(-30,52)",
+      "translate(30,52)"
+    ]
+  },
   "vair": {
     "patternWidth": 4,
     "patternHeight": 8,
