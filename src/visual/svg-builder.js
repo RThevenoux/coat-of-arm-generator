@@ -13,11 +13,16 @@ export default class SvgBuilder {
 
     this.patternCount = 0;
     this.definedSolidFiller = {};
+    this.definedSymbol = {};
     this.defaultFillerId = null;
   }
 
   _fillColor(key) {
-    return "fill:#" + this._getColor(key);
+    return "fill:#" + this._getColor(key) + ";";
+  }
+
+  _stroke(width) {
+    return "stroke:black;stroke-width:" + width + "px;"
   }
 
   _getColor(key) {
@@ -72,6 +77,41 @@ export default class SvgBuilder {
     return id;
   }
 
+  addSeme(parameters, shapeWidth) {
+    let id = "pattern" + (this.patternCount++);
+
+    let box = { width: parameters.seme.width, height: parameters.seme.height };
+
+    let symbolId = this._addSymbol(parameters.meuble);
+
+    let scaleCoef = shapeWidth / (box.width * parameters.seme.repetition)
+    let transform = "scale(" + scaleCoef + "," + scaleCoef + ")";
+
+    let patternNode = this.defs.ele("pattern")
+      .att("id", id)
+      .att("x", 0).att("y", 0)
+      .att("width", box.width)
+      .att("height", box.height)
+      .att("patternUnits", "userSpaceOnUse")
+      .att("patternTransform", transform);
+
+    patternNode.ele("rect")
+      .att("x", 0).att("y", 0)
+      .att("width", box.width).att("height", box.height)
+      .att("style", this._fillColor(parameters.fieldColor));
+
+    let borderSize = 1 / scaleCoef; // Expect a visual size of '1'
+
+    for (let copyTransform of parameters.seme.copies) {
+      patternNode.ele("use")
+        .att("xlink:href", "#" + symbolId)
+        .att("transform", copyTransform)
+        .att("style", this._fillColor(parameters.meuble.color) + this._stroke(borderSize));
+    }
+
+    return id;
+  }
+
   addPattern(pattern, parameters) {
     let id = "pattern" + (this.patternCount++);
 
@@ -109,6 +149,24 @@ export default class SvgBuilder {
     }
 
     return id;
+  }
+
+  _addSymbol(symbol) {
+    let symbolId = this.definedSolidFiller[symbol.name];
+
+    if (!symbolId) {
+      symbolId = "symbol_" + symbol.name;
+      this.definedSolidFiller[symbol.name] = symbolId;
+
+      this.defs.ele("symbol")
+        .att("id", symbolId)
+        .att("width", symbol.width)
+        .att("height", symbol.height)
+        .att("viewBox", "0 0 " + symbol.width + " " + symbol.height)
+        .raw(symbol.xml);
+    }
+
+    return symbolId;
   }
 
 }

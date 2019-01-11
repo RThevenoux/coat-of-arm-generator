@@ -11,6 +11,11 @@ Vue.component('filler-picker', {
       },
       fusele: {
         angle: 'bande'
+      },
+      seme: {
+        meuble: 'billette',
+        fieldColor: 'azur',
+        meubleColor: 'or'
       }
     }
   },
@@ -43,6 +48,15 @@ Vue.component('filler-picker', {
             color1: this.pattern.color1,
             color2: this.pattern.color2
           }
+
+          case "seme": {
+            return {
+              type: this.type,
+              meuble: this.seme.meuble,
+              fieldColor: this.seme.fieldColor,
+              meubleColor: this.seme.meubleColor
+            }
+          }
           default: return {
             type: this.type
           }
@@ -65,8 +79,10 @@ Vue.component('filler-picker', {
         <label>Plein</label>
         <color-picker v-model="plein.color" @input="update"></color-picker>
       </div>
+
       <div class="flex-container" style="background-color:#D8D8D8">
-        <div style="flex-direction: column">
+        <p>Pavage</p>
+        <div>
           <div>
             <input type="radio" v-model="type" value="echiquete" @change="update">
             <label>Échiqueté</label>
@@ -89,7 +105,7 @@ Vue.component('filler-picker', {
             </select>
           </div>
         </div>
-        <div style="flex-direction: column">
+        <div>
           <div>
             <input type="radio" v-model="type" value="vair" @change="update">
             <label>Vair</label>
@@ -107,14 +123,34 @@ Vue.component('filler-picker', {
             <label>Vair en pointe</label>
           </div>
         </div>
-        <div style="flex-direction: column">
+        <div>
           <div>
             <color-picker v-model="pattern.color1" @input="update"></color-picker>
-          <div>
           </div>
-            <color-picker v-model="pattern.color2" @input="update"></color-picker>
           <div>
+            <color-picker v-model="pattern.color2" @input="update"></color-picker>
+          </div>
         </div>
+      </div>
+
+      <div class="flex-container" style="background-color:#FFF">
+        <p>Semé</p>
+        
+        <input type="radio" v-model="type" value="seme" @change="update">
+        
+        <select v-model="seme.meuble" @change="update">
+          <option value="hermine">Hermine</option>
+          <option value="lys">Lys</option>
+          <option value="billette">Billettes</option>
+          <option value="croisette">Croisettes</option>
+        </select>
+        
+        <label>Couleur champs</label>
+        <color-picker v-model="seme.fieldColor" @input="update"></color-picker>
+       
+        <label>Couleur meuble</label>
+        <color-picker v-model="seme.meubleColor" @input="update"></color-picker>
+         
       </div>
     </div>
     `

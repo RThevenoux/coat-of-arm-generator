@@ -1,0 +1,26 @@
+{
+  "lys": {
+    "label": {
+      "one": "lys",
+      "plural": "lys",
+      "genre": "m",
+      "elision":false
+    }
+  },
+  "billette": {
+    "label": {
+      "one": "billette",
+      "plural": "billettes",
+      "genre": "f",
+      "elision":false
+    }
+  },
+  "hermine": {
+    "label": {
+      "one": "hermine",
+      "plural": "hermines",
+      "genre": "f",
+      "elision":true
+    }
+  }
+}

@@ -1,5 +1,6 @@
-var colorNames = require("./colorNames.json");
-var patterns = require("./patterns.json");
+let colorNames = require("./colorNames.json");
+let patterns = require("./patterns.json");
+let meubles = require("./meubles.json");
 
 export default function generateBlazon(model) {
 
@@ -11,26 +12,50 @@ export default function generateBlazon(model) {
 
 function getFiller(model) {
   switch (model.type) {
-    case "plein": {
-      return colorNames[model.color];
-    }
-    case "pattern": {
-      let pattern = patterns[model.patternName];
-      if (typeof pattern === 'string' || pattern instanceof String) {
-        return _simplePattern(model, pattern);
-      } else {
-        for (let aCase of pattern.cases) {
-          if (aCase.colors[0] == model.color1 && aCase.colors[1] == model.color2) {
-            return aCase.label;
-          }
-        }
-        // else (if colors match no case)
-        return _simplePattern(model, pattern.else);
+    case "plein": return _plein(model);
+    case "pattern": return _pattern(model);
+    case "seme": return _seme(model);
+    default: return "unsupported-type:" + model.type;
+  }
+}
+
+function _getColor(key) {
+  return colorNames[key];
+}
+
+function _plein(model) {
+  return _getColor(model.color);
+}
+
+function _pattern(model) {
+  let pattern = patterns[model.patternName];
+  if (typeof pattern === 'string' || pattern instanceof String) {
+    return _simplePattern(model, pattern);
+  } else {
+    for (let aCase of pattern.cases) {
+      if (aCase.colors[0] == model.color1 && aCase.colors[1] == model.color2) {
+        return aCase.label;
       }
     }
-    default: {
-      return "unsupported-type:" + model.type;
-    }
+    // else (if colors match no case)
+    return _simplePattern(model, pattern.else);
+  }
+}
+
+function _seme(model) {
+  return _getColor(model.fieldColor) + " semé " + _getMeubleDe(model.meuble) + " " + _getColor(model.meubleColor);
+}
+
+function _getMeubleDe(meubleKey) {
+  let meubleDef = meubles[meubleKey]
+  if (!meubleDef) {
+    return "de [?]";
+  }
+
+  if (meubleDef.label.elision) {
+    return "d'" + meubleDef.label.plural;
+  } else {
+    return "de " + meubleDef.label.plural;
   }
 }
 
@@ -44,7 +69,7 @@ function _simplePattern(model, label) {
       default: return "invalid-angle:" + model.angle;
     }
   }
-  string += " " + colorNames[model.color1] + " et " + colorNames[model.color2];
+  string += " " + _getColor(model.color1) + " et " + _getColor(model.color2);
   return string;
 
 }

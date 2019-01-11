@@ -1,6 +1,7 @@
 import SvgBuilder from './svg-builder';
 
 let patterns = require("./patterns.json");
+let meubles = require("./meubles.json");
 
 export default function generateVisual(description, configuration) {
 
@@ -69,11 +70,51 @@ function getFiller(builder, description, shapeBox) {
       let parameters = getPatternParameters(description, shapeBox);
       return builder.addPattern(pattern, parameters);
     };
+    case "seme": {
+      let parameters = getSemeParameters(description);
+      return builder.addSeme(parameters, shapeBox.width);
+    }
     default: {
       console.log("unsupported-type:" + description.type);
       return builder.getDefaultFiller();
     }
   }
+}
+
+function getSemeParameters(description) {
+  let meubleDef = meubles[description.meuble];
+  if (!meubleDef) {
+    meubleDef = meubles["$default"];
+  }
+
+  let tx = meubleDef.seme.tx;
+  let ty = meubleDef.seme.ty;
+  let h = meubleDef.height;
+  let w = meubleDef.width;
+
+  let parameters = {
+    meuble: {
+      name: description.meuble,
+      xml: meubleDef.xml,
+      color: description.meubleColor,
+      width: w,
+      height: h
+    },
+    seme: {
+      width: tx * 2,
+      height: ty * 2,
+      repetition: meubleDef.seme.repetition,
+      copies: [
+        "translate(" + (-w / 2 + tx) + "," + (-h / 2 + ty) + ")",
+        "translate(" + (-w / 2) + "," + (-h / 2) + ")",
+        "translate(" + (-w / 2) + "," + (-h / 2 + 2 * ty) + ")",
+        "translate(" + (-w / 2 + 2 * tx) + "," + (-h / 2) + ")",
+        "translate(" + (-w / 2 + 2 * tx) + "," + (-h / 2 + 2 * ty) + ")"
+      ]
+    },
+    fieldColor: description.fieldColor
+  }
+  return parameters;
 }
 
 function getPatternParameters(description, shapeBox) {
