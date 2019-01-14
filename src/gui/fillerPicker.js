@@ -1,6 +1,9 @@
+let chargeOptions = require("./charges.json");
+
 Vue.component('filler-picker', {
   data: function () {
     return {
+      chargeOptions:chargeOptions,
       type: 'none',
       plein: {
         color: 'azur'
@@ -13,9 +16,9 @@ Vue.component('filler-picker', {
         angle: 'bande'
       },
       seme: {
-        meuble: 'billette',
+        charge: 'billette',
         fieldColor: 'azur',
-        meubleColor: 'or'
+        chargeColor: 'or'
       }
     }
   },
@@ -52,9 +55,9 @@ Vue.component('filler-picker', {
           case "seme": {
             return {
               type: this.type,
-              meuble: this.seme.meuble,
+              chargeId: this.seme.charge,
               fieldColor: this.seme.fieldColor,
-              meubleColor: this.seme.meubleColor
+              chargeColor: this.seme.chargeColor
             }
           }
           default: return {
@@ -138,18 +141,17 @@ Vue.component('filler-picker', {
         
         <input type="radio" v-model="type" value="seme" @change="update">
         
-        <select v-model="seme.meuble" @change="update">
-          <option value="moucheture">Moucheture</option>
-          <option value="lys">Lys</option>
-          <option value="billette">Billettes</option>
-          <option value="croisette">Croisettes</option>
+        <select v-model="seme.charge" @change="update">
+          <option v-for="option in chargeOptions" :value="option.id">
+            {{ option.label }}
+          </option>
         </select>
         
         <label>Couleur champs</label>
         <color-picker v-model="seme.fieldColor" @input="update"></color-picker>
        
         <label>Couleur meuble</label>
-        <color-picker v-model="seme.meubleColor" @input="update"></color-picker>
+        <color-picker v-model="seme.chargeColor" @input="update"></color-picker>
          
       </div>
     </div>

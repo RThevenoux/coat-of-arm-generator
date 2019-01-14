@@ -1,7 +1,7 @@
 import SvgBuilder from './svg-builder';
 
 let patterns = require("./patterns.json");
-let meubles = require("./meubles.json");
+let charges = require("./charges.json");
 let escutcheons = require("./escutcheons.json");
 let palettes = require("./palettes.json");
 
@@ -11,7 +11,7 @@ export default function generateVisual(description, configuration) {
   let palette = palettes[configuration.palette];
   let borderSize = configuration.borderSize;
   let defaultStrokeSize = configuration.defaultStrokeSize;
-  
+
   let viewBoxSize = {
     x: -borderSize,
     y: -borderSize,
@@ -84,29 +84,34 @@ function getFiller(builder, description, shapeBox) {
   }
 }
 
-function getSemeParameters(description) {
-  let meubleDef = meubles[description.meuble];
-  if (!meubleDef) {
-    meubleDef = meubles["$default"];
+function getChargeDefinition(chargeId) {
+  let chargeDef = charges[chargeId];
+  if (!chargeDef) {
+    chargeDef = charges["$default"];
   }
+  return chargeDef;
+}
 
-  let tx = meubleDef.seme.tx;
-  let ty = meubleDef.seme.ty;
-  let h = meubleDef.height;
-  let w = meubleDef.width;
+function getSemeParameters(description) {
+  let chargeDef = getChargeDefinition(description.chargeId);
+
+  let tx = chargeDef.seme.tx;
+  let ty = chargeDef.seme.ty;
+  let h = chargeDef.height;
+  let w = chargeDef.width;
 
   let parameters = {
-    meuble: {
-      name: description.meuble,
-      xml: meubleDef.xml,
-      color: description.meubleColor,
+    charge: {
+      id: description.chargeId,
+      xml: chargeDef.xml,
+      color: description.chargeColor,
       width: w,
       height: h
     },
     seme: {
       width: tx * 2,
       height: ty * 2,
-      repetition: meubleDef.seme.repetition,
+      repetition: chargeDef.seme.repetition,
       copies: [
         "translate(" + (-w / 2 + tx) + "," + (-h / 2 + ty) + ")",
         "translate(" + (-w / 2) + "," + (-h / 2) + ")",

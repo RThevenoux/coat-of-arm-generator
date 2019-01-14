@@ -1,6 +1,6 @@
 let colorNames = require("./colorNames.json");
 let patterns = require("./patterns.json");
-let meubles = require("./meubles.json");
+let charges = require("./charges.json");
 let semes = require("./semes.json");
 
 export default function generateBlazon(model) {
@@ -44,35 +44,36 @@ function _pattern(model) {
 }
 
 function _seme(model) {
-  let semeDef = semes[model.meuble];
+  
+  let semeDef = semes[model.chargeId];
   if (semeDef) {
     for (let aCase of semeDef.cases) {
-      if (aCase.colors[0] == model.fieldColor && aCase.colors[1] == model.meubleColor) {
+      if (aCase.colors[0] == model.fieldColor && aCase.colors[1] == model.chargeColor) {
         return aCase.label;
       }
     }
     // else case
-    return _simpleSeme(model.fieldColor, semeDef.else, model.meubleColor);
+    return _simpleSeme(model.fieldColor, semeDef.else, model.chargeColor);
   } else {
-    let semeLabel = "semé " + _getMeubleDe(model.meuble);
-    return _simpleSeme(model.fieldColor, semeLabel, model.meubleColor);
+    let semeLabel = _getSeme(model.chargeId);
+    return _simpleSeme(model.fieldColor, semeLabel, model.chargeColor);
   }
 }
 
-function _simpleSeme(fieldColor, semeLabel, meubleColor) {
-  return _getColor(fieldColor) + " " + semeLabel + " " + _getColor(meubleColor);
+function _simpleSeme(fieldColor, semeLabel, chargeColor) {
+  return _getColor(fieldColor) + " " + semeLabel + " " + _getColor(chargeColor);
 }
 
-function _getMeubleDe(meubleKey) {
-  let meubleDef = meubles[meubleKey]
-  if (!meubleDef) {
-    return "de [?]";
+function _getSeme(chargeId) {
+  let chargeDef = charges[chargeId]
+  if (!chargeDef) {
+    return "semé de [?]";
   }
 
-  if (meubleDef.label.elision) {
-    return "d'" + meubleDef.label.plural;
+  if (chargeDef.label.elision) {
+    return "semé d'" + chargeDef.label.plural;
   } else {
-    return "de " + meubleDef.label.plural;
+    return "semé de " + chargeDef.label.plural;
   }
 }
 
