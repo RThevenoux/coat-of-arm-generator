@@ -15,10 +15,10 @@
       "elision":false
     }
   },
-  "hermine": {
+  "moucheture": {
     "label": {
-      "one": "hermine",
-      "plural": "hermines",
+      "one": "moucheture",
+      "plural": "mouchetures",
       "genre": "f",
       "elision":true
     }

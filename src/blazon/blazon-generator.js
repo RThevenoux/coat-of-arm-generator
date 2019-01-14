@@ -1,6 +1,7 @@
 let colorNames = require("./colorNames.json");
 let patterns = require("./patterns.json");
 let meubles = require("./meubles.json");
+let semes = require("./semes.json");
 
 export default function generateBlazon(model) {
 
@@ -43,7 +44,24 @@ function _pattern(model) {
 }
 
 function _seme(model) {
-  return _getColor(model.fieldColor) + " semé " + _getMeubleDe(model.meuble) + " " + _getColor(model.meubleColor);
+  let semeDef = semes[model.meuble];
+  console.log("semeDef:" + semeDef);
+  if (semeDef) {
+    for (let aCase of semeDef.cases) {
+      if (aCase.colors[0] == model.fieldColor && aCase.colors[1] == model.meubleColor) {
+        return aCase.label;
+      }
+    }
+    // else case
+    return _simpleSeme(model.fieldColor, semeDef.else, model.meubleColor);
+  } else {
+    let semeLabel = "semé " + _getMeubleDe(model.meuble);
+    return _simpleSeme(model.fieldColor, semeLabel, model.meubleColor);
+  }
+}
+
+function _simpleSeme(fieldColor, semeLabel, meubleColor) {
+  return _getColor(fieldColor) + " " + semeLabel + " " + _getColor(meubleColor);
 }
 
 function _getMeubleDe(meubleKey) {

@@ -1,0 +1,35 @@
+{
+  "moucheture": {
+    "cases": [
+      {
+        "colors": [
+          "argent",
+          "sable"
+        ],
+        "label": "d'hermine"
+      },
+      {
+        "colors": [
+          "sable",
+          "argent"
+        ],
+        "label": "de contre-hermine"
+      },
+      {
+        "colors": [
+          "sable",
+          "or"
+        ],
+        "label": "de péan"
+      },
+      {
+        "colors": [
+          "or",
+          "sable"
+        ],
+        "label": "d'erminois"
+      }
+    ],
+    "else": "herminé"
+  }
+}

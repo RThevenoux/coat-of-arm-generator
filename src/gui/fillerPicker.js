@@ -139,7 +139,7 @@ Vue.component('filler-picker', {
         <input type="radio" v-model="type" value="seme" @change="update">
         
         <select v-model="seme.meuble" @change="update">
-          <option value="hermine">Hermine</option>
+          <option value="moucheture">Moucheture</option>
           <option value="lys">Lys</option>
           <option value="billette">Billettes</option>
           <option value="croisette">Croisettes</option>
