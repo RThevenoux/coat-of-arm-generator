@@ -1,8 +1,9 @@
 import xmlBuilder from 'xmlbuilder';
 
 export default class SvgBuilder {
-  constructor(viewBoxSize, palette) {
+  constructor(viewBoxSize, palette, defaultStrokeWidth) {
     this.palette = palette;
+    this.defaultStrokeWidth = defaultStrokeWidth;
 
     this.container = xmlBuilder.create('svg', { headless: true })
       .att("xmlns", "http://www.w3.org/2000/svg")
@@ -100,13 +101,13 @@ export default class SvgBuilder {
       .att("width", box.width).att("height", box.height)
       .att("style", this._fillColor(parameters.fieldColor));
 
-    let borderSize = 1 / scaleCoef; // Expect a visual size of '1'
+    let strokeWidth = this.defaultStrokeWidth / scaleCoef;
 
     for (let copyTransform of parameters.seme.copies) {
       patternNode.ele("use")
         .att("xlink:href", "#" + symbolId)
         .att("transform", copyTransform)
-        .att("style", this._fillColor(parameters.meuble.color) + this._stroke(borderSize));
+        .att("style", this._fillColor(parameters.meuble.color) + this._stroke(strokeWidth));
     }
 
     return id;

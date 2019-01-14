@@ -29,29 +29,11 @@
         <div>
           <h2>Visual</h2>
           <div class="flex-container">
-            <div>
-              <h3>Configuration</h3>
-              <select v-model="visual.shape">
-                <option v-for="shape in visual.options.shapes" :value="shape.id">
-                  {{ shape.label }}
-                </option>
-              </select>
-
-              <select v-model="visual.palette">
-                <option v-for="palette in visual.options.palettes" :value="palette.id">
-                  {{ palette.label }}
-                </option>
-              </select>
-
-              <div>
-                <input type="checkbox" name="reflect" v-model="visual.reflect">
-                <label for="reflect">Reflect effect</label>
-              </div>
-
-            </div>
+            <visual-configuration v-model="visual"></visual-configuration>
             <div v-html="image"></div>
           </div>
         </div>
+
       </div>
     </div>
   </div>

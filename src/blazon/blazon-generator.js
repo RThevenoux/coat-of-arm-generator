@@ -45,7 +45,6 @@ function _pattern(model) {
 
 function _seme(model) {
   let semeDef = semes[model.meuble];
-  console.log("semeDef:" + semeDef);
   if (semeDef) {
     for (let aCase of semeDef.cases) {
       if (aCase.colors[0] == model.fieldColor && aCase.colors[1] == model.meubleColor) {

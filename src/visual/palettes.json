@@ -1,7 +1,5 @@
-[
-  {
-    "id": "0",
-    "label": "basic",
+{
+  "basic": {
     "or": "ff0",
     "argent": "fff",
     "sable": "000",
@@ -10,9 +8,7 @@
     "gueules": "f00",
     "pourpre": "f0f"
   },
-  {
-    "id": "1",
-    "label": "fr-wikipedia",
+  "fr-wikipedia": {
     "or": "FCEF3C",
     "argent": "FFFFFF",
     "sable": "000000",
@@ -21,4 +17,4 @@
     "gueules": "E20909",
     "pourpre": "D576AD"
   }
-]
+}

@@ -2,13 +2,16 @@ import SvgBuilder from './svg-builder';
 
 let patterns = require("./patterns.json");
 let meubles = require("./meubles.json");
+let escutcheons = require("./escutcheons.json");
+let palettes = require("./palettes.json");
 
 export default function generateVisual(description, configuration) {
 
-  let shape = configuration.shape;
+  let shape = escutcheons[configuration.shape];
+  let palette = palettes[configuration.palette];
   let borderSize = configuration.borderSize;
-  let palette = configuration.palette;
-
+  let defaultStrokeSize = configuration.defaultStrokeSize;
+  
   let viewBoxSize = {
     x: -borderSize,
     y: -borderSize,
@@ -21,7 +24,7 @@ export default function generateVisual(description, configuration) {
     height: shape.height
   }
 
-  let builder = new SvgBuilder(viewBoxSize, palette);
+  let builder = new SvgBuilder(viewBoxSize, palette, defaultStrokeSize);
 
   let mainShapeId = definePath(builder, shape.path);
 
