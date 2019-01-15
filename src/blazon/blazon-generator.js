@@ -4,14 +4,75 @@ let charges = require("./charges.json");
 let semes = require("./semes.json");
 
 export default function generateBlazon(model) {
-
-  let label = getFiller(model)
+  let label = _getPartitionning(model);
 
   // Capitalize first letter
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-function getFiller(model) {
+function _getPartitionning(model) {
+  if (!model) {
+    return "[empty]";
+  }
+  switch (model.type) {
+    case "plain":
+      if (model.partitions.length != 1) {
+        return "[invalid partitions length]";
+      }
+      return _getPartition(model.partitions[0].model);
+    case "parti": {
+      if (model.partitions.length != 2) {
+        return "[invalid partitions length]";
+      }
+      return "parti " + _getPartition(model.partitions[0].model)
+        + " et " + _getPartition(model.partitions[1].model);
+    };
+    case "coupe": {
+      if (model.partitions.length != 2) {
+        return "[invalid partitions length]";
+      }
+      return "coupé " + _getPartition(model.partitions[0].model)
+        + " et " + _getPartition(model.partitions[1].model);
+    }
+    case "tierce_en_pairle": {
+      if (model.partitions.length != 3) {
+        return "[invalid partitions length]";
+      }
+      return "tiercé en pairle " + _getPartition(model.partitions[0].model)
+        + ", " + _getPartition(model.partitions[1].model)
+        + " et " + _getPartition(model.partitions[2].model);
+    }
+    case "ecartele": {
+      if (model.partitions.length != 4) {
+        return "[invalid partitions length]";
+      }
+      return "écratelé : au 1 " + _getPartition(model.partitions[0].model)
+        + "; au 2 " + _getPartition(model.partitions[1].model)
+        + "; au 3 " + _getPartition(model.partitions[2].model)
+        + "; au 4 " + _getPartition(model.partitions[3].model);
+    }
+    default: return "unsupported partitionning '" + model.type + "'";
+  }
+}
+
+function _getPartition(model) {
+  if (!model || model == "none") {
+    return "[of-empty]";
+  }
+  let fillerLabel = _getFiller(model.filler);
+  if (charges.length > 0) {
+    let charges = _getCharges(model.charges);
+    return fillerLabel + " " + charges;
+  } else {
+    return fillerLabel;
+  }
+}
+
+function _getCharges(charges) {
+  return "charges:" + charges.length;
+}
+
+function _getFiller(model) {
   switch (model.type) {
     case "plein": return _plein(model);
     case "pattern": return _pattern(model);
@@ -44,7 +105,7 @@ function _pattern(model) {
 }
 
 function _seme(model) {
-  
+
   let semeDef = semes[model.chargeId];
   if (semeDef) {
     for (let aCase of semeDef.cases) {
