@@ -1,7 +1,8 @@
-let colorNames = require("./colorNames.json");
-let patterns = require("./patterns.json");
-let charges = require("./charges.json");
-let semes = require("./semes.json");
+let colorNames = require("./data/colorNames.json");
+let patterns = require("./data/patterns.json");
+let charges = require("./data/charges.json");
+let semes = require("./data/semes.json");
+let partitions = require("./data/partitions.json");
 
 export default function generateBlazon(model) {
   let label = _getPartitionning(model);
@@ -15,53 +16,16 @@ function _getPartitionning(model) {
     return "[empty]";
   }
 
-  switch (model.type) {
-    case "plain":
-      if (model.partitions.length != 1) {
-        return "[invalid partitions length]";
-      }
-      return _getPartition(model.partitions[0].model);
-    case "parti": {
-      if (model.partitions.length != 2) {
-        return "[invalid partitions length]";
-      }
-      return "parti " + _getPartition(model.partitions[0].model)
-        + " et " + _getPartition(model.partitions[1].model);
-    };
-    case "coupe": {
-      if (model.partitions.length != 2) {
-        return "[invalid partitions length]";
-      }
-      return "coupé " + _getPartition(model.partitions[0].model)
-        + " et " + _getPartition(model.partitions[1].model);
-    }
-    case "tierce_en_pal": {
-      if (model.partitions.length != 3) {
-        return "[invalid partitions length]";
-      }
-      return "tiercé en pal " + _getPartition(model.partitions[0].model)
-        + ", " + _getPartition(model.partitions[1].model)
-        + " et " + _getPartition(model.partitions[2].model);
-    }
-    case "tierce_en_pairle": {
-      if (model.partitions.length != 3) {
-        return "[invalid partitions length]";
-      }
-      return "tiercé en pairle " + _getPartition(model.partitions[0].model)
-        + ", " + _getPartition(model.partitions[1].model)
-        + " et " + _getPartition(model.partitions[2].model);
-    }
-    case "ecartele": {
-      if (model.partitions.length != 4) {
-        return "[invalid partitions length]";
-      }
-      return "écratelé : au 1 " + _getPartition(model.partitions[0].model)
-        + "; au 2 " + _getPartition(model.partitions[1].model)
-        + "; au 3 " + _getPartition(model.partitions[2].model)
-        + "; au 4 " + _getPartition(model.partitions[3].model);
-    }
-    default: return "unsupported partitionning '" + model.type + "'";
+  let partitionDef = partitions[model.type];
+  if (!partitionDef) {
+    return "unsupported partitionning '" + model.type + "'";
   }
+
+  let count = partitionDef.match(/\{\}/g).length;
+  for (let i = 0; i < count; i++) {
+    partitionDef = partitionDef.replace("{}", _getPartition(model.partitions[i].model));
+  }
+  return partitionDef;
 }
 
 function _getPartition(model) {

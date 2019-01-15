@@ -1,0 +1,8 @@
+{
+  "plain": "{}",
+  "parti": "parti {} et {}",
+  "coupe": "coupé {} et {}",
+  "tierce_en_pal": "tiercé en pal {}, {} et {}",
+  "tierce_en_pairle": "tiercé en pairle {}, {} et {}",
+  "ecartele": "écratelé : au 1 {}; au 2 {}; au 3 {}; au 4 {}"
+}

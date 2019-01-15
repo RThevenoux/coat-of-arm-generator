@@ -1,4 +1,4 @@
-let chargeOptions = require("./charges.json");
+let chargeOptions = require("./data/charges.json");
 
 Vue.component('filler-picker', {
   data: function () {

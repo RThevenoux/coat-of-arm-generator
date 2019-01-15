@@ -1,6 +1,6 @@
 import paper from 'paper-jsdom';
 
-let partitionDefs = require('./partitions.json');
+let partitionDefs = require('./data/partitions.json');
 
 export default function partitionShape(shape, partitionningType) {
   if (partitionningType == "plain") {

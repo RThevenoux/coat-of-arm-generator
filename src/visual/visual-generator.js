@@ -1,14 +1,14 @@
 import SvgBuilder from './svg-builder';
 import partitionShape from './partitionner';
 
-let patterns = require("./patterns.json");
-let charges = require("./charges.json");
-let escutcheons = require("./escutcheons.json");
-let palettes = require("./palettes.json");
+let patterns = require("./data/patterns.json");
+let charges = require("./data/charges.json");
+let escutcheons = require("./data/escutcheons.json");
+let palettes = require("./data/palettes.json");
 
 export default function generateVisual(model, configuration) {
 
-  let shape = escutcheons[configuration.shape];
+  let escutcheon = escutcheons[configuration.escutcheon];
   let palette = palettes[configuration.palette];
   let borderSize = configuration.borderSize;
   let defaultStrokeSize = configuration.defaultStrokeSize;
@@ -16,17 +16,17 @@ export default function generateVisual(model, configuration) {
   let viewBoxSize = {
     x: -borderSize,
     y: -borderSize,
-    width: parseInt(shape.width) + borderSize * 2,
-    height: parseInt(shape.height) + borderSize * 2,
+    width: parseInt(escutcheon.width) + borderSize * 2,
+    height: parseInt(escutcheon.height) + borderSize * 2,
   };
 
   let builder = new SvgBuilder(viewBoxSize, palette, defaultStrokeSize);
 
   // Draw 
-  let subShapes = partitionShape(shape, model.type);
+  let subShapes = partitionShape(escutcheon, model.type);
   if (subShapes.length == 0) {
     //Error case
-    _addField(builder, "none", shape);
+    _addField(builder, "none", escutcheon);
   } else {
     for (let i = 0; i < subShapes.length; i++) {
       let partitionModel = model.partitions[i].model;
@@ -36,10 +36,10 @@ export default function generateVisual(model, configuration) {
   }
 
   // Visual effet
-  let mainShapeId = _definePath(builder, shape.path);
+  let mainShapeId = _definePath(builder, escutcheon.path);
   _addBorder(builder, borderSize, mainShapeId);
   if (configuration.reflect) {
-    _addReflect(builder, shape, mainShapeId);
+    _addReflect(builder, escutcheon, mainShapeId);
   }
 
   // Static size of 300x300 for the image

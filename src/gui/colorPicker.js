@@ -1,4 +1,4 @@
-let colorOptionData = require("./colors.json");
+let colorOptionData = require("./data/colors.json");
 
 Vue.component('color-picker', {
   data: () => {

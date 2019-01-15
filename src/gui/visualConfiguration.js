@@ -1,11 +1,11 @@
-let shapes = require("./shapes.json");
-let palettes = require("./palettes.json");
+let escutcheons = require("./data/escutcheons.json");
+let palettes = require("./data/palettes.json");
 
 Vue.component('visual-configuration', {
   data: () => {
     return {
       options: {
-        shapes: shapes,
+        escutcheons: escutcheons,
         palettes: palettes
       }
     };
@@ -16,9 +16,9 @@ Vue.component('visual-configuration', {
   template: `
   <div>
     <h3>Configuration</h3>
-    <select v-model="value.shape" @change="update">
-      <option v-for="shape in options.shapes" :value="shape.id">
-        {{ shape.label }}
+    <select v-model="value.escutcheon" @change="update">
+      <option v-for="escutcheon in options.escutcheons" :value="escutcheon.id">
+        {{ escutcheon.label }}
       </option>
     </select>
 
