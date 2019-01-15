@@ -1,14 +1,12 @@
+let options = require('./data/partitions.json');
+
+let formattedOptions = {};
+options.forEach(option => formattedOptions[option.id] = option);
+
 Vue.component('partitionnig-picker', {
   data: function () {
     return {
-      options: {
-        "plain": { label: "Aucun", id: "plain", count: 1 },
-        "parti": { label: "Parti", id: "parti", count: 2 },
-        "coupe": { label: "Coupé", id: "coupe", count: 2 },
-        "tierce_en_pal": {label: "Tiercé en pal", id: "tierce_en_pal", count: 3},
-        "tierce_en_pairle": { label: "Tiercé en pairle", id: "tierce_en_pairle", count: 3 },
-        "ecartele": { label: "Écartelé", id: "ecartele", count: 4 }
-      },
+      options: formattedOptions,
       value: {
         type: "plain",
         partitions: [{ number: 0, model: "none" }]
@@ -29,7 +27,7 @@ Vue.component('partitionnig-picker', {
           array.pop();
         }
       }
-     this.$emit('input', this.value);
+      this.$emit('input', this.value);
     }
   },
   template: `
