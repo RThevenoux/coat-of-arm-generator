@@ -14,6 +14,7 @@ function _getPartitionning(model) {
   if (!model) {
     return "[empty]";
   }
+
   switch (model.type) {
     case "plain":
       if (model.partitions.length != 1) {
@@ -33,6 +34,14 @@ function _getPartitionning(model) {
       }
       return "coupé " + _getPartition(model.partitions[0].model)
         + " et " + _getPartition(model.partitions[1].model);
+    }
+    case "tierce_en_pal": {
+      if (model.partitions.length != 3) {
+        return "[invalid partitions length]";
+      }
+      return "tiercé en pal " + _getPartition(model.partitions[0].model)
+        + ", " + _getPartition(model.partitions[1].model)
+        + " et " + _getPartition(model.partitions[2].model);
     }
     case "tierce_en_pairle": {
       if (model.partitions.length != 3) {

@@ -1,0 +1,46 @@
+{
+  "parti": {
+    "paths": [
+      "M 0,0 L  5,0 L  5,10 L 0,10 z",
+      "M 5,0 L 10,0 L 10,10 L 5,10 z"
+    ],
+    "width": 10,
+    "height": 10
+  },
+  "coupe": {
+    "paths": [
+      "M 0,0 L 10,0 L 10,5  L 0,5 z",
+      "M 0,5 L 10,5 L 10,10 L 0,10 z"
+    ],
+    "width": 10,
+    "height": 10
+  },
+  "tierce_en_pairle": {
+    "paths": [
+      "M 0,0 L 10,0 L 5,5 z",
+      "M 0,0 L 5,5 L 5,10 L 0,10 z",
+      "M 5,5 L 10,0 L 10,10 L 5,10 z"
+    ],
+    "width": 10,
+    "height": 10
+  },
+  "tierce_en_pal": {
+    "paths": [
+      "M 0,0 L 3,0 L 3,9 L 0,9 z",
+      "M 3,0 L 6,0 L 6,9 L 3,9 z",
+      "M 6,0 L 9,0 L 9,9 L 6,9 z"
+    ],
+    "width": 9,
+    "height": 9
+  },
+  "ecartele": {
+    "paths": [
+      "M 0,0 L 5,0 L 5,5 L 0,5 z",
+      "M 5,0 L 10,0 L 10,5 L 5,5 z",
+      "M 0,5 L 5,5 L 5,10 L 0,10 z",
+      "M 5,5 L 10,5 L 10,10 L 5,10 z"
+    ],
+    "width": 10,
+    "height": 10
+  }
+}

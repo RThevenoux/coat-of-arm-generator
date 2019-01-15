@@ -5,7 +5,8 @@ Vue.component('partitionnig-picker', {
         "plain": { label: "Aucun", id: "plain", count: 1 },
         "parti": { label: "Parti", id: "parti", count: 2 },
         "coupe": { label: "Coupé", id: "coupe", count: 2 },
-        "tierce_en_pairle": { label: "Tiercé", id: "tierce_en_pairle", count: 3 },
+        "tierce_en_pal": {label: "Tiercé en pal", id: "tierce_en_pal", count: 3},
+        "tierce_en_pairle": { label: "Tiercé en pairle", id: "tierce_en_pairle", count: 3 },
         "ecartele": { label: "Écartelé", id: "ecartele", count: 4 }
       },
       value: {

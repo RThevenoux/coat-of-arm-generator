@@ -27,6 +27,7 @@
     "webpack-cli": "^3.2.0"
   },
   "dependencies": {
+    "paper-jsdom": "^0.12.0",
     "xmlbuilder": "^10.1.1"
   }
 }

@@ -1,4 +1,5 @@
 import SvgBuilder from './svg-builder';
+import partitionShape from './partitionner';
 
 let patterns = require("./patterns.json");
 let charges = require("./charges.json");
@@ -22,14 +23,14 @@ export default function generateVisual(model, configuration) {
   let builder = new SvgBuilder(viewBoxSize, palette, defaultStrokeSize);
 
   // Draw 
-  let partitionShapes = _partitionShape(shape, model.type);
-  if (partitionShapes.length == 0) {
+  let subShapes = partitionShape(shape, model.type);
+  if (subShapes.length == 0) {
     //Error case
     _addField(builder, "none", shape);
   } else {
-    for (let i = 0; i < partitionShapes.length; i++) {
+    for (let i = 0; i < subShapes.length; i++) {
       let partitionModel = model.partitions[i].model;
-      let subShape = partitionShapes[i];
+      let subShape = subShapes[i];
       _addPartition(builder, partitionModel, subShape);
     }
   }
@@ -47,91 +48,6 @@ export default function generateVisual(model, configuration) {
     .att("width", 300)
     .att("height", 300)
     .end();
-}
-
-function _partitionShape(shape, partitionningType) {
-  switch (partitionningType) {
-    case "plain": {
-      return [shape];
-    }
-    case "parti": {
-      let w = shape.width;
-      let h = shape.height;
-      let shape1 = {
-        path: "M 0,0 L " + w / 2 + ",0 L" + w / 2 + "," + h + " L 0," + h + "z",
-        width: w / 2,
-        height: h
-      };
-      let shape2 = {
-        path: "M " + w / 2 + ",0 L " + w + ",0 L" + w + "," + h + " L " + w / 2 + "," + h + "z",
-        width: w / 2,
-        height: h
-      };
-      return [shape1, shape2];
-    }
-    case "coupe": {
-      let w = shape.width;
-      let h = shape.height;
-      let shape1 = {
-        path: "M 0,0 L " + w + ",0 L" + w + "," + h / 2 + " L 0," + h / 2 + "z",
-        width: w,
-        height: h / 2
-      };
-      let shape2 = {
-        path: "M " + 0 + "," + h / 2 + " L " + w + "," + h / 2 + " L" + w + "," + h + " L " + 0 + "," + h + "z",
-        width: w,
-        height: h / 2
-      };
-      return [shape1, shape2];
-    }
-    case "tierce_en_pairle": {
-      let w = shape.width;
-      let h = shape.height;
-      let shape1 = {
-        path: "M 0,0 L " + w + ",0 L" + w / 2 + "," + h / 2 + " z",
-        width: w,
-        height: h / 2
-      };
-      let shape2 = {
-        path: "M " + 0 + "," + 0 + " L " + w / 2 + "," + h / 2 + " L" + w / 2 + "," + h + " L " + 0 + "," + h + "z",
-        width: w / 2,
-        height: h
-      };
-      let shape3 = {
-        path: "M " + w / 2 + "," + h / 2 + " L " + w + "," + 0 + " L" + w + "," + h + " L " + w / 2 + "," + h + "z",
-        width: w / 2,
-        height: h
-      };
-      return [shape1, shape2, shape3];
-    }
-    case "ecartele": {
-      let w = shape.width;
-      let h = shape.height;
-      let shape1 = {
-        path: "M 0,0 L " + w / 2 + ",0 L" + w / 2 + "," + h / 2 +" L " + 0 + "," + h / 2 + " z",
-        width: w / 2,
-        height: h / 2
-      };
-      let shape2 = {
-        path: "M " + w / 2 + "," + 0 + " L " + w + "," + 0 + " L" + w + "," + h / 2 + " L " + w / 2 + "," + h / 2 + "z",
-        width: w / 2,
-        height: h / 2
-      };
-      let shape3 = {
-        path: "M " + 0 + "," + h / 2 + " L " + w / 2 + "," + h / 2 + " L" + w / 2 + "," + h + " L " + 0 + "," + h + "z",
-        width: w / 2,
-        height: h / 2
-      };
-      let shape4 = {
-        path: "M " + w / 2 + "," + h / 2 + " L " + w + "," + h / 2 + " L" + w + "," + h + " L " + w / 2 + "," + h + "z",
-        width: w / 2,
-        height: h / 2
-      };
-      return [shape1, shape2, shape3, shape4];
-    }
-    default:
-      return [];
-  }
 }
 
 function _addPartition(builder, model, shape) {
