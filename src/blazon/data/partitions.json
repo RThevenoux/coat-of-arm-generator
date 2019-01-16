@@ -2,6 +2,8 @@
   "plain": "{}",
   "parti": "parti {} et {}",
   "coupe": "coupé {} et {}",
+  "taille": "taillé {} et {}",
+  "tranche": "tranché {} et {}",
   "adextre": "{} adextré {}",
   "senestre": "{} senestré {}",
   "tierce_pal": "tiercé en pal {}, {} et {}",
@@ -9,6 +11,7 @@
   "tierce_bande": "tiercé en bande {}, {} et {}",
   "tierce_barre": "tiercé en barre {}, {} et {}",
   "tierce_pairle": "tiercé en pairle {}, {} et {}",
+  "tierce_pairle_verse" : "tiercé en pairle versé {}, {} et {}",
   "ecartele": "écratelé : au 1 {}; au 2 {}; au 3 {}; au 4 {}",
   "ecartele_sautoir": "écratelé en sautoir : au 1 {}; au 2 {}; au 3 {}; au 4 {}",
   "gironne": "gironné {} et {}"

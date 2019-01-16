@@ -15,6 +15,16 @@
     "count": 2
   },
   {
+    "label": "Tranché",
+    "id": "tranche",
+    "count": 2
+  },
+  {
+    "label": "Taillé",
+    "id": "taille",
+    "count": 2
+  },
+  {
     "label": "Adextré",
     "id": "adextre",
     "count": 2
@@ -47,6 +57,11 @@
   {
     "label": "Tiercé en pairle",
     "id": "tierce_pairle",
+    "count": 3
+  },
+  {
+    "label": "Tiercé en pairle versé",
+    "id": "tierce_pairle_verse",
     "count": 3
   },
   {
