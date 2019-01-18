@@ -1,6 +1,7 @@
+import { uncountableCharge, countableCharge } from './charge-labeller';
+
 let colorNames = require("./data/colorNames.json");
 let patterns = require("./data/patterns.json");
-let charges = require("./data/charges.json");
 let semes = require("./data/semes.json");
 let partitions = require("./data/partitions.json");
 
@@ -33,16 +34,36 @@ function _getPartition(model) {
     return "[of-empty]";
   }
   let fillerLabel = _getFiller(model.filler);
-  if (charges.length > 0) {
-    let charges = _getCharges(model.charges);
-    return fillerLabel + " " + charges;
+
+  if (model.charges.length > 0) {
+    let chargesLabel = _chargeList(model.charges);
+    return fillerLabel + " " + chargesLabel;
   } else {
     return fillerLabel;
   }
 }
 
-function _getCharges(charges) {
-  return "charges:" + charges.length;
+function _chargeList(charges) {
+  return charges.map(item => _singleCharge(item.model)).join(", ");
+}
+
+function _singleCharge(charge) {
+  let chargeId= _getChargeId(charge);
+  let chargeLabel = countableCharge(chargeId, charge.count);
+  return chargeLabel + " " + _getColor(charge.color);
+}
+
+function _getChargeId(charge) {
+  if (charge.type == "stripe") {
+    switch (charge.angle) {
+      case "0": return 'fasce';
+      case "45": return 'barre';
+      case "90": return 'pal';
+      case "135": return 'bande';
+      default: return 'strip:' + charge.angle;
+    }
+  }
+  return "[invalid-type:" + charge.type + "]";
 }
 
 function _getFiller(model) {
@@ -78,7 +99,6 @@ function _pattern(model) {
 }
 
 function _seme(model) {
-
   let semeDef = semes[model.chargeId];
   if (semeDef) {
     for (let aCase of semeDef.cases) {
@@ -89,26 +109,13 @@ function _seme(model) {
     // else case
     return _simpleSeme(model.fieldColor, semeDef.else, model.chargeColor);
   } else {
-    let semeLabel = _getSeme(model.chargeId);
+    let semeLabel = "semé " + uncountableCharge(model.chargeId);
     return _simpleSeme(model.fieldColor, semeLabel, model.chargeColor);
   }
 }
 
 function _simpleSeme(fieldColor, semeLabel, chargeColor) {
   return _getColor(fieldColor) + " " + semeLabel + " " + _getColor(chargeColor);
-}
-
-function _getSeme(chargeId) {
-  let chargeDef = charges[chargeId]
-  if (!chargeDef) {
-    return "semé de [?]";
-  }
-
-  if (chargeDef.label.elision) {
-    return "semé d'" + chargeDef.label.plural;
-  } else {
-    return "semé de " + chargeDef.label.plural;
-  }
 }
 
 function _simplePattern(model, label) {

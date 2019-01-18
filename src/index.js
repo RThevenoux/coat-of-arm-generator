@@ -7,6 +7,8 @@ import colorPicker from './gui/colorPicker';
 import visualConfiguration from './gui/visualConfiguration';
 import partitionEditor from './gui/partitionEditor';
 import partitionningPicker from './gui/partitionningPicker';
+import singleCharge from './gui/single-charge';
+import multiCharge from './gui/multi-charge';
 //---
 
 let defaultConfiguration = require("./defaultConfiguration.json");
