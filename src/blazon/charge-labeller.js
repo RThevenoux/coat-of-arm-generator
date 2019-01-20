@@ -32,6 +32,7 @@ function _getDefinition(chargeId) {
   let chargeDef = charges[chargeId];
 
   if (!chargeDef) {
+    console.log("Invalid chargeId:" + chargeId);
     return {
       "one": "[?]",
       "plural": "[?]",

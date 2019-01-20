@@ -3,7 +3,7 @@ Vue.component('single-charge', {
     return {
       value: {
         type: "stripe",
-        angle: 0,
+        angle: "0",
         count: 1,
         color: 'gueules'
       }

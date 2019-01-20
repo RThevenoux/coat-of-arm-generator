@@ -15,9 +15,6 @@ export default function partitionShape(shape, partitionningType) {
   let scaleX = shape.width / partitionDef.width;
   let scaleY = shape.height / partitionDef.height;
 
-  // ?? Improve paper.Project management ??
-  new paper.Project();
-  // --
   let mainPath = new paper.Path(shape.path);
 
   let paths = partitionDef.paths.map(pathData => new paper.Path(pathData).scale(scaleX, scaleY, [0, 0]));

@@ -1,12 +1,17 @@
 import SvgBuilder from './svg-builder';
 import partitionShape from './partitionner';
+import getFiller from './filler-builder';
+import addStrip from './strip-drawer';
+import paper from 'paper-jsdom';
 
-let patterns = require("./data/patterns.json");
-let charges = require("./data/charges.json");
 let escutcheons = require("./data/escutcheons.json");
 let palettes = require("./data/palettes.json");
 
 export default function generateVisual(model, configuration) {
+
+  // ?? Improve paper.Project management ??
+  new paper.Project();
+  // --
 
   let escutcheon = escutcheons[configuration.escutcheon];
   let palette = palettes[configuration.palette];
@@ -51,9 +56,20 @@ export default function generateVisual(model, configuration) {
 }
 
 function _addPartition(builder, model, shape) {
-  let filler = model.filler;
-  _addField(builder, filler, shape);
-  // TODO : add charges
+  _addField(builder, model.filler, shape);
+  if (model.charges) {
+    model.charges.forEach(item => {
+      _addCharge(builder, item.model, shape);
+    });
+  }
+}
+
+function _addCharge(builder, charge, shape) {
+  if (charge.type == 'stripe') {
+    addStrip(builder, charge, shape);
+  } else {
+    console.log("-- unsupported charge-type: " + JSON.stringify(charge));
+  }
 }
 
 function _definePath(builder, path) {
@@ -66,104 +82,16 @@ function _definePath(builder, path) {
 }
 
 function _addField(builder, filler, shape) {
-
-  let fillerId = _getFiller(builder, filler, shape);
-
-  if (fillerId) {
-    builder.container
-      .ele("path")
-      .att("d", shape.path)
-      .att("fill", "url(#" + fillerId + ")");
-  }
-}
-
-function _getFiller(builder, filler, shape) {
-  if (!filler) {
-    return builder.getDefaultFiller();
-  }
-
-  switch (filler.type) {
-    case "plein": {
-      return builder.getSolidFiller(filler.color);
-    };
-    case "pattern": {
-      let pattern = patterns[filler.patternName];
-      let parameters = _getPatternParameters(filler, shape);
-      return builder.addPattern(pattern, parameters);
-    };
-    case "seme": {
-      let parameters = _getSemeParameters(filler);
-      return builder.addSeme(parameters, shape.width);
-    }
-    default: {
-      console.log("visual-generator - unsupported-filler-type:" + filler.type);
-      return builder.getDefaultFiller();
-    }
-  }
-}
-
-function _getChargeDefinition(chargeId) {
-  let chargeDef = charges[chargeId];
-  if (!chargeDef) {
-    chargeDef = charges["$default"];
-  }
-  return chargeDef;
-}
-
-function _getSemeParameters(description) {
-  let chargeDef = _getChargeDefinition(description.chargeId);
-
-  let tx = chargeDef.seme.tx;
-  let ty = chargeDef.seme.ty;
-  let h = chargeDef.height;
-  let w = chargeDef.width;
-
-  let parameters = {
-    charge: {
-      id: description.chargeId,
-      xml: chargeDef.xml,
-      color: description.chargeColor,
-      width: w,
-      height: h
-    },
-    seme: {
-      width: tx * 2,
-      height: ty * 2,
-      repetition: chargeDef.seme.repetition,
-      copies: [
-        "translate(" + (-w / 2 + tx) + "," + (-h / 2 + ty) + ")",
-        "translate(" + (-w / 2) + "," + (-h / 2) + ")",
-        "translate(" + (-w / 2) + "," + (-h / 2 + 2 * ty) + ")",
-        "translate(" + (-w / 2 + 2 * tx) + "," + (-h / 2) + ")",
-        "translate(" + (-w / 2 + 2 * tx) + "," + (-h / 2 + 2 * ty) + ")"
-      ]
-    },
-    fieldColor: description.fieldColor
-  }
-  return parameters;
-}
-
-function _getPatternParameters(description, shape) {
-  let param = {
-    backgroundColor: description.color1,
-    patternColor: description.color2,
-    shapeWidth: shape.width
-  }
-
-  if (description.angle) {
-    switch (description.angle) {
-      case "bande": param.rotation = -45; break;
-      case "barre": param.rotation = 45; break;
-      case "defaut": break;
-      default: console.log("Invalid angle" + description.angle);
-    }
-  }
-
-  return param;
+  let fillerId = getFiller(builder, filler, shape);
+  builder.container
+    .ele("path")
+    .att("d", shape.path)
+    .att("fill", "url(#" + fillerId + ")");
 }
 
 function _addBorder(builder, borderSize, mainShapeId) {
-  builder.container.ele("use")
+  builder.container
+    .ele("use")
     .att("xlink:href", "#" + mainShapeId)
     .att("style", "fill:none;stroke:#000;stroke-width:" + borderSize);
 }
