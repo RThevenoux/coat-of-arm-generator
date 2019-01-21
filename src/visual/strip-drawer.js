@@ -2,12 +2,7 @@ import getFiller from './filler-builder';
 import paper from 'paper-jsdom';
 
 export default function addStripe(builder, charge, shape) {
-
-  let filler = {
-    type: "plein",
-    color: charge.color,
-  };
-  let fillerId = getFiller(builder, filler, shape);
+  let fillerId = getFiller(builder, charge.filler, shape);
 
   let shapePath = new paper.Path(shape.path);
   let n = charge.count;

@@ -11,7 +11,10 @@ Vue.component('multi-charge', {
           type: "stripe",
           angle: "0",
           count: 1,
-          color: 'gueules'
+          filler: {
+            type: "plein",
+            color: "gueules"
+          }
         }
       };
       this.value.push(newCharge);

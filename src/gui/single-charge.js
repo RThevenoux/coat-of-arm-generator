@@ -1,11 +1,15 @@
 Vue.component('single-charge', {
   data: () => {
+    
     return {
       value: {
         type: "stripe",
         angle: "0",
         count: 1,
-        color: 'gueules'
+        filler : {
+          type: "plein",
+          color: "gueules"
+        }
       }
     };
   },
@@ -23,7 +27,7 @@ Vue.component('single-charge', {
         <option value="135">en bande</option>
       </select>
       <input v-model.number="value.count" type="number" @input="update"></input>
-      <color-picker v-model="value.color" @input="update"></color-picker>
+      <color-picker v-model="value.filler.color" @input="update"></color-picker>
     </div>
   `
 })
