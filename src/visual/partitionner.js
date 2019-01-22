@@ -2,9 +2,9 @@ import paper from 'paper-jsdom';
 
 let partitionDefs = require('./data/partitions.json');
 
-export default function partitionShape(shape, partitionningType) {
+export default function partitionShape(containerPath, partitionningType) {
   if (partitionningType == "plain") {
-    return [shape];
+    return [containerPath];
   }
 
   let partitionDef = partitionDefs[partitionningType];
@@ -12,24 +12,15 @@ export default function partitionShape(shape, partitionningType) {
     return [];
   }
 
-  let scaleX = shape.width / partitionDef.width;
-  let scaleY = shape.height / partitionDef.height;
-
-  let mainPath = new paper.Path(shape.path);
+  let scaleX = containerPath.bounds.width / partitionDef.width;
+  let scaleY = containerPath.bounds.height / partitionDef.height;
 
   let paths = partitionDef.paths.map(pathData => new paper.Path(pathData).scale(scaleX, scaleY, [0, 0]));
 
-  return _intersectPath(mainPath, paths);
+  return _intersectPath(containerPath, paths);
 }
 
-function _intersectPath(mainPath, partitionPaths) {
+function _intersectPath(containerPath, partitionPaths) {
   return partitionPaths
-    .map(path => mainPath.intersect(path))
-    .map(result => {
-      return {
-        path: result.pathData,
-        width: result.strokeBounds.width,
-        height: result.strokeBounds.height
-      }
-    });
+    .map(path => containerPath.intersect(path));
 }

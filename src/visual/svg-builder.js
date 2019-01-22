@@ -6,13 +6,13 @@ import getCharge from './charge-manager';
 let patterns = require("./data/patterns.json");
 
 export default class SvgBuilder {
-  constructor(viewBoxSize, palette, defaultStrokeWidth) {
+  constructor(viewBox, palette, defaultStrokeWidth) {
     this.palette = palette;
     this.defaultStrokeWidth = defaultStrokeWidth;
 
     this.container = xmlBuilder.create('svg', { headless: true })
       .att("xmlns", "http://www.w3.org/2000/svg")
-      .att("viewBox", viewBoxSize.x + " " + viewBoxSize.y + " " + viewBoxSize.width + " " + viewBoxSize.height);
+      .att("viewBox", viewBox.x + " " + viewBox.y + " " + viewBox.width + " " + viewBox.height);
 
     // Create "defs" section
     this.defs = this.container.ele("defs");

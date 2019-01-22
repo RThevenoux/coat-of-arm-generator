@@ -8,41 +8,39 @@ let palettes = require("./data/palettes.json");
 
 export default function generateVisual(model, configuration) {
 
-  // ?? Improve paper.Project management ??
+  // ?? TODO Improve paper.Project management ??
   new paper.Project();
   // --
 
   let escutcheon = escutcheons[configuration.escutcheon];
+  let escutcheonPath = new paper.Path(escutcheon.path);
+
   let palette = palettes[configuration.palette];
   let borderSize = configuration.borderSize;
   let defaultStrokeSize = configuration.defaultStrokeSize;
 
-  let viewBoxSize = {
-    x: -borderSize,
-    y: -borderSize,
-    width: parseInt(escutcheon.width) + borderSize * 2,
-    height: parseInt(escutcheon.height) + borderSize * 2,
-  };
+  // Create the border to compute viewBox
+  let clone = escutcheonPath.clone();
+  clone.strokeWidth = borderSize;
+  clone.strokeColor = "black";
 
-  let builder = new SvgBuilder(viewBoxSize, palette, defaultStrokeSize);
+  let builder = new SvgBuilder(clone.strokeBounds, palette, defaultStrokeSize);
 
-  // Draw 
-  let subShapes = partitionShape(escutcheon, model.type);
-  if (subShapes.length == 0) {
+  // Draw
+  let partitionPaths = partitionShape(escutcheonPath, model.type);
+  if (partitionPaths.length == 0) {
     //Error case
-    let escutcheonPath = new paper.Path(escutcheon.path);
     builder.fill("none", escutcheonPath);
   } else {
-    for (let i = 0; i < subShapes.length; i++) {
+    for (let i = 0; i < partitionPaths.length; i++) {
       let partitionModel = model.partitions[i].model;
-      let subShape = subShapes[i];
-      let subShapePath = new paper.Path(subShape.path);
-      _addPartition(builder, partitionModel, subShapePath);
+      let partitionPath = partitionPaths[i];
+      _addPartition(builder, partitionModel, partitionPath);
     }
   }
 
   // Visual effet
-  let mainShapeId = _definePath(builder, escutcheon.path);
+  let mainShapeId = _definePath(builder, escutcheonPath);
   _addBorder(builder, borderSize, mainShapeId);
   if (configuration.reflect) {
     _addReflect(builder, escutcheon, mainShapeId);
@@ -79,7 +77,7 @@ function _definePath(builder, path) {
   builder.defs
     .ele("path")
     .att("id", id)
-    .att("d", path);
+    .att("d", path.pathData);
   return id;
 }
 
