@@ -39,71 +39,37 @@ export default class SvgBuilder {
   }
 
   _fillWithStrips(fillerModel, path) {
-    let x = path.bounds.x;
-    let y = path.bounds.y;
-    let w = path.bounds.width;
-    let h = path.bounds.height;
+    let center = [0, 0];
+    let angle;
 
+    let pathAngle = Math.atan(path.bounds.height / path.bounds.width) * 180 / Math.PI;
     switch (fillerModel.angle) {
-      case "0": {
-        let hStrip = h / (2 * fillerModel.count);
-        let def = {
-          point: [x, y],
-          size: [w, hStrip]
-        }
-        let stripPath = new paper.Path.Rectangle(def);
-        let stripVector = [0, hStrip];
-        this._fillMultipleStrips(path, stripPath, stripVector, fillerModel.count, fillerModel.color1, fillerModel.color2);
-      } break;
-      case "45": {
-        let wStrip = w / fillerModel.count;
-        let stripPathData
-          = "M " + (x) + "," + y
-          + " L " + (x + wStrip) + "," + y
-          + " " + (x - w + wStrip) + "," + (y + h)
-          + " " + (x - w) + "," + (y + h)
-          + " z";
-        let stripPath = new paper.Path(stripPathData);
-        let stripVector = [wStrip, 0];
-        this._fillMultipleStrips(path, stripPath, stripVector, fillerModel.count, fillerModel.color1, fillerModel.color2);
-      } break;
-      case "90": {
-        let wStrip = w / (2 * fillerModel.count);
-        let def = {
-          point: [x, y],
-          size: [wStrip, h]
-        }
-        let stripPath = new paper.Path.Rectangle(def);
-        let stripVector = [wStrip, 0];
-        this._fillMultipleStrips(path, stripPath, stripVector, fillerModel.count, fillerModel.color1, fillerModel.color2);
-      } break;
-      case "135": {
-        let wStrip = w / fillerModel.count;
-        let stripPathData
-          = "M " + (x - w) + "," + y
-          + " L " + (x - w + wStrip) + "," + y
-          + " " + (x + wStrip) + "," + (y + h)
-          + " " + (x) + "," + (y + h)
-          + " z";
-        let stripPath = new paper.Path(stripPathData);
-        let stripVector = [wStrip, 0];
-        this._fillMultipleStrips(path, stripPath, stripVector, fillerModel.count, fillerModel.color1, fillerModel.color2);
-      } break;
-      default:
-        let defaultFillerId = this._getDefaultFiller();
-        this._fillPath(defaultFillerId, path);
+      case "0": angle = 0; break;
+      case "45": angle = pathAngle; break;
+      case "90": angle = 90; break;
+      case "135": angle = -pathAngle; break;
     }
-  }
 
-  _fillMultipleStrips(container, stripPath, stripVector, count, color1, color2) {
-    let color1Id = this._getSolidFiller(color1);
-    let color2Id = this._getSolidFiller(color2);
+    let clone = path.clone();
 
-    for (let i = 0; i < count; i++) {
-      this._fillPath(color1Id, container.intersect(stripPath));
-      stripPath.translate(stripVector);
-      this._fillPath(color2Id, container.intersect(stripPath));
-      stripPath.translate(stripVector);
+    clone.rotate(angle, center);
+    let x = clone.bounds.x;
+    let y = clone.bounds.y;
+    let w = clone.bounds.width;
+    let h = clone.bounds.height;
+    let hStrip = h / (2 * fillerModel.count);
+
+    let color1Id = this._getSolidFiller(fillerModel.color1);
+    let color2Id = this._getSolidFiller(fillerModel.color2);
+
+    for (let i = 0; i < 2 * fillerModel.count; i++) {
+      let stripPath = new paper.Path.Rectangle({
+        point: [x, y + hStrip * i],
+        size: [w, hStrip]
+      });
+      let strip = clone.intersect(stripPath).rotate(-angle, center);
+      let colorId = (i % 2 == 0 ? color1Id : color2Id);
+      this._fillPath(colorId, strip);
     }
   }
 
