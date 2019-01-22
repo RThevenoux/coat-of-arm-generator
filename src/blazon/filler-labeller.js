@@ -5,12 +5,16 @@ let patterns = require("./data/patterns.json");
 let semes = require("./data/semes.json");
 
 export default function getFiller(model) {
+  if (!model) {
+    console.log("getFiller() : model is undefined");
+    return "[?]";
+  }
   switch (model.type) {
     case "plein": return _plein(model);
     case "pattern": return _pattern(model);
     case "seme": return _seme(model);
     case "strip": return _strip(model);
-    default: return "unsupported-type:" + model.type;
+    default: return "unsupported-filler-type:" + model.type;
   }
 }
 

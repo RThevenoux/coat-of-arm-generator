@@ -8,7 +8,7 @@ Vue.component('multi-charge', {
     add: function () {
       let newCharge = {
         model: {
-          type: "stripe",
+          type: "strip",
           angle: "0",
           count: 1,
           filler: {
@@ -31,8 +31,10 @@ Vue.component('multi-charge', {
   template: `
     <div>
       <div v-for="(charge, index) in value">
-        <single-charge v-model="charge.model" @input="update"></single-charge>
-        <button @click="remove(index)">(-)</button>
+        <div class="flex-container">
+          <button @click="remove(index)">(-)</button>
+          <single-charge v-model="charge.model" @input="update"></single-charge>
+        </div>
       </div>
       <button @click="add">(+)</button>
     </div>

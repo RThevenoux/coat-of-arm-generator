@@ -52,7 +52,7 @@ function _singleCharge(charge) {
 }
 
 function _getChargeId(charge) {
-  if (charge.type == "stripe") {
+  if (charge.type == "strip") {
     switch (charge.angle) {
       case "0": return 'fasce';
       case "45": return 'barre';

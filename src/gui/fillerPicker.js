@@ -1,9 +1,10 @@
-let chargeOptions = require("./data/charges.json");
+import getChargeOptions from './charge-provider';
+
+let chargeOptions = getChargeOptions();
 
 Vue.component('filler-picker', {
   data: function () {
     return {
-      chargeOptions: chargeOptions,
       type: 'none',
       plein: {
         color: 'azur'
@@ -16,7 +17,8 @@ Vue.component('filler-picker', {
         angle: 'bande'
       },
       seme: {
-        charge: 'billette',
+        chargeOptions: chargeOptions.options,
+        chargeId: chargeOptions.defaultOptionId,
         fieldColor: 'azur',
         chargeColor: 'or'
       },
@@ -61,7 +63,7 @@ Vue.component('filler-picker', {
           case "seme": {
             return {
               type: this.type,
-              chargeId: this.seme.charge,
+              chargeId: this.seme.chargeId,
               fieldColor: this.seme.fieldColor,
               chargeColor: this.seme.chargeColor
             }
@@ -157,8 +159,8 @@ Vue.component('filler-picker', {
         
         <input type="radio" v-model="type" value="seme" @change="update">
         
-        <select v-model="seme.charge" @change="update">
-          <option v-for="option in chargeOptions" :value="option.id">
+        <select v-model="seme.chargeId" @change="update">
+          <option v-for="option in seme.chargeOptions" :value="option.id">
             {{ option.label }}
           </option>
         </select>

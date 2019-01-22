@@ -65,7 +65,7 @@ function _addPartition(builder, model, shapePath) {
 }
 
 function _addCharge(builder, charge, shapePath) {
-  if (charge.type == 'stripe') {
+  if (charge.type == 'strip') {
     addStrip(builder, charge, shapePath);
   } else {
     console.log("-- unsupported charge-type: " + JSON.stringify(charge));
