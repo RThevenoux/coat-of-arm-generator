@@ -1,10 +1,6 @@
-import getFiller from './filler-builder';
 import paper from 'paper-jsdom';
 
-export default function addStripe(builder, charge, shape) {
-  let fillerId = getFiller(builder, charge.filler, shape);
-
-  let shapePath = new paper.Path(shape.path);
+export default function addStrip(builder, charge, shapePath) {
   let n = charge.count;
   let w = shapePath.bounds.width;
   let h = shapePath.bounds.height;
@@ -18,9 +14,9 @@ export default function addStripe(builder, charge, shape) {
         point: [x, y + hStrip],
         size: [w, hStrip]
       }
-      let itemPath = new paper.Path.Rectangle(def);
-      let translateVector = [0, 2 * hStrip];
-      _addMultiple(builder, shapePath, itemPath, translateVector, n, fillerId);
+      let stripPath = new paper.Path.Rectangle(def);
+      let stripVector = [0, 2 * hStrip];
+      _addMultiple(builder, shapePath, stripPath, stripVector, n, charge.filler);
     } break;
     case "45": {
       let d = (w) / (2 * n + 1) / Math.sqrt(2);
@@ -33,9 +29,9 @@ export default function addStripe(builder, charge, shape) {
         + " " + (x0 - w) + "," + (y + h)
         + " z";
       let stripPath = new paper.Path(stripPathData);
-      let translateVector = [-4 * d, 0];
+      let stripVector = [-4 * d, 0];
 
-      _addMultiple(builder, shapePath, stripPath, translateVector, n, fillerId);
+      _addMultiple(builder, shapePath, stripPath, stripVector, n, charge.filler);
       break;
     }
     case "90": {
@@ -44,9 +40,9 @@ export default function addStripe(builder, charge, shape) {
         point: [x + wStrip, y],
         size: [wStrip, h]
       }
-      let itemPath = new paper.Path.Rectangle(def);
-      let translateVector = [2 * wStrip, 0];
-      _addMultiple(builder, shapePath, itemPath, translateVector, n, fillerId);
+      let stripPath = new paper.Path.Rectangle(def);
+      let stripVector = [2 * wStrip, 0];
+      _addMultiple(builder, shapePath, stripPath, stripVector, n, charge.filler);
     } break;
     case "135":
       let d = (w) / (2 * n + 1) / Math.sqrt(2);
@@ -59,9 +55,9 @@ export default function addStripe(builder, charge, shape) {
         + " " + (x0 + w) + "," + (y + h)
         + " z";
       let stripPath = new paper.Path(stripPathData);
-      let translateVector = [4 * d, 0];
+      let stripVector = [4 * d, 0];
 
-      _addMultiple(builder, shapePath, stripPath, translateVector, n, fillerId);
+      _addMultiple(builder, shapePath, stripPath, stripVector, n, charge.filler);
       break;
     default:
       console.log("invalid angle " + charge.angle + " count=" + charge.count + " fillerId:" + fillerId);
@@ -69,13 +65,12 @@ export default function addStripe(builder, charge, shape) {
   }
 }
 
-function _addMultiple(builder, containerShape, itemShape, vector, count, fillerId) {
+function _addMultiple(builder, containerPath, stripPath, stripVector, count, fillerModel) {
   for (let i = 0; i < count; i++) {
-    let pathData = containerShape.intersect(itemShape).pathData;
-    builder.container
-      .ele("path")
-      .att("d", pathData)
-      .att("fill", "url(#" + fillerId + ")");
-    itemShape.translate(vector);
+    let path = containerPath.intersect(stripPath);
+
+    builder.fill(fillerModel,path);
+
+    stripPath.translate(stripVector);
   }
 }

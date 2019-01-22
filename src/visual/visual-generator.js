@@ -1,6 +1,5 @@
 import SvgBuilder from './svg-builder';
 import partitionShape from './partitionner';
-import getFiller from './filler-builder';
 import addStrip from './strip-drawer';
 import paper from 'paper-jsdom';
 
@@ -31,12 +30,14 @@ export default function generateVisual(model, configuration) {
   let subShapes = partitionShape(escutcheon, model.type);
   if (subShapes.length == 0) {
     //Error case
-    _addField(builder, "none", escutcheon);
+    let escutcheonPath = new paper.Path(escutcheon.path);
+    builder.fill("none", escutcheonPath);
   } else {
     for (let i = 0; i < subShapes.length; i++) {
       let partitionModel = model.partitions[i].model;
       let subShape = subShapes[i];
-      _addPartition(builder, partitionModel, subShape);
+      let subShapePath = new paper.Path(subShape.path);
+      _addPartition(builder, partitionModel, subShapePath);
     }
   }
 
@@ -55,18 +56,19 @@ export default function generateVisual(model, configuration) {
     .end();
 }
 
-function _addPartition(builder, model, shape) {
-  _addField(builder, model.filler, shape);
+function _addPartition(builder, model, shapePath) {
+  builder.fill(model.filler, shapePath);
+
   if (model.charges) {
     model.charges.forEach(item => {
-      _addCharge(builder, item.model, shape);
+      _addCharge(builder, item.model, shapePath);
     });
   }
 }
 
-function _addCharge(builder, charge, shape) {
+function _addCharge(builder, charge, shapePath) {
   if (charge.type == 'stripe') {
-    addStrip(builder, charge, shape);
+    addStrip(builder, charge, shapePath);
   } else {
     console.log("-- unsupported charge-type: " + JSON.stringify(charge));
   }
@@ -79,14 +81,6 @@ function _definePath(builder, path) {
     .att("id", id)
     .att("d", path);
   return id;
-}
-
-function _addField(builder, filler, shape) {
-  let fillerId = getFiller(builder, filler, shape);
-  builder.container
-    .ele("path")
-    .att("d", shape.path)
-    .att("fill", "url(#" + fillerId + ")");
 }
 
 function _addBorder(builder, borderSize, mainShapeId) {

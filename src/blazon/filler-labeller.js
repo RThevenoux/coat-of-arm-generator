@@ -9,6 +9,7 @@ export default function getFiller(model) {
     case "plein": return _plein(model);
     case "pattern": return _pattern(model);
     case "seme": return _seme(model);
+    case "strip": return _strip(model);
     default: return "unsupported-type:" + model.type;
   }
 }
@@ -68,5 +69,21 @@ function _simplePattern(model, label) {
   }
   string += " " + _getColor(model.color1) + " et " + _getColor(model.color2);
   return string;
+}
 
+function _strip(model) {
+  let label = "";
+  switch (model.angle) {
+    case "0": label = "fascé"; break;
+    case "45": label = "barré"; break;
+    case "90": label = "palé"; break;
+    case "135": label = "bandé"; break;
+  }
+
+  label += " " + _getColor(model.color1) + " et " + _getColor(model.color2);
+  if (model.count != 3) {
+    label += " de " + model.count * 2 + " pièces";
+  }
+
+  return label;
 }

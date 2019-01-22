@@ -3,7 +3,7 @@ let chargeOptions = require("./data/charges.json");
 Vue.component('filler-picker', {
   data: function () {
     return {
-      chargeOptions:chargeOptions,
+      chargeOptions: chargeOptions,
       type: 'none',
       plein: {
         color: 'azur'
@@ -19,6 +19,12 @@ Vue.component('filler-picker', {
         charge: 'billette',
         fieldColor: 'azur',
         chargeColor: 'or'
+      },
+      strip: {
+        angle: "0",
+        color1: 'azur',
+        color2: 'or',
+        count: 3
       }
     }
   },
@@ -58,6 +64,16 @@ Vue.component('filler-picker', {
               chargeId: this.seme.charge,
               fieldColor: this.seme.fieldColor,
               chargeColor: this.seme.chargeColor
+            }
+          }
+
+          case "strip": {
+            return {
+              type: this.type,
+              angle: this.strip.angle,
+              color1: this.strip.color1,
+              color2: this.strip.color2,
+              count: this.strip.count
             }
           }
           default: return {
@@ -152,8 +168,21 @@ Vue.component('filler-picker', {
        
         <label>Couleur meuble</label>
         <color-picker v-model="seme.chargeColor" @input="update"></color-picker>
-         
       </div>
+
+      <div style="background-color:#D8D8D8">
+        <input type="radio" v-model="type" value="strip" @change="update">
+        <select v-model="strip.angle" @change="update">
+          <option value="0">fascé</option>
+          <option value="45">barré</option>
+          <option value="90">palé</option>
+          <option value="135">bandé</option>
+        </select>
+        <color-picker v-model="strip.color1" @input="update"></color-picker>
+        <color-picker v-model="strip.color2" @input="update"></color-picker>
+        <input v-model.number="strip.count" type="number" @input="update"></input>
+      </div>
+
     </div>
     `
 });
