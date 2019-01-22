@@ -35,6 +35,16 @@
     "count": 2
   },
   {
+    "label": "Chef",
+    "id": "chef",
+    "count": 2
+  },
+  {
+    "label": "Champagne",
+    "id": "champagne",
+    "count": 2
+  },
+  {
     "label": "Tiercé en pal",
     "id": "tierce_pal",
     "count": 3

@@ -47,6 +47,22 @@
     "width": 4,
     "height": 4
   },
+  "chef": {
+    "paths": [
+      "M 0,1 L 3,1 3,3 0,3 z",
+      "M 0,0 L 3,0 3,1 0,1 z"
+    ],
+    "width": 3,
+    "height": 3
+  },
+  "champagne": {
+    "paths": [
+      "M 0,0 L 3,0 3,2 0,2 z",
+      "M 0,2 L 3,2 3,3 0,3 z"
+    ],
+    "width": 3,
+    "height": 3
+  },
   "tierce_pairle": {
     "paths": [
       "M 0,0 L 2,0 1,1 z",
