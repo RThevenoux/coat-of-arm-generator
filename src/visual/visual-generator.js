@@ -1,6 +1,6 @@
 import SvgBuilder from './svg-builder';
 import partitionShape from './partitionner';
-import addStrip from './strip-drawer';
+import addCharge from './charge-drawer';
 import paper from 'paper-jsdom';
 
 let escutcheons = require("./data/escutcheons.json");
@@ -54,21 +54,13 @@ export default function generateVisual(model, configuration) {
     .end();
 }
 
-function _addPartition(builder, model, shapePath) {
-  builder.fill(model.filler, shapePath);
+function _addPartition(builder, model, partitionPath) {
+  builder.fill(model.filler, partitionPath);
 
   if (model.charges) {
     model.charges.forEach(item => {
-      _addCharge(builder, item.model, shapePath);
+      addCharge(builder, item.model, partitionPath);
     });
-  }
-}
-
-function _addCharge(builder, charge, shapePath) {
-  if (charge.type == 'strip') {
-    addStrip(builder, charge, shapePath);
-  } else {
-    console.log("-- unsupported charge-type: " + JSON.stringify(charge));
   }
 }
 

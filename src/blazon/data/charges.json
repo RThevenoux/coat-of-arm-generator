@@ -23,6 +23,18 @@
     "genre": "f",
     "elision": false
   },
+  "croix": {
+    "one": "croix",
+    "plural": "croix",
+    "genre": "f",
+    "elision": false
+  },
+  "sautoir": {
+    "one": "sautoir",
+    "plural": "sautoirs",
+    "genre": "m",
+    "elision": false
+  },
   "lys": {
     "one": "lys",
     "plural": "lys",
@@ -39,6 +51,6 @@
     "one": "moucheture",
     "plural": "mouchetures",
     "genre": "f",
-    "elision": true
+    "elision": false
   }
 }
