@@ -5,96 +5,93 @@ export { getIncircle }
 function getIncircle(path) {
   let incirleDef = _getInitalIncircle(path);
 
+  // Try to find a better incircle iteratively
   for (let i = 0; i < 10; i++) {
+    // Find intersection between current incircle and path
     let center = incirleDef.center;
-    // Multiply radius by 1.05 to be sure the circle intersect the path
+    // - Multiply radius by 1.05 to be sure the circle intersect the path
     let incircle = new paper.Path.Circle(center, incirleDef.radius * 1.05);
     let intersections = incircle.getIntersections(path);
     if (intersections.length == 0) {
       console.log("  Error > no intersection");
       break;
     }
-    // -- Here, angle are in degree
-    let angles = intersections.map(intersection => _getAngleInDegree(center, intersection.point));
+
+    // Analyse intersection points to get a direction for the next incircle search
+    let angles = intersections.map(intersection => -intersection.point.subtract(center).angle / 180 * Math.PI);
     let analysis = _analyseAngles(angles);
-    if (analysis.delta >= 180) {
+    if (analysis.delta >= Math.PI) {
       break;
     }
-    // -- angle are in radian after
-    let radianAngle = analysis.median / 180 * Math.PI;
-    incirleDef = _nextIncircle(path, incirleDef, radianAngle);
+
+    // Find a better incircle in the median angle direction
+    let searchAngle = Math.PI - analysis.median;
+    let next = _nextIncircle(path, incirleDef, searchAngle);
+    if (next == null) {
+      // An error occur
+      break;
+    }
+    incirleDef = next;
   }
 
   return incirleDef;
 }
 
+// NOTA : the path should be "almost" convex
 function _getInitalIncircle(path) {
+  // First, test 'interiorPoint'
   let center = path.interiorPoint;
+  let incirleDef = _safeGetIncircleDef(path, center);
+  if (incirleDef) return incirleDef;
 
-  let incirleDef = _getIncircleDef(path, center);
-  if (incirleDef.radius != 0) {
-    return incirleDef;
-  }
-
-  // If initialCenter is on a border, check other point.
+  // If interiorPoint is on a border, check other point.
   // Loop until found a correct point
   let i = 1;
   while (true) {
     let delta = path.bounds.width / (Math.pow(2, i));
 
-    let north = center.add([0, -delta]);
-    if (path.contains(north)) {
-      incirleDef = _getIncircleDef(path, north);
-      if (incirleDef.radius != 0) {
-        return incirleDef;
-      }
-    }
+    let north = _safeGetIncircleDef(path, center.add([0, -delta]));
+    if (north) return north;
 
-    let south = center.add([0, delta]);
-    if (path.contains(south)) {
-      incirleDef = _getIncircleDef(path, south);
-      if (incirleDef.radius != 0) {
-        return incirleDef;
-      }
-    }
+    let south = _safeGetIncircleDef(path, center.add([0, delta]));
+    if (south) return south;
 
-    let east = center.add([delta, 0]);
-    if (path.contains(east)) {
-      incirleDef = _getIncircleDef(path, east);
-      if (incirleDef.radius != 0) {
-        return incirleDef;
-      }
-    }
+    let east = _safeGetIncircleDef(path, center.add([delta, 0]));
+    if (east) return east;
 
-    let west = center.add([-delta, 0]);
-    if (path.contains(west)) {
-      incirleDef = _getIncircleDef(path, west);
-      if (incirleDef.radius != 0) {
-        return incirleDef;
-      }
-    }
+    let west = _safeGetIncircleDef(path, center.add([-delta, 0]));
+    if (west) return west;
 
     i++;
   }
 }
 
+function _safeGetIncircleDef(path, point) {
+  if (path.contains(point)) {
+    let incirleDef = _getTangentCircleDef(path, point);
+    if (incirleDef.radius != 0) {
+      return incirleDef;
+    }
+  }
+  return null;
+}
+
 function _nextIncircle(path, incircleDef, angle) {
-  // trace a line in angle opposite direction
-  let lineLenght = path.bounds.height + path.bounds.width;
-  let lineEnd = _translate(incircleDef.center, angle, lineLenght);
-  let line = new paper.Path.Line(incircleDef.center, lineEnd);
-  // get the opposite intersection
-  let opposite = line.getIntersections(path)[0].point;
-  let oppositeDistance = opposite.getDistance(incircleDef.center);
-  let delta = (oppositeDistance - incircleDef.radius) / 2;
+  let oppositeDistance = _getIntersectionDistance(path, incircleDef.center, angle);
+  if (oppositeDistance == 0) {
+    // Error, do not find an intersection.
+    return null;
+  }
+  let maxDelta = oppositeDistance - incircleDef.radius;
 
   // find the bigger inCircle on the line between
   // the old incircle's center and the intersection
   let n = 10;
   let maxIncircleDef = incircleDef;
   for (let i = 0; i < n; i++) {
-    let nextCenter = _translate(incircleDef.center, angle, delta / n * (i + 1));
-    let nextIncircleDef = _getIncircleDef(path, nextCenter);
+    let vector = _vector(angle, maxDelta / n * (i + 1));
+    let nextCenter = incircleDef.center.add(vector);
+    let nextIncircleDef = _getTangentCircleDef(path, nextCenter);
     if (nextIncircleDef.radius > maxIncircleDef.radius) {
       maxIncircleDef = nextIncircleDef;
     }
@@ -103,7 +100,20 @@ function _nextIncircle(path, incircleDef, angle) {
   return maxIncircleDef;
 }
 
-function _getIncircleDef(path, point) {
+function _getIntersectionDistance(path, point, angle) {
+  // trace a line in angle opposite direction
+  let lineLenght = path.bounds.height + path.bounds.width;// 
+  let lineEnd = point.add(_vector(angle, lineLenght));
+  let line = new paper.Path.Line(point, lineEnd);
+  let intersections = line.getIntersections(path);
+  if (intersections.length == 0) {
+    console.log("# IntersectionLine : No intersection! Point:" + point + " angle:" + angle);
+    return 0;
+  }
+  return intersections[0].point.getDistance(point);
+}
+
+function _getTangentCircleDef(path, point) {
   let nearest = path.getNearestPoint(point);
   let distance = nearest.getDistance(point);
   return {
@@ -113,18 +123,13 @@ function _getIncircleDef(path, point) {
   }
 }
 
-/** angle is opposite, in radian */
-function _translate(source, angle, length) {
-  let unitVector = new paper.Point(- Math.cos(angle), + Math.sin(angle));
-  let vector = unitVector.multiply(length);
-  return source.add(vector);
+function _vector(angle, length) {
+  let unitVector = new paper.Point(Math.cos(angle), Math.sin(angle));
+  return unitVector.multiply(length);
 }
 
-/**
- * 
- * @param {number} angles in degree 
- */
 function _analyseAngles(angles) {
+  // If only one angle
   if (angles.length == 1) {
     return {
       median: angles[0],
@@ -132,38 +137,41 @@ function _analyseAngles(angles) {
     };
   }
 
+  // If 2 or mores angles, compute a 'delta' between the two first angle,
+  // then add each other angles and increase the delta if necessary
   let angle0 = angles[0];
   let angle1 = angles[1];
 
-  let delta = angleDelta(angle0, angle1);
-
+  let delta = _positiveDirectedAngleDelta(angle0, angle1);
   let min, max = null;
-  if (delta < 180) {
+  if (delta < Math.PI) {
     min = angle0;
     max = angle1;
   } else {
     min = angle1;
     max = angle0;
-    delta = 360 - delta;
+    delta = 2 * Math.PI - delta;
   }
 
+  // add each other angle
   for (let i = 2; i < angles.length; i++) {
     let angle = angles[i];
-    let minToAngle = angleDelta(min, angle);
+    let minToAngle = _positiveDirectedAngleDelta(min, angle);
     let minToMax = delta;
     if (minToAngle > minToMax) {
       let maxToAngle = minToAngle - minToMax;
-      let angleToMin = 360 - minToAngle;
+      let angleToMin = 2 * Math.PI - minToAngle;
       if (maxToAngle < angleToMin) {
         max = angle;
       } else {
         min = angle;
       }
     }
-    delta = angleDelta(min, max);
+    delta = _positiveDirectedAngleDelta(min, max);
   }
 
-  let median = ((min + delta / 2) % 360);
+  // compute result
+  let median = ((min + delta / 2) % (2 * Math.PI));
 
   return {
     median: median,
@@ -171,29 +179,9 @@ function _analyseAngles(angles) {
   };
 }
 
-/**
- * 
- * @param {*} a in degree
- * @param {*} b in degree
- */
-function angleDelta(a, b) {
-  let delta = (b - a) % 360;
-  if (delta < 0) { delta += 360 };
+// return in interval [0, 2*PI]
+function _positiveDirectedAngleDelta(a, b) {
+  let delta = (b - a) % (2 * Math.PI);
+  if (delta < 0) { delta += (2 * Math.PI) };
   return delta;
-}
-
-function _getAngleInDegree(start, end) {
-  let dx = end.x - start.x;
-  let dy = end.y - start.y;
-  let atan = Math.atan(-dy / dx) * 180 / Math.PI;
-
-  if (dx > 0) {
-    return atan;
-  } else {
-    if (atan < 0) {
-      return atan + 180;
-    } else {
-      return atan - 180;
-    }
-  }
 }
