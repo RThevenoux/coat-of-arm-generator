@@ -166,9 +166,9 @@ export default class SvgBuilder {
 
     let box = { width: parameters.seme.width, height: parameters.seme.height };
 
-    let symbolId = this._addSymbol(parameters.charge);
+    let symbolId = this.addSymbol(parameters.charge);
 
-    let scaleCoef = shapeWidth / (box.width * parameters.seme.repetition)
+    let scaleCoef = shapeWidth / (box.width * parameters.seme.repetition);
     let transform = "scale(" + scaleCoef + "," + scaleCoef + ")";
 
     let patternNode = this.defs.ele("pattern")
@@ -190,7 +190,7 @@ export default class SvgBuilder {
       patternNode.ele("use")
         .att("xlink:href", "#" + symbolId)
         .att("transform", copyTransform)
-        .att("style", this._getFillColorProp(parameters.charge.color) + this._stroke(strokeWidth));
+        .att("style", this._getFillColorProp(parameters.color) + this._stroke(strokeWidth));
     }
 
     return id;
@@ -235,19 +235,19 @@ export default class SvgBuilder {
     return id;
   }
 
-  _addSymbol(symbol) {
-    let symbolId = this.definedSymbol[symbol.id];
+  addSymbol(symbolDef) {
+    let symbolId = this.definedSymbol[symbolDef.id];
 
     if (!symbolId) {
-      symbolId = "symbol_" + symbol.id;
-      this.definedSymbol[symbol.id] = symbolId;
+      symbolId = "symbol_" + symbolDef.id;
+      this.definedSymbol[symbolDef.id] = symbolId;
 
       this.defs.ele("symbol")
         .att("id", symbolId)
-        .att("width", symbol.width)
-        .att("height", symbol.height)
-        .att("viewBox", "0 0 " + symbol.width + " " + symbol.height)
-        .raw(symbol.xml);
+        .att("width", symbolDef.width)
+        .att("height", symbolDef.height)
+        .att("viewBox", "0 0 " + symbolDef.width + " " + symbolDef.height)
+        .raw(symbolDef.xml);
     }
 
     return symbolId;
@@ -262,13 +262,8 @@ export default class SvgBuilder {
     let w = chargeDef.width;
 
     let parameters = {
-      charge: {
-        id: description.chargeId,
-        xml: chargeDef.xml,
-        color: description.chargeColor,
-        width: w,
-        height: h
-      },
+      charge: chargeDef,
+      color: description.chargeColor,
       seme: {
         width: tx * 2,
         height: ty * 2,
