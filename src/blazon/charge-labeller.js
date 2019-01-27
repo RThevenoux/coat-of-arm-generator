@@ -1,6 +1,8 @@
 let charges = require("./data/charges.json");
 
-export function countableCharge(chargeId, count) {
+export { getCountableChargeLabel, getSemeDefinition }
+
+function getCountableChargeLabel(chargeId, count) {
   let chargeDef = _getDefinition(chargeId);
 
   if (count > 1) {
@@ -18,9 +20,29 @@ export function countableCharge(chargeId, count) {
   return "à la " + chargeDef.one;
 }
 
-export function uncountableCharge(chargeId) {
+function getSemeDefinition(chargeId) {
   let chargeDef = _getDefinition(chargeId);
+  if (chargeDef.seme) {
+    let semeDef = chargeDef.seme;
 
+    if (typeof semeDef === 'string' || semeDef instanceof String) {
+      return {
+        type: "label",
+        label: semeDef
+      };
+    }
+
+    semeDef.type = "case";
+    return semeDef;
+  }
+
+  return {
+    type: "label",
+    label: "semé " + _uncountable(chargeDef)
+  };
+}
+
+function _uncountable(chargeDef) {
   if (chargeDef.elision) {
     return "d'" + chargeDef.plural;
   } else {

@@ -1,8 +1,7 @@
-import { uncountableCharge } from './charge-labeller';
+import { getSemeDefinition } from './charge-labeller';
 
-let colorNames = require("./data/colors.json");
+let color = require("./data/colors.json");
 let patterns = require("./data/patterns.json");
-let semes = require("./data/semes.json");
 
 export default function getFiller(model) {
   if (!model) {
@@ -19,7 +18,7 @@ export default function getFiller(model) {
 }
 
 function _getColor(key) {
-  return colorNames[key];
+  return color[key];
 }
 
 function _plein(model) {
@@ -42,22 +41,22 @@ function _pattern(model) {
 }
 
 function _seme(model) {
-  let semeDef = semes[model.chargeId];
-  if (semeDef) {
+  let semeDef = getSemeDefinition(model.chargeId);
+
+  if (semeDef.type == "case") {
     for (let aCase of semeDef.cases) {
       if (aCase.colors[0] == model.fieldColor && aCase.colors[1] == model.chargeColor) {
         return aCase.label;
       }
     }
     // else case
-    return _simpleSeme(model.fieldColor, semeDef.else, model.chargeColor);
-  } else {
-    let semeLabel = "semé " + uncountableCharge(model.chargeId);
-    return _simpleSeme(model.fieldColor, semeLabel, model.chargeColor);
+    return _simpleSeme(semeDef.else, model.fieldColor, model.chargeColor);
   }
+
+  return _simpleSeme(semeDef.label, model.fieldColor, model.chargeColor);
 }
 
-function _simpleSeme(fieldColor, semeLabel, chargeColor) {
+function _simpleSeme(semeLabel, fieldColor, chargeColor) {
   return _getColor(fieldColor) + " " + semeLabel + " " + _getColor(chargeColor);
 }
 

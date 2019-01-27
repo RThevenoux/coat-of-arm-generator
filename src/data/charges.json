@@ -1,14 +1,16 @@
 [
   {
     "id": "lion",
-    "type": "svg",
-    "file": "lion.svg",
-    "width": 238,
-    "height": 347,
-    "seme": {
-      "tx": 240,
-      "ty": 350,
-      "repetition": 5
+    "visual": {
+      "type": "svg",
+      "file": "lion.svg",
+      "width": 238,
+      "height": 347,
+      "seme": {
+        "tx": 240,
+        "ty": 350,
+        "repetition": 5
+      }
     },
     "blazon": {
       "one": "lion",
@@ -19,32 +21,69 @@
   },
   {
     "id": "moucheture",
-    "type": "svg",
-    "file": "moucheture.svg",
-    "width": 181,
-    "height": 325,
-    "seme": {
-      "tx": 180,
-      "ty": 360,
-      "repetition": 5
+    "visual": {
+      "type": "svg",
+      "file": "moucheture.svg",
+      "width": 181,
+      "height": 325,
+      "seme": {
+        "tx": 180,
+        "ty": 360,
+        "repetition": 5
+      }
     },
     "blazon": {
       "one": "moucheture",
       "plural": "mouchetures",
       "genre": "f",
-      "elision": false
+      "elision": false,
+      "seme": {
+        "cases": [
+          {
+            "colors": [
+              "argent",
+              "sable"
+            ],
+            "label": "d'hermine"
+          },
+          {
+            "colors": [
+              "sable",
+              "argent"
+            ],
+            "label": "de contre-hermine"
+          },
+          {
+            "colors": [
+              "sable",
+              "or"
+            ],
+            "label": "de péan"
+          },
+          {
+            "colors": [
+              "or",
+              "sable"
+            ],
+            "label": "d'erminois"
+          }
+        ],
+        "else": "herminé"
+      }
     }
   },
   {
     "id": "billette",
-    "type": "svg",
-    "xml": "<rect x=\"0\" y=\"0\" width=\"10\" height=\"25\"/>",
-    "width": 10,
-    "height": 25,
-    "seme": {
-      "tx": 20,
-      "ty": 35,
-      "repetition": 5
+    "visual": {
+      "type": "svg",
+      "xml": "<rect x=\"0\" y=\"0\" width=\"10\" height=\"25\"/>",
+      "width": 10,
+      "height": 25,
+      "seme": {
+        "tx": 20,
+        "ty": 35,
+        "repetition": 5
+      }
     },
     "blazon": {
       "one": "billette",
@@ -55,14 +94,16 @@
   },
   {
     "id": "lys",
-    "type": "svg",
-    "file": "lys.svg",
-    "width": 88,
-    "height": 115,
-    "seme": {
-      "tx": 88,
-      "ty": 115,
-      "repetition": 5
+    "visual": {
+      "type": "svg",
+      "file": "lys.svg",
+      "width": 88,
+      "height": 115,
+      "seme": {
+        "tx": 88,
+        "ty": 115,
+        "repetition": 5
+      }
     },
     "blazon": {
       "one": "lys",
@@ -73,7 +114,9 @@
   },
   {
     "id": "bande",
-    "type": "calculate",
+    "visual": {
+      "type": "calculate"
+    },
     "blazon": {
       "one": "bande",
       "plural": "bandes",
@@ -83,7 +126,9 @@
   },
   {
     "id": "barre",
-    "type": "calculate",
+    "visual": {
+      "type": "calculate"
+    },
     "blazon": {
       "one": "barre",
       "plural": "barres",
@@ -93,7 +138,9 @@
   },
   {
     "id": "pal",
-    "type": "calculate",
+    "visual": {
+      "type": "calculate"
+    },
     "blazon": {
       "one": "pal",
       "plural": "pals",
@@ -103,7 +150,9 @@
   },
   {
     "id": "fasce",
-    "type": "calculate",
+    "visual": {
+      "type": "calculate"
+    },
     "blazon": {
       "one": "fasce",
       "plural": "fasces",
@@ -113,7 +162,9 @@
   },
   {
     "id": "croix",
-    "type": "calculate",
+    "visual": {
+      "type": "calculate"
+    },
     "blazon": {
       "one": "croix",
       "plural": "croix",
@@ -123,7 +174,9 @@
   },
   {
     "id": "sautoir",
-    "type": "calculate",
+    "visual": {
+      "type": "calculate"
+    },
     "blazon": {
       "one": "sautoir",
       "plural": "sautoirs",

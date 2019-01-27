@@ -19,14 +19,14 @@ function buildCharges() {
 
   for (let item of input) {
 
-    if (item.type == "svg") {
+    if (item.visual.type == "svg") {
       let xml = getVisualXml(item);
       let visualData = {
         id: item.id,
-        width: item.width,
-        height: item.height,
+        width: item.visual.width,
+        height: item.visual.height,
         xml: xml,
-        seme: item.seme
+        seme: item.visual.seme
       };
       visual[item.id] = visualData;
 
@@ -59,12 +59,12 @@ function buildCharges() {
 }
 
 function getVisualXml(item) {
-  if (item.file) {
-    let data = fs.readFileSync("src/data/charges/" + item.file, "ascii");
+  if (item.visual.file) {
+    let data = fs.readFileSync("src/data/charges/" + item.visual.file, "ascii");
     data = data.replace(/\r?\n|\r/g, "");
     return data;
   } else {
-    return item.xml;
+    return item.visual.xml;
   }
 }
 

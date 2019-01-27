@@ -1,4 +1,4 @@
-import { countableCharge } from './charge-labeller';
+import { getCountableChargeLabel } from './charge-labeller';
 import getFiller from './filler-labeller';
 
 let partitions = require("./data/partitions.json");
@@ -47,7 +47,7 @@ function _chargeList(charges) {
 
 function _singleCharge(charge) {
   let chargeId = _getChargeId(charge);
-  let chargeLabel = countableCharge(chargeId, charge.count);
+  let chargeLabel = getCountableChargeLabel(chargeId, charge.count);
   return chargeLabel + " " + getFiller(charge.filler);
 }
 
