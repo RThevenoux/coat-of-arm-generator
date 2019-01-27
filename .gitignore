@@ -1,3 +1,7 @@
 dist/main.js
 
+src/blazon/data/charges.json
+src/gui/data/charges.json
+src/visual/data/charges.json
+
 node_modules/
