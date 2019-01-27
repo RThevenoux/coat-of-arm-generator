@@ -1,0 +1,225 @@
+[
+  {
+    "id": "plain",
+    "label": "Aucune",
+    "blazon": "{}"
+  },
+  {
+    "id": "parti",
+    "label": "Parti",
+    "blazon": "parti {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 1,0 1,2 0,2 z",
+        "M 1,0 L 2,0 2,2 1,2 z"
+      ],
+      "width": 2,
+      "height": 2
+    }
+  },
+  {
+    "id": "coupe",
+    "label": "Coupé",
+    "blazon": "coupé {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 2,0 2,1 0,1 z",
+        "M 0,1 L 2,1 2,2 0,2 z"
+      ],
+      "width": 2,
+      "height": 2
+    }
+  },
+  {
+    "id": "tranche",
+    "label": "Tranché",
+    "blazon": "tranché {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 1,0 1,1 z",
+        "M 0,0 L 1,1 0,1 z"
+      ],
+      "width": 1,
+      "height": 1
+    }
+  },
+  {
+    "id": "taille",
+    "label": "Taillé",
+    "blazon": "taillé {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 1,0 0,1 z",
+        "M 0,1 L 1,0 1,1 z"
+      ],
+      "width": 1,
+      "height": 1
+    }
+  },
+  {
+    "id": "adextre",
+    "label": "Adextré",
+    "blazon": "{} adextré {}",
+    "visual": {
+      "paths": [
+        "M 1,0 L 4,0 4,4 1,4 z",
+        "M 0,0 L 1,0 1,4 0,4 z"
+      ],
+      "width": 4,
+      "height": 4
+    }
+  },
+  {
+    "id": "senestre",
+    "label": "Senestré",
+    "blazon": "{} senestré {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 3,0 3,4 0,4 z",
+        "M 3,0 L 4,0 4,4 3,4 z"
+      ],
+      "width": 4,
+      "height": 4
+    }
+  },
+  {
+    "id": "chef",
+    "label": "Chef",
+    "blazon": "{} au chef {}",
+    "visual": {
+      "paths": [
+        "M 0,1 L 3,1 3,3 0,3 z",
+        "M 0,0 L 3,0 3,1 0,1 z"
+      ],
+      "width": 3,
+      "height": 3
+    }
+  },
+  {
+    "id": "champagne",
+    "label": "Champagne",
+    "blazon": "{} à la champagne {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 3,0 3,2 0,2 z",
+        "M 0,2 L 3,2 3,3 0,3 z"
+      ],
+      "width": 3,
+      "height": 3
+    }
+  },
+  {
+    "id": "tierce_pal",
+    "label": "Tiercé en pal",
+    "blazon": "tiercé en pal {}, {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 1,0 L 1,3 L 0,3 z",
+        "M 1,0 L 2,0 L 2,3 L 1,3 z",
+        "M 2,0 L 3,0 L 3,3 L 2,3 z"
+      ],
+      "width": 3,
+      "height": 3
+    }
+  },
+  {
+    "id": "tierce_fasce",
+    "label": "Tiercé en fasce",
+    "blazon": "tiercé en fasce {}, {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 3,0 3,1 0,1 z",
+        "M 0,1 L 3,1 3,2 0,2 z",
+        "M 0,2 L 3,2 3,3 0,3 z"
+      ],
+      "width": 3,
+      "height": 3
+    }
+  },
+  {
+    "id": "tierce_bande",
+    "label": "Tiercé en bande",
+    "blazon": "tiercé en bande {}, {} et {}",
+    "visual": {
+      "paths": [
+        "M 1,0 L 0.262,0 1,0.737 z",
+        "M 0,0 L 0.262,0 1,0.737 1,1 0.737,1 0,0.262 z",
+        "M 0,0.262 L 0.737,1 0,1 z"
+      ],
+      "width": 1,
+      "height": 1
+    }
+  },
+  {
+    "id": "tierce_barre",
+    "label": "Tiercé en barre",
+    "blazon": "tiercé en barre {}, {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 0.737,0 0,0.737 z",
+        "M 0,0.737 L 0.737,0 1,0 1,0.262 0.262,1 0,1 z",
+        "M 1,0.262 L 1,1 0.262,1 z"
+      ],
+      "width": 1,
+      "height": 1
+    }
+  },
+  {
+    "id": "tierce_pairle",
+    "label": "Tiercé en pairle",
+    "blazon": "tiercé en pairle {}, {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 2,0 1,1 z",
+        "M 0,0 L 1,1 1,2 0,2 z",
+        "M 1,1 L 2,0 2,2 1,2 z"
+      ],
+      "width": 2,
+      "height": 2
+    }
+  },
+  {
+    "id": "tierce_pairle_verse",
+    "label": "Tiercé en pairle versé",
+    "blazon": "tiercé en pairle versé {}, {} et {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 1,0 1,1 0,2 z",
+        "M 1,0 L 2,0 2,2 1,1 z",
+        "M 1,1 L 2,2 0,2 z"
+      ],
+      "width": 2,
+      "height": 2
+    }
+  },
+  {
+    "id": "ecartele",
+    "label": "Écartelé",
+    "blazon": "écratelé : au 1 {}; au 2 {}; au 3 {}; au 4 {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 1,0 1,1 0,1 z",
+        "M 1,0 L 2,0 2,1 1,1 z",
+        "M 0,1 L 1,1 1,2 0,2 z",
+        "M 1,1 L 2,1 2,2 1,2 z"
+      ],
+      "width": 2,
+      "height": 2
+    }
+  },
+  {
+    "id": "ecartele_sautoir",
+    "label": "Écartelé en Sautoir",
+    "blazon": "écratelé en sautoir : au 1 {}; au 2 {}; au 3 {}; au 4 {}",
+    "visual": {
+      "paths": [
+        "M 0,0 L 2,0 1,1 z",
+        "M 0,0 L 1,1 0,2 z",
+        "M 1,1 L 2,0 2,2 z",
+        "M 0,2 L 1,1 2,2 z"
+      ],
+      "width": 2,
+      "height": 2
+    }
+  }
+]

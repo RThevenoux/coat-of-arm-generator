@@ -1,7 +1,12 @@
 dist/main.js
 
 src/blazon/data/charges.json
+src/blazon/data/partitions.json
+
 src/gui/data/charges.json
+src/gui/data/partitions.json
+
 src/visual/data/charges.json
+src/visual/data/partitions.json
 
 node_modules/

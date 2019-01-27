@@ -3,11 +3,12 @@ console.log("Start build-data");
 const fs = require("fs");
 
 buildCharges();
+buildPartitions();
 
 function buildCharges() {
   console.log(" - Build charges");
-  let input = require("./charges.json");
-  
+  let input = JSON.parse(fs.readFileSync("src/data/charges.json", "utf8"));
+
   let visual = {};
   let blazon = {};
   let gui = [];
@@ -28,7 +29,7 @@ function buildCharges() {
       let label = item.blazon.one;
       let niceLabel = label.charAt(0).toUpperCase() + label.slice(1);
       gui.push({
-        id:item.id,
+        id: item.id,
         label: niceLabel
       });
     }
@@ -61,4 +62,33 @@ function getVisualXml(item) {
   } else {
     return item.xml;
   }
+}
+
+function buildPartitions() {
+  console.log(" - Build partition");
+  let input = JSON.parse(fs.readFileSync("src/data/partitions.json", "utf8"));
+
+  let visual = {};
+  let blazon = {};
+  let gui = [];
+
+  for (let item of input) {
+    blazon[item.id] = item.blazon;
+    let count = 1;
+
+    if (item.visual) {
+      count = item.visual.paths.length;
+      visual[item.id] = item.visual
+    }
+
+    gui.push({
+      id: item.id,
+      label: item.label,
+      count: count
+    });
+  }
+
+  fs.writeFileSync("src/visual/data/partitions.json", JSON.stringify(visual));
+  fs.writeFileSync("src/blazon/data/partitions.json", JSON.stringify(blazon));
+  fs.writeFileSync("src/gui/data/partitions.json", JSON.stringify(gui));
 }
