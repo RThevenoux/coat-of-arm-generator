@@ -6,6 +6,8 @@ buildCharges();
 buildPartitions();
 buildEscutcheons();
 buildPatterns();
+buildColors();
+buildPalettes();
 
 function buildCharges() {
   console.log(" - Build charges");
@@ -128,4 +130,44 @@ function buildPatterns() {
 
   fs.writeFileSync("src/blazon/data/patterns.json", JSON.stringify(blazon));
   fs.writeFileSync("src/visual/data/patterns.json", JSON.stringify(visual));
+}
+
+function buildColors() {
+  console.log(" - Build colors");
+  let input = JSON.parse(fs.readFileSync("src/data/colors.json", "utf8"));
+
+  // Colors
+  let blazon = {};
+  let gui = [];
+
+  for (let item of input) {
+    blazon[item.id] = item.blazon;
+    gui.push({
+      id: item.id,
+      label: item.picker.label,
+      background: item.picker.background
+    });
+  }
+
+  fs.writeFileSync("src/blazon/data/colors.json", JSON.stringify(blazon));
+  fs.writeFileSync("src/gui/data/colors.json", JSON.stringify(gui));
+}
+
+function buildPalettes() {
+  console.log(" - Build palettes");
+  let input = JSON.parse(fs.readFileSync("src/data/palettes.json", "utf8"));
+
+  let visual = {};
+  let gui = [];
+
+  for (let item of input) {
+    visual[item.id] = item.values;
+    gui.push({
+      id: item.id,
+      label: item.label
+    });
+  }
+
+  fs.writeFileSync("src/visual/data/palettes.json", JSON.stringify(visual));
+  fs.writeFileSync("src/gui/data/palettes.json", JSON.stringify(gui));
 }

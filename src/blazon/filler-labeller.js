@@ -1,6 +1,6 @@
 import { uncountableCharge } from './charge-labeller';
 
-let colorNames = require("./data/colorNames.json");
+let colorNames = require("./data/colors.json");
 let patterns = require("./data/patterns.json");
 let semes = require("./data/semes.json");
 

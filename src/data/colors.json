@@ -1,0 +1,58 @@
+[
+  {
+    "id": "or",
+    "picker": {
+      "background": "yellow",
+      "label": "Or"
+    },
+    "blazon": "d'or"
+  },
+  {
+    "id": "argent",
+    "picker": {
+      "background": "white",
+      "label": "Argent"
+    },
+    "blazon": "d'argent"
+  },
+  {
+    "id": "azur",
+    "picker": {
+      "background": "blue",
+      "label": "Azur"
+    },
+    "blazon": "d'azur"
+  },
+  {
+    "id": "gueules",
+    "picker": {
+      "background": "red",
+      "label": "Gueules"
+    },
+    "blazon": "de gueules"
+  },
+  {
+    "id": "sinople",
+    "picker": {
+      "background": "green",
+      "label": "Sinople"
+    },
+    "blazon": "de sinople"
+  },
+  {
+    "id": "sable",
+    "picker": {
+      "background": "black",
+      "label": "Sable"
+    },
+    "blazon": "de sable"
+  },
+  {
+    "id": "pourpre",
+    "picker": {
+      "background": "violet",
+      "label": "Pourpre"
+    },
+    "blazon": "de pourpre"
+  }
+]
