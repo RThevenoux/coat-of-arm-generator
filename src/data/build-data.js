@@ -4,6 +4,7 @@ const fs = require("fs");
 
 buildCharges();
 buildPartitions();
+buildEscutcheons();
 
 function buildCharges() {
   console.log(" - Build charges");
@@ -56,7 +57,7 @@ function buildCharges() {
 
 function getVisualXml(item) {
   if (item.file) {
-    let data = fs.readFileSync("src/data/svg/" + item.file, "ascii");
+    let data = fs.readFileSync("src/data/charges/" + item.file, "ascii");
     data = data.replace(/\r?\n|\r/g, "");
     return data;
   } else {
@@ -91,4 +92,23 @@ function buildPartitions() {
   fs.writeFileSync("src/visual/data/partitions.json", JSON.stringify(visual));
   fs.writeFileSync("src/blazon/data/partitions.json", JSON.stringify(blazon));
   fs.writeFileSync("src/gui/data/partitions.json", JSON.stringify(gui));
+}
+
+function buildEscutcheons() {
+  console.log(" - Build escutcheon");
+  let input = JSON.parse(fs.readFileSync("src/data/escutcheons.json", "utf8"));
+
+  let visual = {};
+  let gui = [];
+
+  for (let item of input) {
+    visual[item.id] = item.visual;
+    gui.push({
+      id: item.id,
+      label: item.label
+    });
+  }
+
+  fs.writeFileSync("src/visual/data/escutcheons.json", JSON.stringify(visual));
+  fs.writeFileSync("src/gui/data/escutcheons.json", JSON.stringify(gui));
 }
