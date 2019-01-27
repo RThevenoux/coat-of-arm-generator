@@ -2,11 +2,6 @@ dist/main.js
 
 node_modules/
 
-src/blazon/data/charges.json
-src/blazon/data/partitions.json
-src/blazon/data/patterns.json
-src/blazon/data/colors.json
-
-src/gui/data/
-
+src/blazon/data/
 src/visual/data/
+src/gui/data/
