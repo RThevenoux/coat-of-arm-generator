@@ -1,0 +1,144 @@
+[
+  {
+    "id": "echiquete",
+    "blazon": "échiqueté",
+    "visual": {
+      "patternWidth": 10,
+      "patternHeight": 10,
+      "patternRepetition": 3,
+      "path": "M 5,0 L 10,0 10,5 0,5 0,10 5,10 z"
+    }
+  },
+  {
+    "id": "losange",
+    "blazon": "losangé",
+    "visual": {
+      "patternWidth": 10,
+      "patternHeight": 10,
+      "patternRepetition": 4,
+      "path": "M 0,0 L 10,10 L 10,0 L 0,10 z"
+    }
+  },
+  {
+    "id": "fusele",
+    "blazon": "fuselé",
+    "visual": {
+      "patternWidth": 20,
+      "patternHeight": 50,
+      "patternRepetition": 5,
+      "path": "M 10,0 L 0,25 L 10,50 L 20,25 z"
+    }
+  },
+  {
+    "id": "triangle",
+    "blazon": "trianglé",
+    "visual": {
+      "patternWidth": 60,
+      "patternHeight": 104,
+      "patternRepetition": 5,
+      "path": "M 30,0 L 0,52 60,52 z",
+      "copies": [
+        "translate(-30,52)",
+        "translate(30,52)"
+      ]
+    }
+  },
+  {
+    "id": "vair",
+    "blazon": {
+      "cases": [
+        {
+          "colors": [
+            "argent",
+            "azur"
+          ],
+          "label": "de vair"
+        }
+      ],
+      "else": "vairé"
+    },
+    "visual": {
+      "patternWidth": 4,
+      "patternHeight": 8,
+      "patternRepetition": 6,
+      "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
+      "copies": [
+        "translate(-2,4)",
+        "translate(2,4)"
+      ]
+    }
+  },
+  {
+    "id": "vair_en_pal",
+    "blazon": {
+      "cases": [
+        {
+          "colors": [
+            "argent",
+            "azur"
+          ],
+          "label": "de vair en pal"
+        }
+      ],
+      "else": "vairé en pal"
+    },
+    "visual": {
+      "patternWidth": 4,
+      "patternHeight": 8,
+      "patternRepetition": 6,
+      "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
+      "copies": [
+        "translate(0,4)"
+      ]
+    }
+  },
+  {
+    "id": "vair_en_pointe",
+    "blazon": {
+      "cases": [
+        {
+          "colors": [
+            "argent",
+            "azur"
+          ],
+          "label": "de vair en pointe"
+        }
+      ],
+      "else": "vairé en pointe"
+    },
+    "visual": {
+      "patternWidth": 4,
+      "patternHeight": 8,
+      "patternRepetition": 6,
+      "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
+      "copies": [
+        "scale(1,-1) translate(2,-8)",
+        "scale(1,-1) translate(-2,-8)"
+      ]
+    }
+  },
+  {
+    "id": "contrevair",
+    "blazon": {
+      "cases": [
+        {
+          "colors": [
+            "argent",
+            "azur"
+          ],
+          "label": "de contre-vair"
+        }
+      ],
+      "else": "contre-vairé"
+    },
+    "visual": {
+      "patternWidth": 4,
+      "patternHeight": 8,
+      "patternRepetition": 6,
+      "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
+      "copies": [
+        "scale(1,-1) translate(0,-8)"
+      ]
+    }
+  }
+]

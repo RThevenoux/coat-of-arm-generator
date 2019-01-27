@@ -5,6 +5,7 @@ const fs = require("fs");
 buildCharges();
 buildPartitions();
 buildEscutcheons();
+buildPatterns();
 
 function buildCharges() {
   console.log(" - Build charges");
@@ -66,7 +67,7 @@ function getVisualXml(item) {
 }
 
 function buildPartitions() {
-  console.log(" - Build partition");
+  console.log(" - Build partitions");
   let input = JSON.parse(fs.readFileSync("src/data/partitions.json", "utf8"));
 
   let visual = {};
@@ -95,7 +96,7 @@ function buildPartitions() {
 }
 
 function buildEscutcheons() {
-  console.log(" - Build escutcheon");
+  console.log(" - Build escutcheons");
   let input = JSON.parse(fs.readFileSync("src/data/escutcheons.json", "utf8"));
 
   let visual = {};
@@ -111,4 +112,20 @@ function buildEscutcheons() {
 
   fs.writeFileSync("src/visual/data/escutcheons.json", JSON.stringify(visual));
   fs.writeFileSync("src/gui/data/escutcheons.json", JSON.stringify(gui));
+}
+
+function buildPatterns() {
+  console.log(" - Build patterns");
+  let input = JSON.parse(fs.readFileSync("src/data/patterns.json", "utf8"));
+
+  let visual = {};
+  let blazon = {};
+
+  for (let item of input) {
+    visual[item.id] = item.visual;
+    blazon[item.id] = item.blazon;
+  }
+
+  fs.writeFileSync("src/blazon/data/patterns.json", JSON.stringify(blazon));
+  fs.writeFileSync("src/visual/data/patterns.json", JSON.stringify(visual));
 }
