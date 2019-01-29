@@ -10,11 +10,25 @@ let initialValue = _createInitialValue(initOptionId);
 export { createPartition, partitionsOptions, initialValue, toModel }
 
 function toModel(viewModel) {
-  let model = {
-    type: viewModel.type,
-    partitions: viewModel.partitions.map(fieldToModel)
+  if (viewModel.type == "plein") {
+    let model = {
+      type: "field",
+      field: fieldToModel(viewModel.partitions[0])
+    }
+    return model;
+  } else {
+    let model = {
+      type: "partition",
+      partitionType: viewModel.type,
+      fields: viewModel.partitions.map(subModel => {
+        return {
+          type: "field",
+          field: fieldToModel(subModel)
+        }
+      })
+    }
+    return model;
   }
-  return model;
 }
 
 function createPartition(id) {

@@ -1,6 +1,5 @@
 import SvgBuilder from './svg-builder';
-import partitionShape from './partitionner';
-import addCharge from './charge-drawer';
+import drawField from './field-drawer';
 import paper from 'paper-jsdom';
 
 let escutcheons = require("./data/escutcheons.json");
@@ -27,17 +26,7 @@ export default function generateVisual(model, configuration) {
   let builder = new SvgBuilder(clone.strokeBounds, palette, defaultStrokeSize);
 
   // Draw
-  let partitionPaths = partitionShape(escutcheonPath, model.type);
-  if (partitionPaths.length == 0) {
-    //Error case
-    builder.fill("none", escutcheonPath);
-  } else {
-    for (let i = 0; i < partitionPaths.length; i++) {
-      let partitionModel = model.partitions[i];
-      let partitionPath = partitionPaths[i];
-      _addPartition(builder, partitionModel, partitionPath);
-    }
-  }
+  drawField(builder,model,escutcheonPath);
 
   // Visual effet
   let mainShapeId = _definePath(builder, escutcheonPath);
@@ -52,16 +41,6 @@ export default function generateVisual(model, configuration) {
     .att("width", 300)
     .att("height", 300)
     .end();
-}
-
-function _addPartition(builder, model, partitionPath) {
-  builder.fill(model.filler, partitionPath);
-
-  if (model.charges) {
-    model.charges.forEach(item => {
-      addCharge(builder, item.model, partitionPath);
-    });
-  }
 }
 
 function _definePath(builder, path) {
