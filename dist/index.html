@@ -10,32 +10,7 @@
 
 <body>
   <div id="app">
-    <div class="flex-container">
-      <div class="column50">
-        <h1>Coat of Arm Generator</h1>
-        <div>
-          <h2>Definition</h2>
-          <main-editor v-model="viewModel"></main-editor>
-        </div>
-      </div>
-
-      <div class="column50">
-
-        <div>
-          <h2>Blazon</h2>
-          <div>{{ blazon }}</div>
-        </div>
-
-        <div>
-          <h2>Visual</h2>
-          <div class="flex-container">
-            <visual-configuration v-model="visual"></visual-configuration>
-            <div v-html="image"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
+    <app></app>
   </div>
 
   <script type="text/javascript" src="main.js"></script>
