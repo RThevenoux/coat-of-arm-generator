@@ -16,10 +16,14 @@ let defaultConfiguration = require("./defaultConfiguration.json");
 new Vue({
   el: '#app',
   data: {
-    model: 'none',
+    viewModel: 'none',
     visual: defaultConfiguration
   },
   computed: {
+    model: function () {
+      let model = toModel(this.viewModel);
+      return model;
+    },
     blazon: function () {
       if (this.model == "none") {
         return "Define a model";
@@ -31,5 +35,76 @@ new Vue({
     }
   }
 });
+
+function toModel(viewModel) {
+  if (viewModel == 'none') {
+    return {
+      type: 'none',
+      partitions: []
+    };
+  }
+
+  let model = {
+    type: viewModel.type,
+    partitions: viewModel.partitions.map(partitionToModel)
+  }
+
+  return model;
+}
+
+function partitionToModel(viewModel) {
+  let model = {
+    filler: fillerToModel(viewModel.model.filler),
+    charges: viewModel.model.charges
+  };
+
+  return {
+    model: model
+  };
+}
+
+function fillerToModel(viewModel) {
+
+  switch (viewModel.type) {
+    case "plein":
+      return {
+        type: "plein",
+        color: viewModel.pleinColor
+      }
+    case "seme":
+      return {
+        type: "seme",
+        chargeId: viewModel.semeChargeId,
+        chargeColor: viewModel.semeChargeColor,
+        fieldColor: viewModel.semeFieldColor
+      }
+    case "strip":
+      return {
+        type: "strip",
+        angle:viewModel.stripAngle,
+        count:viewModel.stripCount,
+        color1:viewModel.stripColor1,
+        color2:viewModel.stripColor2
+      }
+    case "pattern": {
+      let model = {
+        type: "pattern",
+        patternName: viewModel.patternName,
+        color1: viewModel.patternColor1,
+        color2: viewModel.patternColor2,
+      }
+      if (viewModel.patternName == "fusele") {
+        model.angle = viewModel.patternAngle;
+      }
+
+      return model;
+    }
+    default: {
+      return {
+        type: "invalid"
+      }
+    }
+  }
+}
 
 
