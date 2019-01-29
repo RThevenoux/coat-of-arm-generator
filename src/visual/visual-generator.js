@@ -33,7 +33,7 @@ export default function generateVisual(model, configuration) {
     builder.fill("none", escutcheonPath);
   } else {
     for (let i = 0; i < partitionPaths.length; i++) {
-      let partitionModel = model.partitions[i].model;
+      let partitionModel = model.partitions[i];
       let partitionPath = partitionPaths[i];
       _addPartition(builder, partitionModel, partitionPath);
     }

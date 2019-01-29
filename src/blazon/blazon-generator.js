@@ -22,7 +22,7 @@ function _getPartitionning(model) {
 
   let count = partitionDef.match(/\{\}/g).length;
   for (let i = 0; i < count; i++) {
-    partitionDef = partitionDef.replace("{}", _getPartition(model.partitions[i].model));
+    partitionDef = partitionDef.replace("{}", _getPartition(model.partitions[i]));
   }
   return partitionDef;
 }
