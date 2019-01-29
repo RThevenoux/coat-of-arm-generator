@@ -1,22 +1,20 @@
 import SvgBuilder from './svg-builder';
 import drawField from './field-drawer';
 import paper from 'paper-jsdom';
-
-let escutcheons = require("./data/escutcheons.json");
-let palettes = require("./data/palettes.json");
+import getEscutcheonPath from './escutcheon-manager';
+import getPalette from './palette-manager';
 
 export default function generateVisual(model, configuration) {
 
   // ?? TODO Improve paper.Project management ??
   new paper.Project();
   // --
-
-  let escutcheon = escutcheons[configuration.escutcheon];
-  let escutcheonPath = new paper.Path(escutcheon.path);
-
-  let palette = palettes[configuration.palette];
+  console.log("generateVisual. configuration= "+JSON.stringify(configuration));
+  let escutcheonPath = getEscutcheonPath(configuration.escutcheon);
+  let palette = getPalette(configuration.palette);
   let borderSize = configuration.borderSize;
   let defaultStrokeSize = configuration.defaultStrokeSize;
+  let outputSize = { width: 300, height: 300 };
 
   // Create the border to compute viewBox
   let clone = escutcheonPath.clone();
@@ -26,20 +24,18 @@ export default function generateVisual(model, configuration) {
   let builder = new SvgBuilder(clone.strokeBounds, palette, defaultStrokeSize);
 
   // Draw
-  drawField(builder,model,escutcheonPath);
+  drawField(builder, model, escutcheonPath);
 
   // Visual effet
   let mainShapeId = _definePath(builder, escutcheonPath);
   _addBorder(builder, borderSize, mainShapeId);
   if (configuration.reflect) {
-    _addReflect(builder, escutcheon, mainShapeId);
+    _addReflect(builder, clone.strokeBounds, mainShapeId);
   }
 
-  // Static size of 300x300 for the image
-  // Should be more dynamic
   return builder.container
-    .att("width", 300)
-    .att("height", 300)
+    .att("width", outputSize.width)
+    .att("height", outputSize.height)
     .end();
 }
 
@@ -59,12 +55,12 @@ function _addBorder(builder, borderSize, mainShapeId) {
     .att("style", "fill:none;stroke:#000;stroke-width:" + borderSize);
 }
 
-function _addReflect(builder, shapeBox, mainShapeId) {
+function _addReflect(builder, bounds, mainShapeId) {
   let gradienId = "gradient-reflect";
 
-  let cx = shapeBox.width / 3;
-  let cy = shapeBox.height / 3;
-  let radius = shapeBox.width * 2 / 3;
+  let cx = bounds.width / 3;
+  let cy = bounds.height / 3;
+  let radius = bounds.width * 2 / 3;
 
   let gradient = builder.defs.ele("radialGradient")
     .att("id", gradienId)

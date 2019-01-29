@@ -105,7 +105,7 @@ function buildEscutcheons() {
   let gui = [];
 
   for (let item of input) {
-    visual[item.id] = item.visual;
+    visual[item.id] = item.path;
     gui.push({
       id: item.id,
       label: item.label

@@ -2,28 +2,16 @@
   {
     "id": "old-french",
     "label": "Français ancien",
-    "visual": {
-      "path": "M 300,660 C 300,660 600,550 600,260 L 600,0 L 0,0 L 0,260 C 0,550 300,660 300,660 z",
-      "height": "660",
-      "width": "600"
-    }
+    "path": "M 300,660 C 300,660 600,550 600,260 L 600,0 L 0,0 L 0,260 C 0,550 300,660 300,660 z"
   },
   {
     "id": "square",
     "label": "Bannière",
-    "visual":{
-      "path": "M 0,0 L 0,0 0,500 L 500,500 L 500,0 z",
-      "height": "500",
-      "width": "500"
-    }
+    "path": "M 0,0 L 0,0 0,500 L 500,500 L 500,0 z"
   },
   {
     "id": "losange",
     "label": "Losange",
-    "visual":{
-      "path": "M 300,0 L 300,0 0,300 L 300,600 L 600,300 z",
-      "height": "600",
-      "width": "600"
-    }
+    "path": "M 300,0 L 300,0 0,300 L 300,600 L 600,300 z"
   }
 ]
