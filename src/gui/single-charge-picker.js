@@ -2,7 +2,7 @@ import getChargeOptions from './charge-provider';
 
 let chargeOptions = getChargeOptions();
 
-Vue.component('single-charge', {
+Vue.component('single-charge-picker', {
   data: () => {
     return {
       type: "strip",

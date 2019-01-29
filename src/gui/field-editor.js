@@ -11,23 +11,14 @@ Vue.component('field-editor', {
     update: function (event) {
       this.$emit("input", this.value);
     },
-    click: function (event) {
-      let emitEvent = {
-        type: "field-editor",
-        source: {
-          state: this.state,
-          model: this.value
-        }
-      };
-      this.$emit("select", emitEvent);
+    select: function (event) {
+      this.$emit('select', event);
     }
   },
   template: `
   <div>
-    <div @click="click" v-bind:class="{ selected: state.isSelected }">
-      [click me]
-    </div>
-    <multi-charge v-model="value.charges" @input="update"></multi-charge>
+    <filler-picker v-model=value.filler @select="select"></filler-picker>
+    <multi-charge-picker v-model="value.charges" @input="update"></multi-charge-picker>
   </div>
   `
 });

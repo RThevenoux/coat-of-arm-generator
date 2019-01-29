@@ -9,7 +9,7 @@ export default function generateVisual(model, configuration) {
   // ?? TODO Improve paper.Project management ??
   new paper.Project();
   // --
-  console.log("generateVisual. configuration= "+JSON.stringify(configuration));
+  
   let escutcheonPath = getEscutcheonPath(configuration.escutcheon);
   let palette = getPalette(configuration.palette);
   let borderSize = configuration.borderSize;

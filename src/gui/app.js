@@ -4,13 +4,14 @@ import generateBlazon from '../blazon/blazon-generator';
 
 // Dirty registration of vue JS component ---
 import mainEditor from './main-editor';
+import fillerEditor from './filler-editor';
 import fillerPicker from './filler-picker';
 import colorPicker from './colorPicker';
 import visualConfiguration from './visual-configuration';
 import partitionEditor from './field-editor';
 import partitionningPicker from './partitionning-picker';
-import singleCharge from './single-charge';
-import multiCharge from './multi-charge';
+import singleCharge from './single-charge-picker';
+import multiCharge from './multi-charge-picker';
 // ---
 
 let defaultConfiguration = require("./visual.json");

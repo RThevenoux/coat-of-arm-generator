@@ -1,4 +1,4 @@
-Vue.component('multi-charge', {
+Vue.component('multi-charge-picker', {
   data: () => {
     return {
       value: []
@@ -33,7 +33,7 @@ Vue.component('multi-charge', {
       <div v-for="(charge, index) in value">
         <div class="flex-container">
           <button @click="remove(index)">(-)</button>
-          <single-charge v-model="charge.model" @input="update"></single-charge>
+          <single-charge-picker v-model="charge.model" @input="update"></single-charge-picker>
         </div>
       </div>
       <button @click="add">(+)</button>

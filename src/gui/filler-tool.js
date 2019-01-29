@@ -4,6 +4,7 @@ export { initialViewModel, toModel }
 
 function initialViewModel() {
   return {
+    type:'none',
     pleinColor: 'azur',
     patternColor1: 'azur',
     patternColor2: 'or',
