@@ -16,7 +16,7 @@ export function toLabel(model) {
 }
 
 function _chargeList(charges) {
-  return charges.map(item => _singleCharge(item.model)).join(", ");
+  return charges.map(item => _singleCharge(item)).join(", ");
 }
 
 function _singleCharge(charge) {

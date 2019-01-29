@@ -18,7 +18,7 @@ Vue.component('field-editor', {
   template: `
   <div>
     <filler-picker v-model=value.filler @select="select"></filler-picker>
-    <multi-charge-picker v-model="value.charges" @input="update"></multi-charge-picker>
+    <multi-charge-picker v-model="value.charges" @input="update" @select="select"></multi-charge-picker>
   </div>
   `
 });

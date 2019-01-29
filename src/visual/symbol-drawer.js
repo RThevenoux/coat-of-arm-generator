@@ -1,7 +1,7 @@
 import getCharge from './charge-manager';
 import { getIncircle } from './path-tool'
 
-export default function addSymbol(builder, charge, containerPath) {
+export default function drawSymbol(builder, charge, containerPath) {
   let chargeDef = getCharge(charge.chargeId);
 
   let fillerId = builder._getFillerId(charge.filler, containerPath.bounds);

@@ -1,4 +1,5 @@
 import { initialViewModel as initialFiller, toModel as fillerToModel } from './filler-tool';
+import { toModel as chargeToModel } from './single-charge-tool';
 
 export { initialViewModel, toModel }
 
@@ -12,7 +13,7 @@ function initialViewModel() {
 function toModel(viewModel) {
   let model = {
     filler: fillerToModel(viewModel.model.filler),
-    charges: viewModel.model.charges
+    charges: viewModel.model.charges.map(item => chargeToModel(item.model))
   };
   return model;
 }

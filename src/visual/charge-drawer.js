@@ -1,8 +1,8 @@
 import { getStrips } from './strip-drawer';
 import getCross from './cross-drawer';
-import addSymbol from './symbol-drawer';
+import drawSymbol from './symbol-drawer';
 
-export default function addCharge(builder, charge, containerPath) {
+export default function drawCharge(builder, charge, containerPath) {
   switch (charge.type) {
     case 'strip': {
       let strips = getStrips(containerPath.bounds, charge.angle, charge.count);
@@ -17,7 +17,7 @@ export default function addCharge(builder, charge, containerPath) {
       let path = containerPath.intersect(cross);
       builder.fill(charge.filler, path);
     } break;
-    case 'symbol': addSymbol(builder, charge, containerPath); break;
+    case 'symbol': drawSymbol(builder, charge, containerPath); break;
     default: console.log("-- unsupported charge-type: " + JSON.stringify(charge)); break;
   }
 }

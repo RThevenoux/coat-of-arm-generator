@@ -1,5 +1,5 @@
 import partitionShape from './partitionner';
-import addCharge from './charge-drawer';
+import drawCharge from './charge-drawer';
 
 export default function drawField(builder, model, containerPath) {
   switch (model.type) {
@@ -31,8 +31,6 @@ function drawSimpleField(builder, model, containerPath) {
   builder.fill(model.filler, containerPath);
 
   if (model.charges) {
-    model.charges.forEach(item => {
-      addCharge(builder, item.model, containerPath);
-    });
+    model.charges.forEach(charge => drawCharge(builder, charge, containerPath));
   }
 }
