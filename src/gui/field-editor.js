@@ -1,4 +1,4 @@
-Vue.component('partition-editor', {
+Vue.component('field-editor', {
   data: function () {
     return {
       state: {
@@ -13,7 +13,7 @@ Vue.component('partition-editor', {
     },
     click: function (event) {
       let emitEvent = {
-        type: "partition-editor",
+        type: "field-editor",
         source: {
           state: this.state,
           model: this.value

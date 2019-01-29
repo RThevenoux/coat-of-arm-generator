@@ -1,4 +1,4 @@
-import partitionDefaultValue from './partitionTool';
+import partitionDefaultValue from './field-tool';
 
 let options = require('./data/partitions.json');
 
@@ -70,14 +70,14 @@ Vue.component('partitionnig-picker', {
           <option v-for="option in options" :value="option.id">{{option.label}}</option>
         </select>
       </div>
-      <partition-editor
+      <field-editor
         v-for="partition in value.partitions"
         v-model="partition.model"
         :key="partition.number"
         @input="$emit('input', value)"
         @select="select"
       >
-      </partition-editor>
+      </field-editor>
       <div>
         <h2>Filler Editor</h2>
         <div v-if="fillerEditor == null">

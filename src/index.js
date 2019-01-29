@@ -2,11 +2,11 @@ import generateVisual from './visual/visual-generator';
 import generateBlazon from './blazon/blazon-generator';
 
 // Dirty registration of vue JS component ---
-import fillerPicker from './gui/fillerPicker';
+import fillerPicker from './gui/filler-picker';
 import colorPicker from './gui/colorPicker';
-import visualConfiguration from './gui/visualConfiguration';
-import partitionEditor from './gui/partitionEditor';
-import partitionningPicker from './gui/partitionningPicker';
+import visualConfiguration from './gui/visual-configuration';
+import partitionEditor from './gui/field-editor';
+import partitionningPicker from './gui/partitionning-picker';
 import singleCharge from './gui/single-charge';
 import multiCharge from './gui/multi-charge';
 //---
