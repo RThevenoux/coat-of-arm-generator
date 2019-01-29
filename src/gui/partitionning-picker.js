@@ -1,40 +1,13 @@
-import partitionDefaultValue from './field-tool';
+import { createPartition, partitionsOptions } from './partitionning-tool'
 
-let options = require('./data/partitions.json');
-
-let formattedOptions = {};
-options.forEach(option => formattedOptions[option.id] = option);
-
-function _initialValue() {
-  let id = options[0].id;
-  let count = formattedOptions[id].count;
-
-  let array = [];
-  for (let i = array.length; i < count; i++) {
-    array.push(_initPartition(i));
-  }
-
-  return {
-    type: id,
-    partitions: array
-  }
-}
-
-function _initPartition(id) {
-  return {
-    number: id,
-    model: partitionDefaultValue()
-  };
-}
-
-Vue.component('partitionnig-picker', {
+Vue.component('partitionning-picker', {
   data: function () {
     return {
-      options: formattedOptions,
-      value: _initialValue(),
+      options: partitionsOptions,
       fillerEditor: null
     }
   },
+  props:['value'],
   methods: {
     updatePartitionning: function () {
       let count = this.options[this.value.type].count;
@@ -42,7 +15,7 @@ Vue.component('partitionnig-picker', {
 
       if (count > array.length) {
         for (let i = array.length; i < count; i++) {
-          array.push(_initPartition(i));
+          array.push(createPartition(i));
         }
       } else {
         while (count < array.length) {
@@ -52,20 +25,13 @@ Vue.component('partitionnig-picker', {
       this.$emit('input', this.value);
     },
     select: function (event) {
-      if (this.fillerEditor) {
-        this.fillerEditor.state.isSelected = false;
-      }
-      this.fillerEditor = event.source;
-      this.fillerEditor.state.isSelected = true;
-    },
-    updateFiller: function (event) {
-      this.$emit('input', this.value);
+      this.$emit('select', event);
     }
   },
   template: `
     <div>
       <div>
-      <label>Partition</label>
+        <label>Partition</label>
         <select v-model="value.type" @change="updatePartitionning">
           <option v-for="option in options" :value="option.id">{{option.label}}</option>
         </select>
@@ -78,15 +44,6 @@ Vue.component('partitionnig-picker', {
         @select="select"
       >
       </field-editor>
-      <div>
-        <h2>Filler Editor</h2>
-        <div v-if="fillerEditor == null">
-          <p>No selection yet. Click...</p>
-        </div>
-        <div v-else>
-          <filler-picker v-model="fillerEditor.model.filler" @input="updateFiller"></filler-picker>
-        </div>
-      </div>
     </div>
     `
 });

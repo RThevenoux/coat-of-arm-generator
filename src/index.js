@@ -2,6 +2,7 @@ import generateVisual from './visual/visual-generator';
 import generateBlazon from './blazon/blazon-generator';
 
 // Dirty registration of vue JS component ---
+import mainEditor from './gui/main-editor';
 import fillerPicker from './gui/filler-picker';
 import colorPicker from './gui/colorPicker';
 import visualConfiguration from './gui/visual-configuration';
@@ -11,12 +12,14 @@ import singleCharge from './gui/single-charge';
 import multiCharge from './gui/multi-charge';
 //---
 
+import { initialValue } from './gui/partitionning-tool';
+
 let defaultConfiguration = require("./defaultConfiguration.json");
 
 new Vue({
   el: '#app',
   data: {
-    viewModel: 'none',
+    viewModel: initialValue,
     visual: defaultConfiguration
   },
   computed: {
@@ -25,9 +28,6 @@ new Vue({
       return model;
     },
     blazon: function () {
-      if (this.model == "none") {
-        return "Define a model";
-      }
       return generateBlazon(this.model);
     },
     image: function () {
@@ -37,13 +37,6 @@ new Vue({
 });
 
 function toModel(viewModel) {
-  if (viewModel == 'none') {
-    return {
-      type: 'none',
-      partitions: []
-    };
-  }
-
   let model = {
     type: viewModel.type,
     partitions: viewModel.partitions.map(partitionToModel)
@@ -81,10 +74,10 @@ function fillerToModel(viewModel) {
     case "strip":
       return {
         type: "strip",
-        angle:viewModel.stripAngle,
-        count:viewModel.stripCount,
-        color1:viewModel.stripColor1,
-        color2:viewModel.stripColor2
+        angle: viewModel.stripAngle,
+        count: viewModel.stripCount,
+        color1: viewModel.stripColor1,
+        color2: viewModel.stripColor2
       }
     case "pattern": {
       let model = {
