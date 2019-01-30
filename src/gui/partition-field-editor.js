@@ -36,14 +36,16 @@ Vue.component('partition-field-editor', {
           <option v-for="option in options" :value="option.id">{{option.label}}</option>
         </select>
       </div>
-      <simple-field-editor
-        v-for="partition in value.partitions"
-        v-model="partition.model"
-        :key="partition.number"
-        @input="$emit('input', value)"
-        @select="select"
-      >
-      </simple-field-editor>
+      <div v-for="partition in value.partitions" class="flex-container">
+        <p>{{ partition.number + 1 }}</p>
+        <field-editor
+          v-model="partition.model"
+          :key="partition.number"
+          @input="$emit('input', value)"
+          @select="select"
+        >
+        </field-editor>
+      </div>
     </div>
     `
 });

@@ -1,4 +1,4 @@
-import { initialViewModel as initialSimple, toModel as simpleToModel } from './simple-field-tool';
+import { initialViewModel as initialField, toModel as fieldToModel } from './field-tool';
 
 let options = require('./data/partitions.json');
 let partitionsOptions = {};
@@ -10,7 +10,7 @@ function toModel(viewModel) {
   let model = {
     type: "partition",
     partitionType: viewModel.partitionType,
-    fields: viewModel.partitions.map(subModel => simpleToModel(subModel.model))
+    fields: viewModel.partitions.map(subModel => fieldToModel(subModel.model))
   }
   return model;
 }
@@ -18,7 +18,7 @@ function toModel(viewModel) {
 function createPartition(id) {
   return {
     number: id,
-    model: initialSimple()
+    model: initialField()
   };
 }
 
