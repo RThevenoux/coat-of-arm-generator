@@ -2,6 +2,13 @@
   "reflect": true,
   "palette": "fr-wikipedia",
   "escutcheon": "old-french",
-  "borderSize": 3,
-  "defaultStrokeSize": 1
+  "border": {
+    "size": 3,
+    "color": "black"
+  },
+  "defaultStrokeSize": 1,
+  "outputSize": {
+    "height": 350,
+    "width": 350
+  }
 }

@@ -9,17 +9,19 @@ export default function generateVisual(model, configuration) {
   // ?? TODO Improve paper.Project management ??
   new paper.Project();
   // --
-  
+
   let escutcheonPath = getEscutcheonPath(configuration.escutcheon);
   let palette = getPalette(configuration.palette);
-  let borderSize = configuration.borderSize;
+  let borderSize = configuration.border.size;
+  let borderColor = configuration.border.color;
   let defaultStrokeSize = configuration.defaultStrokeSize;
-  let outputSize = { width: 300, height: 300 };
+
+  let outputSize = configuration.outputSize;
 
   // Create the border to compute viewBox
   let clone = escutcheonPath.clone();
   clone.strokeWidth = borderSize;
-  clone.strokeColor = "black";
+  clone.strokeColor = borderColor;
 
   let builder = new SvgBuilder(clone.strokeBounds, palette, defaultStrokeSize);
 

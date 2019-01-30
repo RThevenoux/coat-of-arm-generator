@@ -35,12 +35,19 @@ Vue.component('visual-configuration', {
 
     <div>
       <label>Bordure écu</label>
-      <input v-model.number="value.borderSize" type="number">
+      <input v-model.number="value.border.size" type="number">
     </div>
 
     <div>
       <label>Bordure meubles</label>
       <input v-model.number="value.defaultStrokeSize" type="number">
+    </div>
+
+    <div>
+      <label>Taille</label>
+      <input v-model.number="value.outputSize.width" type="number">
+      <label>×</label>
+      <input v-model.number="value.outputSize.height" type="number">
     </div>
 
   </div>`,
