@@ -4,8 +4,6 @@ import { getIncircle } from './path-tool'
 export default function drawSymbol(builder, charge, containerPath) {
   let chargeDef = getCharge(charge.chargeId);
 
-  let fillerId = builder._getFillerId(charge.filler, containerPath.bounds);
-
   let inCircle = getIncircle(containerPath);
   let chargeRadius = _distance(chargeDef.width, chargeDef.height) / 2;
 
@@ -15,6 +13,13 @@ export default function drawSymbol(builder, charge, containerPath) {
   let y = inCircle.center.y - chargeDef.height * scaleCoef / 2;
 
   let transform = "scale(" + scaleCoef + "," + scaleCoef + ") translate(" + x / scaleCoef + "," + y / scaleCoef + ")";
+
+  let chargeBounds = {
+    width: chargeDef.width,
+    height: chargeDef.height
+  };
+
+  let fillerId = builder._getFillerId(charge.filler, chargeBounds);
 
   let strokeWidth = builder.defaultStrokeWidth / scaleCoef;
   let symbolId = builder.addSymbol(chargeDef);
