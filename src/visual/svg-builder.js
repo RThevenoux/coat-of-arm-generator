@@ -24,7 +24,7 @@ export default class SvgBuilder {
   }
 
   fill(fillerModel, path) {
-    if (!fillerModel) {
+    if (!fillerModel || fillerModel === "none" || !fillerModel.type) {
       let defaultFillerId = this._getDefaultFiller();
       this._fillPath(defaultFillerId, path);
       return;

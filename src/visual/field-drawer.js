@@ -2,21 +2,25 @@ import partitionShape from './partitionner';
 import drawCharge from './charge-drawer';
 
 export default function drawField(builder, model, containerPath) {
+  if (!model || !model.type) {
+    drawError(builder, containerPath);
+    return;
+  }
   switch (model.type) {
+    case "simple": drawSimpleField(builder, model, containerPath); break;
     case "partition": drawPartitionField(builder, model, containerPath); break;
-    case "field": drawSimpleField(builder, model.field, containerPath); break;
-    default: drawError(containerPath); break;
+    default: drawError(builder, containerPath); break;
   }
 }
 
-function drawError(containerPath) {
+function drawError(builder, containerPath) {
   builder.fill("none", containerPath);
 }
 
 function drawPartitionField(builder, model, containerPath) {
   let subFieldPaths = partitionShape(containerPath, model.partitionType);
   if (subFieldPaths.length == 0) {
-    drawError(containerPath);
+    drawError(builder, containerPath);
     return;
   }
 
@@ -29,7 +33,6 @@ function drawPartitionField(builder, model, containerPath) {
 
 function drawSimpleField(builder, model, containerPath) {
   builder.fill(model.filler, containerPath);
-
   if (model.charges) {
     model.charges.forEach(charge => drawCharge(builder, charge, containerPath));
   }

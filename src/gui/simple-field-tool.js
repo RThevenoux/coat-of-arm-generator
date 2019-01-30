@@ -12,8 +12,9 @@ function initialViewModel() {
 
 function toModel(viewModel) {
   let model = {
-    filler: fillerToModel(viewModel.model.filler),
-    charges: viewModel.model.charges.map(item => chargeToModel(item.model))
+    type: "simple",
+    filler: fillerToModel(viewModel.filler),
+    charges: viewModel.charges.map(item => chargeToModel(item.model))
   };
   return model;
 }

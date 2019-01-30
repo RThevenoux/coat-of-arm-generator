@@ -24,12 +24,12 @@ Vue.component('root-editor', {
   },
   template: `
     <div>
-      <partition-field-editor
+      <field-editor
         v-model="value"
         @input="update"
         @select="select"
       >
-      </partition-field-editor>
+      </field-editor>
       <div>
         <h2>Filler Editor</h2>
         <div v-if="fillerModel == null">

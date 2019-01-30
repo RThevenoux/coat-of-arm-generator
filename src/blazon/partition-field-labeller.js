@@ -5,7 +5,7 @@ let partitions = require("./data/partitions.json");
 export function toLabel(model) {
   let partitionDef = partitions[model.partitionType];
   if (!partitionDef) {
-    return "unsupported partitionning '" + model.type + "'";
+    return "unsupported partitionning '" + model.partitionType + "'";
   }
 
   let count = partitionDef.match(/\{\}/g).length;

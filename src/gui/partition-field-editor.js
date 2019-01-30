@@ -7,10 +7,10 @@ Vue.component('partition-field-editor', {
       fillerEditor: null
     }
   },
-  props:['value'],
+  props: ['value'],
   methods: {
     updatePartitionning: function () {
-      let count = this.options[this.value.type].count;
+      let count = this.options[this.value.partitionType].count;
       let array = this.value.partitions;
 
       if (count > array.length) {
@@ -32,7 +32,7 @@ Vue.component('partition-field-editor', {
     <div>
       <div>
         <label>Partition</label>
-        <select v-model="value.type" @change="updatePartitionning">
+        <select v-model="value.partitionType" @change="updatePartitionning">
           <option v-for="option in options" :value="option.id">{{option.label}}</option>
         </select>
       </div>

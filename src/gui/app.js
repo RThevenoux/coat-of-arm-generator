@@ -9,8 +9,9 @@ import fillerEditor from './filler-editor';
 import fillerPicker from './filler-picker';
 import colorPicker from './colorPicker';
 import visualConfiguration from './visual-configuration';
-import partitionEditor from './simple-field-editor';
-import partitionningPicker from './partition-field-editor';
+import field from './field-editor';
+import simpleFiel from './simple-field-editor';
+import partitionField from './partition-field-editor';
 import singleCharge from './single-charge-picker';
 import multiCharge from './multi-charge-picker';
 // ---

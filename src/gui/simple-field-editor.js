@@ -1,12 +1,5 @@
 Vue.component('simple-field-editor', {
-  data: function () {
-    return {
-      state: {
-        isSelected: false
-      }
-    }
-  },
-  props:["value"],
+  props: ["value"],
   methods: {
     update: function (event) {
       this.$emit("input", this.value);

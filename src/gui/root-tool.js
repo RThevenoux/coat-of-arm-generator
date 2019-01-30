@@ -1,11 +1,11 @@
-import { initialViewModel as initialPartition, toModel as partitionToModel } from './partition-field-tool';
+import { initialViewModel as initialField, toModel as fieldToModel } from './field-tool';
 
 export { toModel, initialViewModel }
 
 function toModel(viewModel) {
-  return partitionToModel(viewModel);
+  return fieldToModel(viewModel);
 }
 
 function initialViewModel() {
-  return initialPartition();
+  return initialField();
 }
