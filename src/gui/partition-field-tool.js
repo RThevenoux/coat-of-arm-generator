@@ -1,13 +1,10 @@
-import { initialViewModel as initialField, toModel as fieldToModel } from './field-tool';
+import { initialViewModel as initialField, toModel as fieldToModel } from './simple-field-tool';
 
 let options = require('./data/partitions.json');
 let partitionsOptions = {};
 options.forEach(option => partitionsOptions[option.id] = option);
 
-let initOptionId = options[0].id;
-let initialValue = _createInitialValue(initOptionId);
-
-export { createPartition, partitionsOptions, initialValue, toModel }
+export { createPartition, partitionsOptions, initialViewModel, toModel }
 
 function toModel(viewModel) {
   if (viewModel.type == "plein") {
@@ -38,7 +35,8 @@ function createPartition(id) {
   };
 }
 
-function _createInitialValue(optionId) {
+function initialViewModel() {
+  let optionId = options[0].id;
   let count = partitionsOptions[optionId].count;
   let array = [];
   for (let i = array.length; i < count; i++) {

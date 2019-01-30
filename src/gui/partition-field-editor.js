@@ -1,6 +1,6 @@
-import { createPartition, partitionsOptions } from './partitionning-tool'
+import { createPartition, partitionsOptions } from './partition-field-tool'
 
-Vue.component('partitionning-picker', {
+Vue.component('partition-field-editor', {
   data: function () {
     return {
       options: partitionsOptions,
@@ -36,14 +36,14 @@ Vue.component('partitionning-picker', {
           <option v-for="option in options" :value="option.id">{{option.label}}</option>
         </select>
       </div>
-      <field-editor
+      <simple-field-editor
         v-for="partition in value.partitions"
         v-model="partition.model"
         :key="partition.number"
         @input="$emit('input', value)"
         @select="select"
       >
-      </field-editor>
+      </simple-field-editor>
     </div>
     `
 });

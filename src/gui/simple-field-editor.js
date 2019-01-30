@@ -1,4 +1,4 @@
-Vue.component('field-editor', {
+Vue.component('simple-field-editor', {
   data: function () {
     return {
       state: {

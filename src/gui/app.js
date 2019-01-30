@@ -1,15 +1,16 @@
-import { initialValue, toModel } from './partitionning-tool';
+import { initialViewModel, toModel } from './root-tool';
+
 import generateVisual from '../visual/visual-generator';
 import generateBlazon from '../blazon/blazon-generator';
 
 // Dirty registration of vue JS component ---
-import mainEditor from './main-editor';
+import mainEditor from './root-editor';
 import fillerEditor from './filler-editor';
 import fillerPicker from './filler-picker';
 import colorPicker from './colorPicker';
 import visualConfiguration from './visual-configuration';
-import partitionEditor from './field-editor';
-import partitionningPicker from './partitionning-picker';
+import partitionEditor from './simple-field-editor';
+import partitionningPicker from './partition-field-editor';
 import singleCharge from './single-charge-picker';
 import multiCharge from './multi-charge-picker';
 // ---
@@ -19,7 +20,7 @@ let defaultConfiguration = require("./visual.json");
 Vue.component('app', {
   data: function () {
     return {
-      viewModel: initialValue,
+      viewModel: initialViewModel(),
       visual: defaultConfiguration
     }
   },
@@ -41,7 +42,7 @@ Vue.component('app', {
         <h1>Coat of Arm Generator</h1>
         <div>
           <h2>Definition</h2>
-          <main-editor v-model="viewModel"></main-editor>
+          <root-editor v-model="viewModel"></root-editor>
         </div>
       </div>
 

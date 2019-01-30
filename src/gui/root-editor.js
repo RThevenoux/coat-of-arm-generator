@@ -1,4 +1,4 @@
-Vue.component('main-editor', {
+Vue.component('root-editor', {
   data: function () {
     return {
       selectedState: null,
@@ -24,12 +24,12 @@ Vue.component('main-editor', {
   },
   template: `
     <div>
-      <partitionning-picker
+      <partition-field-editor
         v-model="value"
         @input="update"
         @select="select"
       >
-      </partitionning-picker>
+      </partition-field-editor>
       <div>
         <h2>Filler Editor</h2>
         <div v-if="fillerModel == null">

@@ -5,7 +5,6 @@ import {toModel as fillerToModel} from './filler-tool';
 export { initialViewModel, toModel }
 
 function initialViewModel() {
-  console.log("charge.initialViewModel()");
   return {
     type: "strip",
     strip: {
