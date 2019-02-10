@@ -18,6 +18,7 @@ function initialViewModel() {
     },
     symbol: {
       chargeId: getChargeOptions().defaultOptionId,
+      count: 1,
       filler: initialFiller()
     }
   };
@@ -39,7 +40,7 @@ function toModel(viewModel) {
     }
     case "symbol": return {
       type: "symbol",
-      count: 1,
+      count: viewModel.symbol.count,
       chargeId: viewModel.symbol.chargeId,
       filler: fillerToModel(viewModel.symbol.filler)
     }

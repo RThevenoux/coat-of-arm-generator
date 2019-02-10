@@ -45,6 +45,7 @@ Vue.component('single-charge-picker', {
             {{ option.label }}
           </option>
         </select>
+        <input v-model.number="value.symbol.count" type="number" @input="update" key="symbol-number"></input>
         <filler-picker v-model="value.symbol.filler" @input="update" key="symbol-filler" @select="select"></filler-picker>
       </div>
     </div>
