@@ -1,7 +1,7 @@
 import paper from 'paper-jsdom';
 
 import getCharge from './charge-manager';
-import { getIncircle } from './path-tool';
+import { getIncircle } from './tool/path-tool';
 
 export default function drawSymbol(builder, charge, containerPath) {
   let chargeDef = getCharge(charge.chargeId);

@@ -2,17 +2,29 @@ import { getCountableChargeLabel } from './charge-labeller';
 import getFiller from './filler-labeller';
 
 export function toLabel(model) {
+
   if (!model || model == "none") {
-    return "[of-empty]";
+    return "[?]";
   }
-  let fillerLabel = getFiller(model.filler);
+
+  let label = "";
+
+  label += getFiller(model.filler);
 
   if (model.charges.length > 0) {
     let chargesLabel = _chargeList(model.charges);
-    return fillerLabel + " " + chargesLabel;
-  } else {
-    return fillerLabel;
+    label += " " + chargesLabel;
   }
+
+  if (model.border) {
+    label += _border(model.border);
+  }
+
+  return label;
+}
+
+function _border(model) {
+  return " à la bordure " + getFiller(model.filler);
 }
 
 function _chargeList(charges) {

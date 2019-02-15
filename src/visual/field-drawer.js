@@ -1,5 +1,6 @@
 import partitionShape from './partitionner';
 import drawCharge from './charge-drawer';
+import createBorder from './border-creator';
 
 export default function drawField(builder, model, containerPath) {
   if (!model || !model.type) {
@@ -32,8 +33,21 @@ function drawPartitionField(builder, model, containerPath) {
 }
 
 function drawSimpleField(builder, model, containerPath) {
-  builder.fill(model.filler, containerPath);
-  if (model.charges) {
-    model.charges.forEach(charge => drawCharge(builder, charge, containerPath));
+  if (model.border) {
+    let borderSize = Math.min(containerPath.bounds.height, containerPath.bounds.width) / 6;
+    let border = createBorder(containerPath, borderSize);
+
+    builder.fill(model.border.filler, border);
+
+    let inner = containerPath.subtract(border);
+    builder.fill(model.filler, inner);
+    if (model.charges) {
+      model.charges.forEach(charge => drawCharge(builder, charge, inner));
+    }
+  } else {
+    builder.fill(model.filler, containerPath);
+    if (model.charges) {
+      model.charges.forEach(charge => drawCharge(builder, charge, containerPath));
+    }
   }
 }

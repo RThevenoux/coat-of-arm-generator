@@ -21,7 +21,7 @@ Vue.component('filler-picker', {
   },
   template: `
     <div @click="click" v-bind:class="{ selected: state.isSelected }">
-      [click me 2 {{value.type}}]
+      [Edit-filler {{value.type}}]
     </div>
     `
 });
