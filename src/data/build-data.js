@@ -9,6 +9,11 @@ buildPatterns();
 buildColors();
 buildPalettes();
 
+function writeJSON(destFile, data) {
+  fs.mkdirSync(destFile.substring(0, destFile.lastIndexOf('/')), { recursive: true })
+  fs.writeFileSync(destFile, JSON.stringify(data));
+}
+
 function buildCharges() {
   console.log(" - Build charges");
   let input = JSON.parse(fs.readFileSync("src/data/charges.json", "utf8"));
@@ -53,9 +58,9 @@ function buildCharges() {
     }
   }
 
-  fs.writeFileSync("src/visual/data/charges.json", JSON.stringify(visual));
-  fs.writeFileSync("src/blazon/data/charges.json", JSON.stringify(blazon));
-  fs.writeFileSync("src/gui/data/charges.json", JSON.stringify(gui));
+  writeJSON("src/visual/data/charges.json", visual);
+  writeJSON("src/blazon/data/charges.json", blazon);
+  writeJSON("src/gui/data/charges.json", gui);
 }
 
 function getVisualXml(item) {
@@ -92,9 +97,9 @@ function buildPartitions() {
     });
   }
 
-  fs.writeFileSync("src/visual/data/partitions.json", JSON.stringify(visual));
-  fs.writeFileSync("src/blazon/data/partitions.json", JSON.stringify(blazon));
-  fs.writeFileSync("src/gui/data/partitions.json", JSON.stringify(gui));
+  writeJSON("src/visual/data/partitions.json", visual);
+  writeJSON("src/blazon/data/partitions.json", blazon);
+  writeJSON("src/gui/data/partitions.json", gui);
 }
 
 function buildEscutcheons() {
@@ -112,8 +117,8 @@ function buildEscutcheons() {
     });
   }
 
-  fs.writeFileSync("src/visual/data/escutcheons.json", JSON.stringify(visual));
-  fs.writeFileSync("src/gui/data/escutcheons.json", JSON.stringify(gui));
+  writeJSON("src/visual/data/escutcheons.json", visual);
+  writeJSON("src/gui/data/escutcheons.json", gui);
 }
 
 function buildPatterns() {
@@ -128,8 +133,8 @@ function buildPatterns() {
     blazon[item.id] = item.blazon;
   }
 
-  fs.writeFileSync("src/blazon/data/patterns.json", JSON.stringify(blazon));
-  fs.writeFileSync("src/visual/data/patterns.json", JSON.stringify(visual));
+  writeJSON("src/blazon/data/patterns.json", blazon);
+  writeJSON("src/visual/data/patterns.json", visual);
 }
 
 function buildColors() {
@@ -149,8 +154,8 @@ function buildColors() {
     });
   }
 
-  fs.writeFileSync("src/blazon/data/colors.json", JSON.stringify(blazon));
-  fs.writeFileSync("src/gui/data/colors.json", JSON.stringify(gui));
+  writeJSON("src/blazon/data/colors.json", blazon);
+  writeJSON("src/gui/data/colors.json", gui);
 }
 
 function buildPalettes() {
@@ -168,6 +173,6 @@ function buildPalettes() {
     });
   }
 
-  fs.writeFileSync("src/visual/data/palettes.json", JSON.stringify(visual));
-  fs.writeFileSync("src/gui/data/palettes.json", JSON.stringify(gui));
+  writeJSON("src/visual/data/palettes.json", visual);
+  writeJSON("src/gui/data/palettes.json", gui);
 }
