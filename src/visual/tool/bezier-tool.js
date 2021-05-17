@@ -1,10 +1,10 @@
-import Bezier from 'bezier-js';
+import { Bezier } from 'bezier-js';
 import paper from 'paper';
 
 let BezierTool = {
     beziersToPath: beziersToPath,
     curveToBezier: curveToBezier
-}
+};
 
 export default BezierTool;
 
@@ -60,5 +60,5 @@ function relativePoint(reference, point) {
     return {
         x: point.x - reference.x,
         y: point.y - reference.y
-    }
+    };
 }
