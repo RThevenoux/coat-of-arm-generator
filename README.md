@@ -1,9 +1,10 @@
 # coat-of-arm-generator
 A web page that generate SVG and french description of simple coat of arm
 
-## Install & Run web-serer
+## Install & Run web-server
 
- - run `npm` to install dependency
+ - run `npm install` to install dependency
+ - run `node .\src\data\build-data.js` to build json
  - run `npm run dev` to run local dev server
 
 ## Problem
