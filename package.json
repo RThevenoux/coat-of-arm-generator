@@ -25,17 +25,17 @@
   },
   "homepage": "https://github.com/RThevenoux/coat-of-arm-generator#readme",
   "devDependencies": {
-    "css-loader": "^5",
-    "html-webpack-plugin": "^5",
-    "style-loader": "^2",
-    "webpack": "^5.37.0",
-    "webpack-cli": "^4.7.0",
-    "webpack-dev-server": "^3.11.2"
+    "css-loader": "^6.5.0", 
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.61.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.4.0"
   },
   "dependencies": {
-    "bezier-js": "^4",
+    "bezier-js": "^4.1.1",
     "paper-jsdom": "^0.12.15",
-    "vue": "^2.6.12",
-    "xmlbuilder": "^15"
+    "vue": "^2.6.14",
+    "xmlbuilder": "^15.1.1"
   }
 }

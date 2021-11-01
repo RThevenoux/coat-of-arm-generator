@@ -22,7 +22,9 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: './dist',
+    static:{
+      directory: './dist'
+    }
     // hot: true,
   },
   resolve: {
