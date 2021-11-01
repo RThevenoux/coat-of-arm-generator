@@ -1,32 +1,44 @@
-console.log("Start build-data");
 
-const fs = require("fs");
+import { mkdirSync, writeFileSync, readFileSync } from "fs";
 
-buildCharges();
-buildPartitions();
-buildEscutcheons();
-buildPatterns();
-buildColors();
-buildPalettes();
+main();
 
-function writeJSON(destFile, data) {
-  fs.mkdirSync(destFile.substring(0, destFile.lastIndexOf('/')), { recursive: true })
-  fs.writeFileSync(destFile, JSON.stringify(data));
+function main() {
+  console.log("Start *build-data*");
+
+  console.log(" - Build charges");
+  buildCharges();
+
+  console.log(" - Build partitions");
+  buildPartitions();
+
+  console.log(" - Build escutcheons");
+  buildEscutcheons();
+
+  console.log(" - Build patterns");
+  buildPatterns();
+
+  console.log(" - Build colors");
+  buildColors();
+
+  console.log(" - Build palettes");
+  buildPalettes();
+
+  console.log("End *build-data*");
 }
 
 function buildCharges() {
-  console.log(" - Build charges");
-  let input = JSON.parse(fs.readFileSync("src/data/charges.json", "utf8"));
+  const input = readJSON("src/data/charges.json");
 
-  let visual = {};
-  let blazon = {};
-  let gui = [];
+  const visual = {};
+  const blazon = {};
+  const gui = [];
 
-  for (let item of input) {
+  for (const item of input) {
 
     if (item.visual.type == "svg") {
-      let xml = getVisualXml(item);
-      let visualData = {
+      const xml = getVisualXml(item, "src/data/charges");
+      const visualData = {
         id: item.id,
         width: item.visual.width,
         height: item.visual.height,
@@ -35,8 +47,8 @@ function buildCharges() {
       };
       visual[item.id] = visualData;
 
-      let label = item.blazon.one;
-      let niceLabel = label.charAt(0).toUpperCase() + label.slice(1);
+      const label = item.blazon.one;
+      const niceLabel = label.charAt(0).toUpperCase() + label.slice(1);
       gui.push({
         id: item.id,
         label: niceLabel
@@ -56,38 +68,35 @@ function buildCharges() {
       "ty": 20,
       "repetition": 5
     }
-  }
+  };
 
   writeJSON("src/visual/data/charges.json", visual);
   writeJSON("src/blazon/data/charges.json", blazon);
   writeJSON("src/gui/data/charges.json", gui);
 }
 
-function getVisualXml(item) {
+function getVisualXml(item, chargesFolder) {
   if (item.visual.file) {
-    let data = fs.readFileSync("src/data/charges/" + item.visual.file, "ascii");
-    data = data.replace(/\r?\n|\r/g, "");
-    return data;
+    return readXML(chargesFolder + "/" + item.visual.file);
   } else {
     return item.visual.xml;
   }
 }
 
 function buildPartitions() {
-  console.log(" - Build partitions");
-  let input = JSON.parse(fs.readFileSync("src/data/partitions.json", "utf8"));
+  const input = readJSON("src/data/partitions.json");
 
-  let visual = {};
-  let blazon = {};
-  let gui = [];
+  const visual = {};
+  const blazon = {};
+  const gui = [];
 
-  for (let item of input) {
+  for (const item of input) {
     blazon[item.id] = item.blazon;
     let count = 1;
 
     if (item.visual) {
       count = item.visual.paths.length;
-      visual[item.id] = item.visual
+      visual[item.id] = item.visual;
     }
 
     gui.push({
@@ -103,13 +112,12 @@ function buildPartitions() {
 }
 
 function buildEscutcheons() {
-  console.log(" - Build escutcheons");
-  let input = JSON.parse(fs.readFileSync("src/data/escutcheons.json", "utf8"));
+  const input = readJSON("src/data/escutcheons.json");
 
-  let visual = {};
-  let gui = [];
+  const visual = {};
+  const gui = [];
 
-  for (let item of input) {
+  for (const item of input) {
     visual[item.id] = item.path;
     gui.push({
       id: item.id,
@@ -122,11 +130,10 @@ function buildEscutcheons() {
 }
 
 function buildPatterns() {
-  console.log(" - Build patterns");
-  let input = JSON.parse(fs.readFileSync("src/data/patterns.json", "utf8"));
+  const input = readJSON("src/data/patterns.json");
 
-  let visual = {};
-  let blazon = {};
+  const visual = {};
+  const blazon = {};
 
   for (let item of input) {
     visual[item.id] = item.visual;
@@ -138,14 +145,13 @@ function buildPatterns() {
 }
 
 function buildColors() {
-  console.log(" - Build colors");
-  let input = JSON.parse(fs.readFileSync("src/data/colors.json", "utf8"));
+  const input = readJSON("src/data/colors.json");
 
   // Colors
-  let blazon = {};
-  let gui = [];
+  const blazon = {};
+  const gui = [];
 
-  for (let item of input) {
+  for (const item of input) {
     blazon[item.id] = item.blazon;
     gui.push({
       id: item.id,
@@ -159,13 +165,12 @@ function buildColors() {
 }
 
 function buildPalettes() {
-  console.log(" - Build palettes");
-  let input = JSON.parse(fs.readFileSync("src/data/palettes.json", "utf8"));
+  const input = readJSON("src/data/palettes.json");
 
-  let visual = {};
-  let gui = [];
+  const visual = {};
+  const gui = [];
 
-  for (let item of input) {
+  for (const item of input) {
     visual[item.id] = item.values;
     gui.push({
       id: item.id,
@@ -175,4 +180,22 @@ function buildPalettes() {
 
   writeJSON("src/visual/data/palettes.json", visual);
   writeJSON("src/gui/data/palettes.json", gui);
+}
+
+// ---------------------
+// I/O Utility functions
+// ---------------------
+
+function readJSON(filename) {
+  return JSON.parse(readFileSync(filename, "utf8"));
+}
+
+function readXML(filename) {
+  return readFileSync(filename, "ascii")
+    .replace(/\r?\n|\r/g, "");
+}
+
+function writeJSON(destFile, data) {
+  mkdirSync(destFile.substring(0, destFile.lastIndexOf('/')), { recursive: true });
+  writeFileSync(destFile, JSON.stringify(data));
 }
