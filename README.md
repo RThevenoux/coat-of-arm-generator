@@ -1,14 +1,30 @@
-# coat-of-arm-generator
-A web page that generate SVG and french description of simple coat of arm
+# coat-of-arm-v4
 
-## Install & Run web-server
+## Project setup
+```
+npm install
+```
 
- - run `npm install` to install dependency
- - run `node .\src\data\build-data.js` to build json
- - run `npm run dev` to run local dev server
+### Compiles and hot-reloads for development
+Windows - PowerShell:
+```
+$ENV:NODE_OPTIONS = '--openssl-legacy-provider'
+```
 
-## Problem
 
-### Error: Cannot find module 'html-webpack-plugin'
+```
+npm run serve
+```
 
-Try remove node_modules directory and re-run install
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
