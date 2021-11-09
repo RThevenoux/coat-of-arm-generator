@@ -1,8 +1,10 @@
-import { PartitionFieldEditorModel } from "./PartitionFieldEditorModel";
 import { SimpleFieldEditorModel } from "./SimpleFieldEditorModel";
 
 export interface FieldEditorModel {
-  type: "simple" | "partition";
-  partition: PartitionFieldEditorModel;
+  partitionType: string;
+  partitions: {
+    number: number;
+    model: FieldEditorModel;
+  }[];
   simple: SimpleFieldEditorModel;
 }

@@ -1,27 +1,32 @@
 <template>
   <div id="app" class="flex-container">
-    <div class="column50">
-      <h1>Coat of Arm Generator</h1>
-      <div>
-        <h2>Definition</h2>
-        <RootEditor v-model="editorModel" @input="updateModel"></RootEditor>
-      </div>
-    </div>
-
-    <div class="column50">
-      <div>
-        <h2>Blazon</h2>
-        <div>{{ textual }}</div>
-      </div>
-
-      <div>
-        <h2>Visual</h2>
-        <div class="flex-container">
-          <VisualConf v-model="visualConf" @input="updateVisual"></VisualConf>
-          <div v-html="visual"></div>
+    <template v-if="editorModel === 'loading'">
+      <h2>Loading...</h2>
+    </template>
+    <template v-if="editorModel !== 'loading'">
+      <div class="column50">
+        <h1>Coat of Arm Generator</h1>
+        <div>
+          <h2>Definition</h2>
+          <RootEditor v-model="editorModel" @input="updateModel"></RootEditor>
         </div>
       </div>
-    </div>
+
+      <div class="column50">
+        <div>
+          <h2>Blazon</h2>
+          <div>{{ textual }}</div>
+        </div>
+
+        <div>
+          <h2>Visual</h2>
+          <div class="flex-container">
+            <VisualConf v-model="visualConf" @input="updateVisual"></VisualConf>
+            <div v-html="visual"></div>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -31,7 +36,7 @@ import VisualConf from "./components/VisualConf.vue";
 import { VisualConfModel } from "./generator/visual/VisualConfModel";
 import { defaultVisualConf } from "./service/ConfigurationService";
 import { FieldEditorModel } from "./components/FieldEditorModel";
-import { initialFieldEditorValue, toModel } from "./components/EditorTool";
+import { initialFieldEditorValue, fieldToModel } from "./components/EditorTool";
 import { generateVisual } from "./generator/visual/VisualGenerator";
 import { generateTextual } from "./generator/textual/TextualGenerator";
 import RootEditor from "./components/RootEditor.vue";
@@ -45,7 +50,7 @@ import { FieldModel } from "./generator/model.type";
 })
 export default class App extends Vue {
   visualConf: VisualConfModel = defaultVisualConf();
-  editorModel: FieldEditorModel = {} as FieldEditorModel;
+  editorModel: FieldEditorModel | "loading" = "loading";
   textual = "Loading...";
   visual = "<p>Loading...</p>";
 
@@ -55,17 +60,21 @@ export default class App extends Vue {
   }
 
   async updateModel(): Promise<void> {
-    const model: FieldModel = toModel(this.editorModel);
-    const textual = await generateTextual(model);
-    const visual = await generateVisual(model, this.visualConf);
+    if (this.editorModel != "loading") {
+      const model: FieldModel = fieldToModel(this.editorModel);
+      const textual = await generateTextual(model);
+      const visual = await generateVisual(model, this.visualConf);
 
-    this.textual = textual;
-    this.visual = visual;
+      this.textual = textual;
+      this.visual = visual;
+    }
   }
 
   async updateVisual(): Promise<void> {
-    const model: FieldModel = toModel(this.editorModel);
-    this.visual = await generateVisual(model, this.visualConf);
+    if (this.editorModel != "loading") {
+      const model: FieldModel = fieldToModel(this.editorModel);
+      this.visual = await generateVisual(model, this.visualConf);
+    }
   }
 }
 </script>

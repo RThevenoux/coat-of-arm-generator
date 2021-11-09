@@ -3,21 +3,19 @@ import {
   FieldModel,
   FillerModel,
   FillerPattern,
-  MultiFieldModel,
   SimpleFieldModel,
 } from "@/generator/model.type";
 import { getDefaultChargeId } from "@/service/ChargeService";
 import { FieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
-import { PartitionFieldEditorModel } from "./PartitionFieldEditorModel";
 import { SimpleFieldEditorModel } from "./SimpleFieldEditorModel";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 
 export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
   return {
-    type: "simple",
     simple: await initialSimple(),
-    partition: initialPartition(),
+    partitionType: "plain",
+    partitions: [],
   };
 }
 
@@ -52,13 +50,6 @@ async function initialSimple(): Promise<SimpleFieldEditorModel> {
   };
 }
 
-function initialPartition(): PartitionFieldEditorModel {
-  return {
-    partitionType: "none",
-    partitions: [],
-  };
-}
-
 async function initialFiller(): Promise<FillerEditorModel> {
   return {
     type: "none",
@@ -77,15 +68,17 @@ async function initialFiller(): Promise<FillerEditorModel> {
   };
 }
 
-export { fieldToModel as toModel };
-
-function fieldToModel(viewModel: FieldEditorModel): FieldModel {
-  if (viewModel.type == "simple") {
+export function fieldToModel(viewModel: FieldEditorModel): FieldModel {
+  if (viewModel.partitionType == "plain") {
     return simpleToModel(viewModel.simple);
-  } else if (viewModel.type == "partition") {
-    return partitionToModel(viewModel.partition);
   } else {
-    return "empty-field";
+    return {
+      type: "partition",
+      partitionType: viewModel.partitionType,
+      fields: viewModel.partitions.map((subModel) =>
+        fieldToModel(subModel.model)
+      ),
+    };
   }
 }
 
@@ -102,18 +95,6 @@ function simpleToModel(viewModel: SimpleFieldEditorModel): SimpleFieldModel {
     filler: fillerToModel(viewModel.filler),
     charges: viewModel.charges.map((item) => chargeToModel(item.model)),
     border: border,
-  };
-}
-
-function partitionToModel(
-  viewModel: PartitionFieldEditorModel
-): MultiFieldModel {
-  return {
-    type: "partition",
-    partitionType: viewModel.partitionType,
-    fields: viewModel.partitions.map((subModel) =>
-      fieldToModel(subModel.model)
-    ),
   };
 }
 

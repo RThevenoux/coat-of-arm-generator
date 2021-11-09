@@ -10,9 +10,6 @@ export default async function drawField(
   model: FieldModel,
   containerPath: MyPathItem
 ): Promise<void> {
-  if (!model || model == "empty-field") {
-    return drawError(builder, containerPath);
-  }
   switch (model.type) {
     case "simple":
       return drawSimpleField(builder, model, containerPath);

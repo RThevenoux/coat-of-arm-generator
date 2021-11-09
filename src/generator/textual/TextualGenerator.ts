@@ -12,15 +12,13 @@ function capitalizeFirstLetter(text: string): string {
 }
 
 async function fieldToLabel(model: FieldModel): Promise<string> {
-  if (model == "empty-field") {
-    return "[empty]";
-  } else {
-    switch (model.type) {
-      case "simple":
-        return pleinFieldToLabel(model);
-      case "partition":
-        return partitionToLabel(model);
-    }
+  switch (model.type) {
+    case "simple":
+      return pleinFieldToLabel(model);
+    case "partition":
+      return partitionToLabel(model);
+    default:
+      return "[empty]";
   }
 }
 

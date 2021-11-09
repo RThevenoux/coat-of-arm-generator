@@ -5,7 +5,7 @@ export type Angle = "0" | "45" | "90" | "135";
 //
 // Field
 //
-export type FieldModel = SimpleFieldModel | MultiFieldModel | "empty-field";
+export type FieldModel = SimpleFieldModel | MultiFieldModel;
 
 export interface SimpleFieldModel {
   type: "simple";
