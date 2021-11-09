@@ -14,22 +14,25 @@ export default function partitionShape(
   if (!partitionDef) {
     return [];
   }
-  const paths = partitionDef.paths.map((pathData) => new paper.Path(pathData));
 
-  // Scale every path
+  // Compute scale info
   const scaleX = containerPath.bounds.width / partitionDef.width;
   const scaleY = containerPath.bounds.height / partitionDef.height;
-  const origin = new paper.Point(0, 0);
-  paths.forEach((path) => path.scale(scaleX, scaleY, origin));
+  const partitionOrigin = new paper.Point(0, 0);
+  // Get translate info
+  const containerOrigin = containerPath.bounds.topLeft;
 
-  return _intersectPath(containerPath, paths);
-}
+  const result: MyPathItem[] = [];
+  for (const pathData of partitionDef.paths) {
+    const path = new paper.Path(pathData);
+    path.scale(scaleX, scaleY, partitionOrigin);
+    path.translate(containerOrigin);
 
-function _intersectPath(
-  containerPath: MyPathItem,
-  partitionPaths: MyPathItem[]
-): MyPathItem[] {
-  return partitionPaths.map(
-    (path) => containerPath.intersect(path) as MyPathItem
-  );
+    // Compute intersection.
+    // Intersection should by Path or CompoundPath, so it should be safe to cast to MyPathItem
+    const intersection = containerPath.intersect(path) as MyPathItem;
+    result.push(intersection);
+  }
+
+  return result;
 }
