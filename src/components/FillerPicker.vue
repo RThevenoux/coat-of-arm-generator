@@ -1,7 +1,7 @@
 <template>
-  <div @click="click" v-bind:class="{ selected: state.isSelected }">
+  <button @click="click" v-bind:class="{ selected: state.isSelected }">
     [Edit-filler {{ value.type }}]
-  </div>
+  </button>
 </template>
 
 <script lang="ts">

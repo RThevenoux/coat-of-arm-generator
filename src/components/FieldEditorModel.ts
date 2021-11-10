@@ -1,4 +1,5 @@
-import { SimpleFieldEditorModel } from "./SimpleFieldEditorModel";
+import { FillerEditorModel } from "./FillerEditorModel";
+import { SingleChargePickerModel } from "./SingleChargePickerModel";
 
 export interface FieldEditorModel {
   partitionType: string;
@@ -6,5 +7,14 @@ export interface FieldEditorModel {
     number: number;
     model: FieldEditorModel;
   }[];
-  simple: SimpleFieldEditorModel;
+  plain: PlainFieldEditorModel;
+}
+
+export interface PlainFieldEditorModel {
+  filler: FillerEditorModel;
+  border: {
+    present: boolean;
+    filler: FillerEditorModel;
+  };
+  charges: { model: SingleChargePickerModel }[];
 }

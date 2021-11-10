@@ -1,6 +1,6 @@
 import { getPartitionTextual } from "@/service/PartitionService";
 import { FieldModel, MultiFieldModel } from "../model.type";
-import { pleinFieldToLabel } from "./PleinFieldTextualGenerator";
+import { plainFieldToLabel } from "./PleinFieldTextualGenerator";
 
 export async function generateTextual(model: FieldModel): Promise<string> {
   const label = await fieldToLabel(model);
@@ -13,8 +13,8 @@ function capitalizeFirstLetter(text: string): string {
 
 async function fieldToLabel(model: FieldModel): Promise<string> {
   switch (model.type) {
-    case "simple":
-      return pleinFieldToLabel(model);
+    case "plain":
+      return plainFieldToLabel(model);
     case "partition":
       return partitionToLabel(model);
     default:

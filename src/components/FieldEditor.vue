@@ -7,13 +7,28 @@
           {{ option.label }}
         </option>
       </select>
+      <FillerPicker
+        v-if="value.partitionType === 'plain'"
+        v-model="value.plain.filler"
+        @select="select"
+      >
+      </FillerPicker>
     </div>
-    <SimpleFieldEditor
+    <div class="flex-container" v-if="value.partitionType === 'plain'">
+      <label>Border</label>
+      <input type="checkbox" v-model="value.plain.border.present" />
+      <FillerPicker
+        v-model="value.plain.border.filler"
+        @select="select"
+        v-show="value.plain.border.present"
+      ></FillerPicker>
+    </div>
+    <MultiChargePicker
       v-if="value.partitionType === 'plain'"
-      v-model="value.simple"
-      @input="$emit('input', value)"
+      v-model="value.plain.charges"
+      @input="update"
       @select="select"
-    ></SimpleFieldEditor>
+    ></MultiChargePicker>
     <template v-if="value.partitionType !== 'plain'">
       <div
         v-for="partition in value.partitions"
@@ -36,16 +51,18 @@
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FieldEditorModel } from "./FieldEditorModel";
 import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
-import SimpleFieldEditor from "./SimpleFieldEditor.vue";
 import {
   getPartitionOptions,
   getFieldCountInPartition,
 } from "../service/PartitionService";
 import { initialFieldEditorValue } from "./EditorTool";
+import FillerPicker from "./FillerPicker.vue";
+import MultiChargePicker from "./MultiChargePicker.vue";
 
 @Component({
   components: {
-    SimpleFieldEditor,
+    FillerPicker,
+    MultiChargePicker,
   },
 })
 export default class FieldEditor extends Vue {

@@ -1,9 +1,9 @@
-import { BorderModel, ChargeModel, SimpleFieldModel } from "../model.type";
+import { BorderModel, ChargeModel, PlainFieldModel } from "../model.type";
 import { getCountableChargeLabel } from "./ChargeTextualGenerator";
 import { fillerToLabel } from "./FillerTextualGenerator";
 
-export async function pleinFieldToLabel(
-  model: SimpleFieldModel
+export async function plainFieldToLabel(
+  model: PlainFieldModel
 ): Promise<string> {
   if (!model) {
     return "[?]";

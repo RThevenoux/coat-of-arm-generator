@@ -7,7 +7,7 @@ import {
   BorderModel,
   FieldModel,
   MultiFieldModel,
-  SimpleFieldModel,
+  PlainFieldModel,
 } from "../model.type";
 
 export default async function drawField(
@@ -16,8 +16,8 @@ export default async function drawField(
   containerPath: paper.Path
 ): Promise<void> {
   switch (model.type) {
-    case "simple":
-      return drawSimpleField(builder, model, containerPath);
+    case "plain":
+      return drawPlainField(builder, model, containerPath);
     case "partition":
       return drawPartitionField(builder, model, containerPath);
     default:
@@ -49,9 +49,9 @@ async function drawPartitionField(
   }
 }
 
-async function drawSimpleField(
+async function drawPlainField(
   builder: SvgBuilder,
-  model: SimpleFieldModel,
+  model: PlainFieldModel,
   containerPath: paper.Path
 ): Promise<void> {
   if (model.border) {
@@ -89,7 +89,7 @@ async function drawBorder(
 
 async function drawFieldWithoutBorder(
   builder: SvgBuilder,
-  model: SimpleFieldModel,
+  model: PlainFieldModel,
   containerPath: paper.Path
 ) {
   await builder.fill(model.filler, containerPath);

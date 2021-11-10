@@ -5,10 +5,10 @@ export type Angle = "0" | "45" | "90" | "135";
 //
 // Field
 //
-export type FieldModel = SimpleFieldModel | MultiFieldModel;
+export type FieldModel = PlainFieldModel | MultiFieldModel;
 
-export interface SimpleFieldModel {
-  type: "simple";
+export interface PlainFieldModel {
+  type: "plain";
   filler: FillerModel;
   charges: ChargeModel[];
   border?: BorderModel;

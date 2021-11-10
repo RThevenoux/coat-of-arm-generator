@@ -3,17 +3,16 @@ import {
   FieldModel,
   FillerModel,
   FillerPattern,
-  SimpleFieldModel,
+  PlainFieldModel,
 } from "@/generator/model.type";
 import { getDefaultChargeId } from "@/service/ChargeService";
-import { FieldEditorModel } from "./FieldEditorModel";
+import { FieldEditorModel, PlainFieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
-import { SimpleFieldEditorModel } from "./SimpleFieldEditorModel";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 
 export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
   return {
-    simple: await initialSimple(),
+    plain: await initialPlain(),
     partitionType: "plain",
     partitions: [],
   };
@@ -39,7 +38,7 @@ export async function initialChargeModel(): Promise<SingleChargePickerModel> {
   };
 }
 
-async function initialSimple(): Promise<SimpleFieldEditorModel> {
+async function initialPlain(): Promise<PlainFieldEditorModel> {
   return {
     filler: await initialFiller(),
     border: {
@@ -70,7 +69,7 @@ async function initialFiller(): Promise<FillerEditorModel> {
 
 export function fieldToModel(viewModel: FieldEditorModel): FieldModel {
   if (viewModel.partitionType == "plain") {
-    return simpleToModel(viewModel.simple);
+    return plainFieldToModel(viewModel.plain);
   } else {
     return {
       type: "partition",
@@ -82,7 +81,7 @@ export function fieldToModel(viewModel: FieldEditorModel): FieldModel {
   }
 }
 
-function simpleToModel(viewModel: SimpleFieldEditorModel): SimpleFieldModel {
+function plainFieldToModel(viewModel: PlainFieldEditorModel): PlainFieldModel {
   let border = undefined;
   if (viewModel.border.present) {
     border = {
@@ -91,7 +90,7 @@ function simpleToModel(viewModel: SimpleFieldEditorModel): SimpleFieldModel {
   }
 
   return {
-    type: "simple",
+    type: "plain",
     filler: fillerToModel(viewModel.filler),
     charges: viewModel.charges.map((item) => chargeToModel(item.model)),
     border: border,
