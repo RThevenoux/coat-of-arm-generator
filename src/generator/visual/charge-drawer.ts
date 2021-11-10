@@ -3,12 +3,11 @@ import createCross from "./factory/CrossFactory";
 import drawSymbol from "./symbol-drawer";
 import SvgBuilder from "./SvgBuilder";
 import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";
-import { MyPathItem } from "./type";
 
 export default async function drawCharge(
   builder: SvgBuilder,
   charge: ChargeModel,
-  containerPath: MyPathItem
+  containerPath: paper.Path
 ): Promise<void> {
   switch (charge.type) {
     case "strip":
@@ -26,11 +25,11 @@ export default async function drawCharge(
 async function drawStrip(
   builder: SvgBuilder,
   charge: ChargeStrip,
-  containerPath: MyPathItem
+  containerPath: paper.Path
 ): Promise<void> {
   const strips = createStrips(containerPath.bounds, charge.angle, charge.count);
   for (const strip of strips) {
-    const path = containerPath.intersect(strip) as MyPathItem;
+    const path = containerPath.intersect(strip);
     await builder.fill(charge.filler, path);
   }
 }
@@ -38,10 +37,10 @@ async function drawStrip(
 function drawCross(
   builder: SvgBuilder,
   charge: ChargeCross,
-  containerPath: MyPathItem
+  containerPath: paper.Path
 ): Promise<void> {
-  const rotate = charge.angle == "45";
+  const rotate = charge.angle === "45";
   const cross = createCross(containerPath.bounds, rotate);
-  const path = containerPath.intersect(cross) as MyPathItem;
+  const path = containerPath.intersect(cross);
   return builder.fill(charge.filler, path);
 }

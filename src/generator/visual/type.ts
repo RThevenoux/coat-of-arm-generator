@@ -19,5 +19,3 @@ export interface FillerSemeParameters {
   };
   fieldColor: ColorId;
 }
-
-export type MyPathItem = paper.Path | paper.CompoundPath;

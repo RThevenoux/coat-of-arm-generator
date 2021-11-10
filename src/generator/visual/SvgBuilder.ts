@@ -9,11 +9,7 @@ import {
   FillerSeme,
   FillerStrip,
 } from "../model.type";
-import {
-  FillerPatternParameters,
-  FillerSemeParameters,
-  MyPathItem,
-} from "./type";
+import { FillerPatternParameters, FillerSemeParameters } from "./type";
 import { getPatternVisualInfo } from "../../service/PatternService";
 import {
   ChargeVisualInfo,
@@ -45,7 +41,7 @@ export default class SvgBuilder {
       .att("xmlns", "http://www.w3.org/2000/svg")
       .att(
         "viewBox",
-        viewBox.x + " " + viewBox.y + " " + viewBox.width + " " + viewBox.height
+        `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
       );
 
     // Create "defs" section
@@ -54,11 +50,11 @@ export default class SvgBuilder {
 
   async fill(
     fillerModel: FillerModel | "none",
-    path: MyPathItem
+    path: paper.PathItem
   ): Promise<void> {
     if (!fillerModel || fillerModel == "none" || !fillerModel.type) {
       const defaultFillerId = this._getDefaultFiller();
-      this._fillPath(defaultFillerId, path);
+      this._fillPathItem(defaultFillerId, path);
       return;
     }
 
@@ -66,11 +62,11 @@ export default class SvgBuilder {
       this._fillWithStrips(fillerModel, path);
     } else {
       const fillerId = await this._getFillerId(fillerModel, path.bounds.size);
-      this._fillPath(fillerId, path);
+      this._fillPathItem(fillerId, path);
     }
   }
 
-  _fillWithStrips(fillerModel: FillerStrip, path: MyPathItem): void {
+  _fillWithStrips(fillerModel: FillerStrip, path: paper.PathItem): void {
     const center = new paper.Point(0, 0);
 
     const angle = this._getStripAngle(fillerModel.angle, path);
@@ -93,15 +89,15 @@ export default class SvgBuilder {
         size: [w, hStrip],
       });
 
-      const strip = clone.intersect(stripPath) as MyPathItem;
+      const strip = clone.intersect(stripPath);
       strip.rotate(-angle, center);
 
       const colorId = i % 2 == 0 ? color1Id : color2Id;
-      this._fillPath(colorId, strip);
+      this._fillPathItem(colorId, strip);
     }
   }
 
-  _getStripAngle(angle: Angle, path: MyPathItem): number {
+  _getStripAngle(angle: Angle, path: paper.PathItem): number {
     const pathAngle =
       (Math.atan(path.bounds.height / path.bounds.width) * 180) / Math.PI;
     switch (angle) {
@@ -116,11 +112,11 @@ export default class SvgBuilder {
     }
   }
 
-  _fillPath(fillerId: string, path: MyPathItem): void {
+  _fillPathItem(fillerId: string, path: paper.PathItem): void {
     this.container
       .ele("path")
       .att("d", path.pathData)
-      .att("fill", "url(#" + fillerId + ")");
+      .att("fill", `url(#${fillerId})`);
   }
 
   async _getFillerId(
@@ -150,11 +146,12 @@ export default class SvgBuilder {
   }
 
   _getFillColorProp(key: ColorId): string {
-    return "fill:#" + this._getColor(key) + ";";
+    const color = this._getColor(key);
+    return `fill:#${color};`;
   }
 
   _stroke(width: number): string {
-    return "stroke:black;stroke-width:" + width + "px;";
+    return `stroke:black;stroke-width:${width}px;`;
   }
 
   _getColor(key: ColorId): string {
@@ -205,24 +202,26 @@ export default class SvgBuilder {
   }
 
   _getSolidFiller(key: string): string {
-    let id = this.definedSolidFiller[key];
-
-    if (!id) {
-      id = "solid-" + key;
-      this.defs
-        .ele("linearGradient")
-        .att("id", id)
-        .ele("stop")
-        .att("stop-color", "#" + this._getColor(key));
-
-      this.definedSolidFiller[key] = id;
+    const existingId = this.definedSolidFiller[key];
+    if (existingId) {
+      return existingId;
     }
 
+    // Create new Solid Filler
+    const id = `solid-${key}`;
+    const color = this._getColor(key);
+    this.defs
+      .ele("linearGradient")
+      .att("id", id)
+      .ele("stop")
+      .att("stop-color", `#${color}`);
+
+    this.definedSolidFiller[key] = id;
     return id;
   }
 
   _addSeme(parameters: FillerSemeParameters, shapeWidth: number): string {
-    const id = "pattern" + this.patternCount++;
+    const id = `pattern${this.patternCount++}`;
 
     const box = {
       width: parameters.seme.width,
@@ -232,7 +231,7 @@ export default class SvgBuilder {
     const symbolId = this.addSymbol(parameters.charge);
 
     const scaleCoef = shapeWidth / (box.width * parameters.seme.repetition);
-    const transform = "scale(" + scaleCoef + "," + scaleCoef + ")";
+    const transform = `scale(${scaleCoef},${scaleCoef})`;
 
     const patternNode = this.defs
       .ele("pattern")
@@ -257,7 +256,7 @@ export default class SvgBuilder {
     for (const copyTransform of parameters.seme.copies) {
       patternNode
         .ele("use")
-        .att("xlink:href", "#" + symbolId)
+        .att("xlink:href", `#${symbolId}`)
         .att("transform", copyTransform)
         .att(
           "style",
@@ -272,14 +271,14 @@ export default class SvgBuilder {
     pattern: PatternVisualInfo,
     parameters: FillerPatternParameters
   ): string {
-    const id = "pattern" + this.patternCount++;
+    const id = `pattern${this.patternCount++}`;
 
     const scaleCoef =
       parameters.shapeWidth /
       (pattern.patternWidth * pattern.patternRepetition);
-    let transform = "scale(" + scaleCoef + "," + scaleCoef + ")";
+    let transform = `scale(${scaleCoef},${scaleCoef})`;
     if (parameters.rotation) {
-      transform += "rotate(" + parameters.rotation + ")";
+      transform += `rotate(${parameters.rotation})`;
     }
 
     const patternNode = this.defs
@@ -300,7 +299,7 @@ export default class SvgBuilder {
       .att("height", pattern.patternHeight)
       .att("style", this._getFillColorProp(parameters.backgroundColor));
 
-    const originalId = id + "_original";
+    const originalId = `${id}_original`;
     patternNode
       .ele("path")
       .att("d", pattern.path)
@@ -311,7 +310,7 @@ export default class SvgBuilder {
       for (const copyTransform of pattern.copies) {
         patternNode
           .ele("use")
-          .att("xlink:href", "#" + originalId)
+          .att("xlink:href", `#${originalId}`)
           .att("transform", copyTransform);
       }
     }
@@ -323,7 +322,7 @@ export default class SvgBuilder {
     let symbolId = this.definedSymbol[symbolDef.id];
 
     if (!symbolId) {
-      symbolId = "symbol_" + symbolDef.id;
+      symbolId = `symbol_${symbolDef.id}`;
       this.definedSymbol[symbolDef.id] = symbolId;
 
       this.defs
@@ -331,7 +330,7 @@ export default class SvgBuilder {
         .att("id", symbolId)
         .att("width", symbolDef.width)
         .att("height", symbolDef.height)
-        .att("viewBox", "0 0 " + symbolDef.width + " " + symbolDef.height)
+        .att("viewBox", `0 0 ${symbolDef.width} ${symbolDef.height}`)
         .raw(symbolDef.xml);
     }
 
@@ -346,8 +345,14 @@ export default class SvgBuilder {
 
     const tx = semeDef.tx;
     const ty = semeDef.ty;
-    const h = chargeDef.height;
-    const w = chargeDef.width;
+    const y0 = -chargeDef.height / 2;
+    const x0 = -chargeDef.width / 2;
+
+    const translateCenter = `translate(${x0 + tx},${y0 + ty})`;
+    const translateTopLeft = `translate(${x0},${y0})`;
+    const translateBottomLeft = `translate(${x0},${y0 + 2 * ty})`;
+    const translateTopRigth = `translate(${x0 + 2 * tx},${y0})`;
+    const translateBottomRigth = `translate(${x0 + 2 * tx},${y0 + 2 * ty})`;
 
     return {
       charge: chargeDef,
@@ -357,11 +362,11 @@ export default class SvgBuilder {
         height: ty * 2,
         repetition: semeDef.repetition,
         copies: [
-          "translate(" + (-w / 2 + tx) + "," + (-h / 2 + ty) + ")",
-          "translate(" + -w / 2 + "," + -h / 2 + ")",
-          "translate(" + -w / 2 + "," + (-h / 2 + 2 * ty) + ")",
-          "translate(" + (-w / 2 + 2 * tx) + "," + -h / 2 + ")",
-          "translate(" + (-w / 2 + 2 * tx) + "," + (-h / 2 + 2 * ty) + ")",
+          translateCenter,
+          translateTopLeft,
+          translateBottomLeft,
+          translateTopRigth,
+          translateBottomRigth,
         ],
       },
       fieldColor: description.fieldColor,

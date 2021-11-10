@@ -1,24 +1,27 @@
 import paper from "paper";
 import BezierTool from "../tool/bezier-tool";
 import getLineIntersection from "../tool/affine-tool";
-import { MyPathItem } from "../type";
 import { Bezier } from "bezier-js";
 import { Segment } from "paper/dist/paper-core";
 
+/**
+ *
+ * @param path
+ * @param offset
+ * @throws Error if the border can not be created
+ * @returns
+ */
 export default function createBorder(
-  path: MyPathItem,
+  path: paper.Path,
   offset: number
-): MyPathItem {
+): paper.PathItem {
   if (!path.clockwise) {
     path.reverse();
   }
 
   if (path.curves.length == 0) {
-    console.log(
-      "createBorder: no curves. Path bounds=" +
-        path.bounds +
-        " area=" +
-        path.area
+    throw new Error(
+      "Can not create border. Input path does not contains curves"
     );
   }
 
@@ -61,8 +64,8 @@ export default function createBorder(
 function _firstCurve(
   curve: paper.Curve,
   offset: number,
-  clipper: MyPathItem
-): { result: MyPathItem; firstPath: MyPathItem } {
+  clipper: paper.Path
+): { result: paper.PathItem; firstPath: paper.Path } {
   const borderInfo = createCurveBorder(curve, offset);
   if (clipper.closed) {
     borderInfo.solid = clip(borderInfo.solid, clipper);
@@ -74,12 +77,12 @@ function _firstCurve(
 }
 
 function joinBorder(
-  path1: MyPathItem,
-  path2: MyPathItem,
+  path1: paper.Path,
+  path2: paper.Path,
   joinPoint: paper.Point,
-  result: MyPathItem,
-  clipPath: MyPathItem
-): MyPathItem {
+  result: paper.PathItem,
+  clipPath: paper.Path
+): paper.PathItem {
   const cap = computeCap(joinPoint, path1, path2);
   if (cap) {
     const clipped = clip(cap, clipPath);
@@ -88,23 +91,23 @@ function joinBorder(
   return result;
 }
 
-function unite(path1: paper.PathItem, path2: paper.PathItem): MyPathItem {
+function unite(path1: paper.PathItem, path2: paper.PathItem): paper.PathItem {
   const temp = path1.unite(path2);
-  path1.remove();
-  path2.remove();
-  return temp as MyPathItem;
+  path1.remove(); // Removed from project
+  path2.remove(); // Removed from project
+  return temp;
 }
 
-function clip(path: MyPathItem, clip: MyPathItem): MyPathItem {
+function clip(path: paper.PathItem, clip: paper.PathItem): paper.PathItem {
   const temp = clip.intersect(path);
-  path.remove();
-  return temp as MyPathItem;
+  path.remove(); // Removed from project
+  return temp;
 }
 
 function computeCap(
   point: paper.Point,
-  previousPath: MyPathItem,
-  nextPath: MyPathItem
+  previousPath: paper.Path,
+  nextPath: paper.Path
 ): paper.Path | null {
   const intersections = previousPath.getIntersections(nextPath);
   if (intersections.length > 0) {
@@ -134,7 +137,7 @@ function computeCap(
     const intersection = getLineIntersection(p1, tangent1, p2, tangent2);
 
     if (intersection == null) {
-      console.log("Colinear! Can not create correct cap");
+      console.warn("Colinear! Can not create correct cap");
     } else {
       cap.add(intersection);
     }
@@ -166,50 +169,63 @@ interface ClassifyResult {
 function createCurveBorder(
   curve: paper.Curve,
   offset: number
-): { offsetPath: paper.Path; solid: MyPathItem } {
+): { offsetPath: paper.Path; solid: paper.PathItem } {
   const type = (curve.classify() as ClassifyResult).type;
-
-  if (type != "line") {
-    const bezier = BezierTool.curveToBezier(curve);
-    const offsetBeziers = bezier.offset(offset) as Bezier[];
-    const offsetPath = BezierTool.beziersToPath(offsetBeziers);
-
-    const reversed = curve.reversed();
-
-    const solid = offsetPath.clone();
-    const segment1 = reversed.segment1;
-    solid.add(new Segment(segment1.point, undefined, segment1.handleOut));
-
-    const segment2 = reversed.segment2;
-    solid.add(new Segment(segment2.point, segment2.handleIn, undefined));
-
-    solid.closePath();
-
-    return {
-      offsetPath: offsetPath,
-      solid: solid,
-    };
+  if (type == "line") {
+    return createLineBorder(curve, offset);
   } else {
-    const p1 = curve.point1;
-    const p2 = curve.point2;
-
-    const angle = 90;
-    const vector = p2
-      .subtract(p1)
-      .normalize(offset)
-      .rotate(angle, undefined as unknown as paper.Point);
-
-    const offsetPath = new paper.Path([p1, p2]);
-    offsetPath.translate(vector);
-
-    const solid = offsetPath.clone();
-    solid.add(p2);
-    solid.add(p1);
-    solid.closePath();
-
-    return {
-      offsetPath: offsetPath,
-      solid: solid,
-    };
+    return createBezierBorder(curve, offset);
   }
+}
+
+function createLineBorder(
+  curve: paper.Curve,
+  offset: number
+): { offsetPath: paper.Path; solid: paper.PathItem } {
+  const p1 = curve.point1;
+  const p2 = curve.point2;
+
+  const angle = 90;
+  const vector = p2
+    .subtract(p1)
+    .normalize(offset)
+    .rotate(angle, undefined as unknown as paper.Point);
+
+  const offsetPath = new paper.Path([p1, p2]);
+  offsetPath.translate(vector);
+
+  const solid = offsetPath.clone();
+  solid.add(p2);
+  solid.add(p1);
+  solid.closePath();
+
+  return {
+    offsetPath: offsetPath,
+    solid: solid,
+  };
+}
+
+function createBezierBorder(
+  curve: paper.Curve,
+  offset: number
+): { offsetPath: paper.Path; solid: paper.PathItem } {
+  const bezier = BezierTool.curveToBezier(curve);
+  const offsetBeziers = bezier.offset(offset) as Bezier[];
+  const offsetPath = BezierTool.beziersToPath(offsetBeziers);
+
+  const reversed = curve.reversed();
+
+  const solid = offsetPath.clone();
+  const segment1 = reversed.segment1;
+  solid.add(new Segment(segment1.point, undefined, segment1.handleOut));
+
+  const segment2 = reversed.segment2;
+  solid.add(new Segment(segment2.point, segment2.handleIn, undefined));
+
+  solid.closePath();
+
+  return {
+    offsetPath: offsetPath,
+    solid: solid,
+  };
 }

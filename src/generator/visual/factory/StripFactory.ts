@@ -87,24 +87,12 @@ function createDiagonals(
   const x0 = x - d * (2 * count - 1);
 
   // create the '\' diagonal
-  const pathData =
-    "M " +
-    x0 +
-    "," +
-    y +
-    " L " +
-    (x0 + 2 * d) +
-    "," +
-    y +
-    " " +
-    (x0 + w + 2 * d) +
-    "," +
-    (y + h) +
-    " " +
-    (x0 + w) +
-    "," +
-    (y + h) +
-    " z";
+  const p0 = `${x0},${y}`;
+  const p1 = `${x0 + 2 * d},${y}`;
+  const p2 = `${x0 + w + 2 * d},${y + h}`;
+  const p3 = `${x0 + w},${y + h}`;
+  const pathData = `M ${p0} L ${p1} ${p2} ${p3} z`;
+
   const patternPath = new paper.Path(pathData);
   if (reverse) {
     // Mirror to obtain the '/' diagonal
