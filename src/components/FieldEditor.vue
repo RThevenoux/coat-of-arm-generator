@@ -35,7 +35,7 @@
         :key="partition.number"
         class="flex-container"
       >
-        <p>{{ partition.number + 1 }}</p>
+        <img :src="partition.img" />
         <FieldEditor
           v-model="partition.model"
           @input="$emit('input', value)"
@@ -72,22 +72,51 @@ export default class FieldEditor extends Vue {
   private selectedOption = this.value.partitionType;
 
   async updatePartitions(): Promise<void> {
-    const expectedPartitionCount = getFieldCountInPartition(
-      this.selectedOption
-    );
-    const array = this.value.partitions;
-
-    const countDelta = array.length - expectedPartitionCount;
-    if (countDelta < 0) {
-      // Not enough partitions, add element
-      const newPartitions = await this.generatePartitions(
-        -countDelta,
-        array.length
+    if (this.selectedOption === "plain") {
+      this.value.partitions.splice(1);
+    } else {
+      const expectedPartitionCount = getFieldCountInPartition(
+        this.selectedOption
       );
-      array.push(...newPartitions);
-    } else if (countDelta > 0) {
-      // To much partitions, remove last elements
-      array.splice(-countDelta, countDelta);
+      const array = this.value.partitions;
+
+      const countDelta = array.length - expectedPartitionCount;
+      if (countDelta < 0) {
+        // Get imgUrl to update existing partition
+        const newImgUrls = await this.getPartitionImgUrls(
+          this.selectedOption,
+          0,
+          array.length
+        );
+        // Create new partition to complete
+        const newPartitions = await this.generatePartitions(
+          -countDelta,
+          array.length,
+          this.selectedOption
+        );
+
+        // update existing partitions
+        for (let partIndex = 0; partIndex < array.length; partIndex++) {
+          array[partIndex].img = newImgUrls[partIndex];
+        }
+        // add created partition
+        array.push(...newPartitions);
+      } else {
+        // update existing partitions img
+        const newImgUrls = await this.getPartitionImgUrls(
+          this.selectedOption,
+          0,
+          expectedPartitionCount
+        );
+
+        for (let i = 0; i < expectedPartitionCount; i++) {
+          array[i].img = newImgUrls[i];
+        }
+        if (countDelta > 0) {
+          // To much partitions, remove last elements
+          array.splice(-countDelta, countDelta);
+        }
+      }
     }
 
     this.value.partitionType = this.selectedOption;
@@ -96,16 +125,41 @@ export default class FieldEditor extends Vue {
 
   private async generatePartitions(
     count: number,
-    startIndex: number
-  ): Promise<{ number: number; model: FieldEditorModel }[]> {
+    startIndex: number,
+    partitionName: string
+  ): Promise<{ number: number; img: string; model: FieldEditorModel }[]> {
     const newPartitions = [];
+
     for (let i = 0; i < count; i++) {
+      const partIndex = startIndex + i;
       newPartitions.push({
-        number: startIndex + i,
+        number: partIndex,
+        img: await this.getPartitionImgUrl(partitionName, partIndex),
         model: await initialFieldEditorValue(),
       });
     }
     return newPartitions;
+  }
+
+  private async getPartitionImgUrls(
+    partitionName: string,
+    fromIndex: number,
+    toIndex: number
+  ): Promise<string[]> {
+    const result: string[] = [];
+    for (let partIndex = fromIndex; partIndex < toIndex; partIndex++) {
+      const url = await this.getPartitionImgUrl(partitionName, partIndex);
+      result.push(url);
+    }
+    return result;
+  }
+
+  private async getPartitionImgUrl(
+    partitionName: string,
+    partIndex: number
+  ): Promise<string> {
+    const filename = `${partitionName}_${partIndex + 1}.png`;
+    return (await import("../assets/partition/" + filename)).default;
   }
 
   update(): void {
@@ -118,4 +172,9 @@ export default class FieldEditor extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+img {
+  width: 40px;
+  height: 40px;
+}
+</style>

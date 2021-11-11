@@ -5,6 +5,7 @@ export interface FieldEditorModel {
   partitionType: string;
   partitions: {
     number: number;
+    img: string;
     model: FieldEditorModel;
   }[];
   plain: PlainFieldEditorModel;
