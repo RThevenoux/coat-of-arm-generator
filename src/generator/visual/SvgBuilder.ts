@@ -1,20 +1,20 @@
 import * as paper from "paper";
 import xmlBuilder from "xmlbuilder";
-import { getChargeVisualInfo } from "../../service/ChargeService";
+import { getSemeVisualInfo } from "@/service/ChargeService";
 import {
   Angle,
   ColorId,
   FillerModel,
   FillerPattern,
-  FillerSeme,
   FillerStrip,
 } from "../model.type";
-import { FillerPatternParameters, FillerSemeParameters } from "./type";
-import { getPatternVisualInfo } from "../../service/PatternService";
+import { FillerPatternParameters } from "./type";
+import { getPatternVisualInfo } from "@/service/PatternService";
 import {
   ChargeVisualInfo,
   Palette,
   PatternVisualInfo,
+  SemeVisualInfo,
 } from "@/service/visual.type";
 
 export default class SvgBuilder {
@@ -133,8 +133,13 @@ export default class SvgBuilder {
         return this._addPattern(patternDef, parameters);
       }
       case "seme": {
-        const parameters = await this._getSemeParameters(fillerModel);
-        return this._addSeme(parameters, shapeBox.width);
+        const parameters = await getSemeVisualInfo(fillerModel.chargeId);
+        return this._addSeme(
+          parameters,
+          fillerModel.fieldColor,
+          fillerModel.chargeColor,
+          shapeBox.width
+        );
       }
       default: {
         console.log(
@@ -220,17 +225,22 @@ export default class SvgBuilder {
     return id;
   }
 
-  _addSeme(parameters: FillerSemeParameters, shapeWidth: number): string {
+  _addSeme(
+    parameters: SemeVisualInfo,
+    fieldColor: ColorId,
+    chargeColor: ColorId,
+    shapeWidth: number
+  ): string {
     const id = `pattern${this.patternCount++}`;
 
     const box = {
-      width: parameters.seme.width,
-      height: parameters.seme.height,
+      width: parameters.width,
+      height: parameters.height,
     };
 
     const symbolId = this.addSymbol(parameters.charge);
 
-    const scaleCoef = shapeWidth / (box.width * parameters.seme.repetition);
+    const scaleCoef = shapeWidth / (box.width * parameters.repetition);
     const transform = `scale(${scaleCoef},${scaleCoef})`;
 
     const patternNode = this.defs
@@ -249,19 +259,18 @@ export default class SvgBuilder {
       .att("y", 0)
       .att("width", box.width)
       .att("height", box.height)
-      .att("style", this._getFillColorProp(parameters.fieldColor));
+      .att("style", this._getFillColorProp(fieldColor));
 
     const strokeWidth = this.defaultStrokeWidth / scaleCoef;
 
-    for (const copyTransform of parameters.seme.copies) {
+    const style =
+      this._getFillColorProp(chargeColor) + this._stroke(strokeWidth);
+    for (const copyTransform of parameters.copies) {
       patternNode
         .ele("use")
         .att("xlink:href", `#${symbolId}`)
         .att("transform", copyTransform)
-        .att(
-          "style",
-          this._getFillColorProp(parameters.color) + this._stroke(strokeWidth)
-        );
+        .att("style", style);
     }
 
     return id;
@@ -335,42 +344,6 @@ export default class SvgBuilder {
     }
 
     return symbolId;
-  }
-
-  async _getSemeParameters(
-    description: FillerSeme
-  ): Promise<FillerSemeParameters> {
-    const chargeDef = await getChargeVisualInfo(description.chargeId);
-    const semeDef = chargeDef.seme;
-
-    const tx = semeDef.tx;
-    const ty = semeDef.ty;
-    const y0 = -chargeDef.height / 2;
-    const x0 = -chargeDef.width / 2;
-
-    const translateCenter = `translate(${x0 + tx},${y0 + ty})`;
-    const translateTopLeft = `translate(${x0},${y0})`;
-    const translateBottomLeft = `translate(${x0},${y0 + 2 * ty})`;
-    const translateTopRigth = `translate(${x0 + 2 * tx},${y0})`;
-    const translateBottomRigth = `translate(${x0 + 2 * tx},${y0 + 2 * ty})`;
-
-    return {
-      charge: chargeDef,
-      color: description.chargeColor,
-      seme: {
-        width: tx * 2,
-        height: ty * 2,
-        repetition: semeDef.repetition,
-        copies: [
-          translateCenter,
-          translateTopLeft,
-          translateBottomLeft,
-          translateTopRigth,
-          translateBottomRigth,
-        ],
-      },
-      fieldColor: description.fieldColor,
-    };
   }
 
   _getPatternParameters(

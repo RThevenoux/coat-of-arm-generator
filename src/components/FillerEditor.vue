@@ -153,7 +153,7 @@ export default class FieldEditor extends Vue {
     { id: "vair_en_pointe", label: "Vair en pointe" },
   ];
 
-  get color1Label(): string {
+  get color1Label(): string | null {
     switch (this.value.type) {
       case "plein":
         return "Couleur";
@@ -168,7 +168,7 @@ export default class FieldEditor extends Vue {
     }
   }
 
-  get color2Label(): string {
+  get color2Label(): string | null {
     switch (this.value.type) {
       case "seme":
         return "Couleur meuble";

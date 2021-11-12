@@ -19,9 +19,11 @@ export interface SVGVisualData {
   xml?: string;
   width: number;
   height: number;
-  seme: {
-    tx: number;
-    ty: number;
-    repetition: number;
-  };
+  seme: SemeData;
+}
+
+export interface SemeData {
+  tx: number;
+  ty: number;
+  repetition: number;
 }

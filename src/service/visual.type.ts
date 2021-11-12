@@ -20,10 +20,13 @@ export type ChargeVisualInfo = {
   id: string;
   width: number;
   height: number;
-  seme: {
-    tx: number;
-    ty: number;
-    repetition: number;
-  };
   xml: string;
+};
+
+export type SemeVisualInfo = {
+  charge: ChargeVisualInfo;
+  width: number;
+  height: number;
+  repetition: number;
+  copies: string[];
 };

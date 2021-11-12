@@ -3,12 +3,12 @@
     "id": "$default",
     "xml": "<circle cx=\"10\" cy=\"10\" r=\"10\"/>",
     "width": 20,
-    "height": 20,
-    "seme": {
-      "tx": 20,
-      "ty": 20,
-      "repetition": 5
-    }
+    "height": 20
+  },
+  "seme": {
+    "tx": 20,
+    "ty": 20,
+    "repetition": 5
   },
   "textual": {
     "one": "[?]",

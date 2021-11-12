@@ -1,14 +1,15 @@
 import { MyOption } from "./MyOptions.type";
-import { ChargeData, SVGVisualData } from "./ChargeData";
+import { ChargeData, SemeData, SVGVisualData } from "./ChargeData";
 import { ChargeTextualInfo } from "@/service/textual.type";
-import { ChargeVisualInfo } from "./visual.type";
+import { ChargeVisualInfo, SemeVisualInfo } from "./visual.type";
 
-// Data
+// Load Data
 import data from "./data/charges.json";
 import defaultValues from "./data/charge-default.json";
 
 interface ChargeRepo {
   visual: Record<string, ChargeVisualInfo>;
+  semeVisual: Record<string, SemeVisualInfo>;
   blazon: Record<string, ChargeTextualInfo>;
   options: MyOption[];
   defaultChargeId: string;
@@ -17,6 +18,7 @@ interface ChargeRepo {
 let repo: ChargeRepo | null = null;
 const defaultTextual: ChargeTextualInfo = defaultValues.textual;
 const defaultVisual: ChargeVisualInfo = defaultValues.visual;
+const defaultSeme = computeSemeInfo(defaultVisual, defaultValues.seme);
 
 async function getRepo(): Promise<ChargeRepo> {
   if (repo == null) {
@@ -27,6 +29,7 @@ async function getRepo(): Promise<ChargeRepo> {
 
 async function loadData(): Promise<ChargeRepo> {
   const visual: Record<string, ChargeVisualInfo> = {};
+  const semeVisual: Record<string, SemeVisualInfo> = {};
   const blazon: Record<string, ChargeTextualInfo> = {};
   const options: MyOption[] = [];
   let defaultChargeId: string | null = null;
@@ -35,7 +38,10 @@ async function loadData(): Promise<ChargeRepo> {
     const chargeData = item as ChargeData;
     const visualData = chargeData.visual;
     if (visualData.type === "svg") {
-      visual[chargeData.id] = await buildVisualInfo(chargeData.id, visualData);
+      const visualInfo = await buildVisualInfo(chargeData.id, visualData);
+      visual[chargeData.id] = visualInfo;
+      semeVisual[chargeData.id] = computeSemeInfo(visualInfo, visualData.seme);
+
       options.push(buildOption(chargeData));
 
       if (defaultChargeId == null || chargeData.default) {
@@ -51,6 +57,7 @@ async function loadData(): Promise<ChargeRepo> {
 
   return {
     visual,
+    semeVisual,
     blazon,
     options,
     defaultChargeId,
@@ -66,8 +73,7 @@ async function buildVisualInfo(
     id: id,
     width: visual.width,
     height: visual.height,
-    xml: xml,
-    seme: visual.seme,
+    xml: xml
   };
 }
 
@@ -129,4 +135,45 @@ export async function getChargeVisualInfo(
     return defaultVisual;
   }
   return info;
+}
+
+export async function getSemeVisualInfo(
+  chargeId: string
+): Promise<SemeVisualInfo> {
+  const repo = await getRepo();
+  const info = repo.semeVisual[chargeId];
+  if (!info) {
+    return defaultSeme;
+  }
+  return info;
+}
+
+function computeSemeInfo(
+  chargeDef: ChargeVisualInfo,
+  semeDef: SemeData
+): SemeVisualInfo {
+  const tx = semeDef.tx;
+  const ty = semeDef.ty;
+  const y0 = -chargeDef.height / 2;
+  const x0 = -chargeDef.width / 2;
+
+  const translateCenter = `translate(${x0 + tx},${y0 + ty})`;
+  const translateTopLeft = `translate(${x0},${y0})`;
+  const translateBottomLeft = `translate(${x0},${y0 + 2 * ty})`;
+  const translateTopRigth = `translate(${x0 + 2 * tx},${y0})`;
+  const translateBottomRigth = `translate(${x0 + 2 * tx},${y0 + 2 * ty})`;
+
+  return {
+    charge: chargeDef,
+    width: tx * 2,
+    height: ty * 2,
+    repetition: semeDef.repetition,
+    copies: [
+      translateCenter,
+      translateTopLeft,
+      translateBottomLeft,
+      translateTopRigth,
+      translateBottomRigth,
+    ],
+  };
 }
