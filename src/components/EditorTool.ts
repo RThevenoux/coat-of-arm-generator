@@ -52,17 +52,12 @@ async function initialPlain(): Promise<PlainFieldEditorModel> {
 async function initialFiller(): Promise<FillerEditorModel> {
   return {
     type: "none",
-    pleinColor: "azur",
-    patternColor1: "azur",
-    patternColor2: "or",
+    color1: "azur",
+    color2: "or",
     patternAngle: "bande",
     patternName: "echiquete",
     semeChargeId: await getDefaultChargeId(),
-    semeFieldColor: "azur",
-    semeChargeColor: "or",
     stripAngle: "0",
-    stripColor1: "azur",
-    stripColor2: "or",
     stripCount: 3,
   };
 }
@@ -102,29 +97,29 @@ function fillerToModel(viewModel: FillerEditorModel): FillerModel {
     case "plein":
       return {
         type: "plein",
-        color: viewModel.pleinColor,
+        color: viewModel.color1,
       };
     case "seme":
       return {
         type: "seme",
         chargeId: viewModel.semeChargeId,
-        chargeColor: viewModel.semeChargeColor,
-        fieldColor: viewModel.semeFieldColor,
+        chargeColor: viewModel.color2,
+        fieldColor: viewModel.color1,
       };
     case "strip":
       return {
         type: "strip",
         angle: viewModel.stripAngle,
         count: viewModel.stripCount,
-        color1: viewModel.stripColor1,
-        color2: viewModel.stripColor2,
+        color1: viewModel.color1,
+        color2: viewModel.color2,
       };
     case "pattern": {
       const model: FillerPattern = {
         type: "pattern",
         patternName: viewModel.patternName,
-        color1: viewModel.patternColor1,
-        color2: viewModel.patternColor2,
+        color1: viewModel.color1,
+        color2: viewModel.color2,
       };
       if (viewModel.patternName == "fusele") {
         model.angle = viewModel.patternAngle;

@@ -30,9 +30,26 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ColorId } from "../generator/model.type";
+import { Palette } from "../service/visual.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 import { FillerPickerState } from "./FillerPickerModel";
 import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
+
+const palette: Palette = {
+  or: "ff0",
+  argent: "fff",
+  sable: "000",
+  azur: "00f",
+  sinople: "0f0",
+  gueules: "f00",
+  pourpre: "f0f",
+};
+const defaultColor = "888";
+
+interface IconColors {
+  color1: string;
+  color2: string;
+}
 
 @Component
 export default class FieldEditor extends Vue {
@@ -42,61 +59,37 @@ export default class FieldEditor extends Vue {
     isSelected: false,
   };
 
-  get colors(): { color1: string; color2: string } {
+  get colors(): IconColors {
     switch (this.value.type) {
       case "plein":
-        return this.getColorFillers(
-          this.value.pleinColor,
-          this.value.pleinColor
-        );
+        return this.getColorFillers(this.value.color1, this.value.color1);
       case "seme":
-        return this.getColorFillers(
-          this.value.semeFieldColor,
-          this.value.semeChargeColor
-        );
       case "pattern":
-        return this.getColorFillers(
-          this.value.patternColor1,
-          this.value.patternColor2
-        );
       case "strip":
-        return this.getColorFillers(
-          this.value.stripColor1,
-          this.value.stripColor2
-        );
+        return this.getColorFillers(this.value.color1, this.value.color2);
       case "none":
       default:
-        return { color1: "fill: #666", color2: "fill: #aaa" };
+        return this.formatFiller("666", "aaa");
     }
   }
 
-  private getColorFillers(
-    colorId1: ColorId,
-    colorId2: ColorId
-  ): { color1: string; color2: string } {
-    const color1 = this.palette(colorId1);
-    const color2 = this.palette(colorId2);
+  private formatFiller(color1: string, color2: string): IconColors {
     return { color1: `fill: #${color1}`, color2: `fill: #${color2}` };
   }
 
+  private getColorFillers(colorId1: ColorId, colorId2: ColorId): IconColors {
+    const color1 = this.palette(colorId1);
+    const color2 = this.palette(colorId2);
+    return this.formatFiller(color1, color2);
+  }
+
   private palette(colorId: ColorId): string {
-    switch (colorId) {
-      case "or":
-        return "ff0";
-      case "argent":
-        return "fff";
-      case "sable":
-        return "000";
-      case "azur":
-        return "00f";
-      case "sinople":
-        return "0f0";
-      case "gueules":
-        return "f00";
-      case "pourpre":
-        return "f0f";
+    const color = palette[colorId];
+    if (color) {
+      return color;
+    } else {
+      return defaultColor;
     }
-    return "888";
   }
 
   click(): void {
