@@ -1,25 +1,22 @@
+import { ChargeVisualInfo } from "@/service/visual.type";
 import paper from "paper";
 import { getChargeVisualInfo } from "../../service/ChargeService";
-import { ChargeSymbol } from "../model.type";
+import { ChargeSymbol, FillerModel } from "../model.type";
 import SvgBuilder from "./SvgBuilder";
 import { getIncircle } from "./tool/path-tool";
+import { FieldShape } from "./type";
 
 export default async function drawSymbol(
   builder: SvgBuilder,
   charge: ChargeSymbol,
-  containerPath: paper.PathItem
+  container: FieldShape
 ): Promise<void> {
   const chargeDef = await getChargeVisualInfo(charge.chargeId);
   const chargeSize = new paper.Size(chargeDef.width, chargeDef.height);
   const chargeRadius = _radius(chargeSize);
 
-  // Get filler and symbol Ids
-  const chargeBounds = new paper.Size(chargeDef.width, chargeDef.height);
-  const fillerId = await builder._getFillerId(charge.filler, chargeBounds);
-  const symbolId = builder.addSymbol(chargeDef);
-
   // Incircle
-  const inCircle = getIncircle(containerPath);
+  const inCircle = getIncircle(container.path);
 
   if (charge.count == 1) {
     // Compute scaleCoef
@@ -28,11 +25,11 @@ export default async function drawSymbol(
 
     _drawOneFromCenter(
       builder,
-      symbolId,
+      chargeDef,
       inCircle.center,
       chargeSize,
       scaleCoef,
-      fillerId
+      charge.filler
     );
   } else if (charge.count == 2) {
     // Compute scaleCoef
@@ -41,10 +38,24 @@ export default async function drawSymbol(
 
     // Compute Position
     const p1 = inCircle.center.add(new paper.Point(0, -inCircle.radius / 2));
-    _drawOneFromCenter(builder, symbolId, p1, chargeSize, scaleCoef, fillerId);
+    _drawOneFromCenter(
+      builder,
+      chargeDef,
+      p1,
+      chargeSize,
+      scaleCoef,
+      charge.filler
+    );
 
     const p2 = inCircle.center.add(new paper.Point(0, +inCircle.radius / 2));
-    _drawOneFromCenter(builder, symbolId, p2, chargeSize, scaleCoef, fillerId);
+    _drawOneFromCenter(
+      builder,
+      chargeDef,
+      p2,
+      chargeSize,
+      scaleCoef,
+      charge.filler
+    );
   } else {
     const sin = Math.sin(Math.PI / charge.count);
     const itemRadius = (inCircle.radius * sin) / (1 + sin);
@@ -57,51 +68,32 @@ export default async function drawSymbol(
       const x = Math.cos(angle) * positionRadius;
       const y = -Math.sin(angle) * positionRadius;
       const p = inCircle.center.add(new paper.Point(x, y));
-      _drawOneFromCenter(builder, symbolId, p, chargeSize, scaleCoef, fillerId);
+      _drawOneFromCenter(
+        builder,
+        chargeDef,
+        p,
+        chargeSize,
+        scaleCoef,
+        charge.filler
+      );
     }
   }
 }
 
 function _drawOneFromCenter(
   builder: SvgBuilder,
-  symbolId: string,
+  chargeDef: ChargeVisualInfo,
   center: paper.Point,
   originalSize: paper.Size,
   scaleCoef: number,
-  fillerId: string
+  filler: FillerModel
 ): void {
   const scaledSize = originalSize.multiply(scaleCoef);
   const deltaSize = scaledSize.divide(2);
   const origin = center.add(
     new paper.Point(-deltaSize.width, -deltaSize.height)
   );
-  _drawOne(builder, symbolId, origin, scaleCoef, fillerId);
-}
-
-function _drawOne(
-  builder: SvgBuilder,
-  symbolId: string,
-  position: paper.Point,
-  scaleCoef: number,
-  fillerId: string
-): void {
-  const strokeWidth = builder.defaultStrokeWidth / scaleCoef;
-  const transform =
-    "scale(" +
-    scaleCoef +
-    "," +
-    scaleCoef +
-    ") translate(" +
-    position.x / scaleCoef +
-    "," +
-    position.y / scaleCoef +
-    ")";
-  builder.container
-    .ele("use")
-    .att("xlink:href", "#" + symbolId)
-    .att("transform", transform)
-    .att("fill", "url(#" + fillerId + ")")
-    .att("style", builder._stroke(strokeWidth));
+  builder.drawSymbol(chargeDef, origin, scaleCoef, filler);
 }
 
 function _radius(size: paper.Size): number {

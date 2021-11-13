@@ -73,7 +73,7 @@ async function buildVisualInfo(
     id: id,
     width: visual.width,
     height: visual.height,
-    xml: xml
+    xml: xml,
   };
 }
 

@@ -6,6 +6,7 @@ import SvgBuilder from "./SvgBuilder";
 import getPalette from "../../service/PaletteService";
 import * as paper from "paper";
 import drawField from "./field-drawer";
+import { FieldShape } from "./type";
 
 export async function generateVisual(
   model: FieldModel,
@@ -24,6 +25,7 @@ export async function generateVisual(
 
   const escutcheonData = getEscutcheonPath(configuration.escutcheon);
   const escutcheonPath = new paper.Path(escutcheonData);
+  const rootField: FieldShape = { type: "field", path: escutcheonPath };
 
   const palette = getPalette(configuration.palette);
 
@@ -33,7 +35,7 @@ export async function generateVisual(
   const builder = new SvgBuilder(viewBow, palette, defaultStrokeSize);
 
   // Draw
-  await drawField(builder, model, escutcheonPath);
+  await drawField(builder, model, rootField);
 
   // Visual effet
   const mainShapeId = _definePath(builder, escutcheonPath);
@@ -70,7 +72,7 @@ function _addBorder(
 ): void {
   builder.container
     .ele("use")
-    .att("xlink:href", "#" + mainShapeId)
+    .att("href", "#" + mainShapeId)
     .att("style", "fill:none;stroke:#000;stroke-width:" + borderSize);
 }
 
@@ -112,6 +114,6 @@ function _addReflect(
 
   builder.container
     .ele("use")
-    .att("xlink:href", "#" + mainShapeId)
+    .att("href", "#" + mainShapeId)
     .att("fill", "url(#" + gradienId + ")");
 }

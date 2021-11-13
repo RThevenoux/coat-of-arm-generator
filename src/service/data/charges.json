@@ -78,12 +78,12 @@
     "default": true,
     "visual": {
       "type": "svg",
-      "xml": "<rect x=\"0\" y=\"0\" width=\"10\" height=\"25\"/>",
-      "width": 10,
-      "height": 25,
+      "xml": "<rect x=\"0\" y=\"0\" width=\"40\" height=\"100\"/>",
+      "width": 40,
+      "height": 100,
       "seme": {
-        "tx": 20,
-        "ty": 35,
+        "tx": 80,
+        "ty": 140,
         "repetition": 5
       }
     },

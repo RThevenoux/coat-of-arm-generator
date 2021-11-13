@@ -3,6 +3,7 @@ import BezierTool from "../tool/bezier-tool";
 import getLineIntersection from "../tool/affine-tool";
 import { Bezier } from "bezier-js";
 import { Segment } from "paper/dist/paper-core";
+import { BorderShape } from "../type";
 
 /**
  *
@@ -14,7 +15,7 @@ import { Segment } from "paper/dist/paper-core";
 export default function createBorder(
   path: paper.Path,
   offset: number
-): paper.PathItem {
+): BorderShape {
   if (!path.clockwise) {
     path.reverse();
   }
@@ -58,7 +59,20 @@ export default function createBorder(
     const joinPoint = path.firstSegment.point;
     result = joinBorder(previousPath, firstPath, joinPoint, result, path);
   }
-  return result;
+
+  const inner = path.subtract(result);
+  if (!(inner instanceof paper.Path)) {
+    throw new Error("Border interrior is not a simple Path");
+  }
+
+  return {
+    type: "border",
+    path: result,
+    inner: {
+      type: "field",
+      path: inner,
+    },
+  };
 }
 
 function _firstCurve(

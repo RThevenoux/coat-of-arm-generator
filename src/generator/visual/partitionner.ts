@@ -1,12 +1,13 @@
 import * as paper from "paper";
 import { getPartitionVisual } from "../../service/PartitionService";
+import { FieldShape } from "./type";
 
 export default function partitionShape(
-  containerPath: paper.Path,
+  container: FieldShape,
   partitionningType: string
-): paper.Path[] {
+): FieldShape[] {
   if (partitionningType == "plain") {
-    return [containerPath];
+    return [container];
   }
 
   const partitionDef = getPartitionVisual(partitionningType);
@@ -14,23 +15,24 @@ export default function partitionShape(
     return [];
   }
 
+  const bounds = container.path.bounds;
   // Compute scale info
-  const scaleX = containerPath.bounds.width / partitionDef.width;
-  const scaleY = containerPath.bounds.height / partitionDef.height;
+  const scaleX = bounds.width / partitionDef.width;
+  const scaleY = bounds.height / partitionDef.height;
   const partitionOrigin = new paper.Point(0, 0);
   // Get translate info
-  const containerOrigin = containerPath.bounds.topLeft;
+  const containerOrigin = bounds.topLeft;
 
-  const result: paper.Path[] = [];
+  const result: FieldShape[] = [];
   for (const pathData of partitionDef.paths) {
     const path = new paper.Path(pathData);
     path.scale(scaleX, scaleY, partitionOrigin);
     path.translate(containerOrigin);
 
     // Compute intersection.
-    const intersection = containerPath.intersect(path);
+    const intersection = container.path.intersect(path);
     if (intersection instanceof paper.Path) {
-      result.push(intersection);
+      result.push({ type: "field", path: intersection });
     } else {
       return [];
     }

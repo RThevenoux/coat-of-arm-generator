@@ -1,4 +1,3 @@
-import * as paper from "paper";
 import partitionShape from "./partitionner";
 import drawCharge from "./charge-drawer";
 import createBorder from "./factory/BorderFactory";
@@ -9,11 +8,12 @@ import {
   MultiFieldModel,
   PlainFieldModel,
 } from "../model.type";
+import { FieldShape, MyShape } from "./type";
 
 export default async function drawField(
   builder: SvgBuilder,
   model: FieldModel,
-  containerPath: paper.Path
+  containerPath: FieldShape
 ): Promise<void> {
   switch (model.type) {
     case "plain":
@@ -25,21 +25,18 @@ export default async function drawField(
   }
 }
 
-function drawError(
-  builder: SvgBuilder,
-  containerPath: paper.Path
-): Promise<void> {
+function drawError(builder: SvgBuilder, containerPath: MyShape): Promise<void> {
   return builder.fill("none", containerPath);
 }
 
 async function drawPartitionField(
   builder: SvgBuilder,
   model: MultiFieldModel,
-  containerPath: paper.Path
+  container: FieldShape
 ): Promise<void> {
-  const subFieldPaths = partitionShape(containerPath, model.partitionType);
+  const subFieldPaths = partitionShape(container, model.partitionType);
   if (subFieldPaths.length == 0) {
-    return drawError(builder, containerPath);
+    return drawError(builder, container);
   }
 
   for (let i = 0; i < subFieldPaths.length; i++) {
@@ -52,50 +49,44 @@ async function drawPartitionField(
 async function drawPlainField(
   builder: SvgBuilder,
   model: PlainFieldModel,
-  containerPath: paper.Path
+  container: FieldShape
 ): Promise<void> {
   if (model.border) {
-    const inner = await drawBorder(builder, model.border, containerPath);
+    const inner = await drawBorder(builder, model.border, container);
     return drawFieldWithoutBorder(builder, model, inner);
   } else {
-    return drawFieldWithoutBorder(builder, model, containerPath);
+    return drawFieldWithoutBorder(builder, model, container);
   }
 }
 
 async function drawBorder(
   builder: SvgBuilder,
   model: BorderModel,
-  containerPath: paper.Path
-): Promise<paper.Path> {
-  const borderSize =
-    Math.min(containerPath.bounds.height, containerPath.bounds.width) / 6;
+  container: FieldShape
+): Promise<FieldShape> {
+  const bounds = container.path.bounds;
+  const borderSize = Math.min(bounds.height, bounds.width) / 6;
 
   try {
-    const border = createBorder(containerPath, borderSize);
+    const border = createBorder(container.path, borderSize);
 
     await builder.fill(model.filler, border);
-
-    const inner = containerPath.subtract(border);
-    if (inner instanceof paper.Path) {
-      return inner;
-    } else {
-      throw new Error("Border interrior is not a simple Path");
-    }
+    return border.inner;
   } catch (err) {
     console.error(err);
-    return containerPath;
+    return container;
   }
 }
 
 async function drawFieldWithoutBorder(
   builder: SvgBuilder,
   model: PlainFieldModel,
-  containerPath: paper.Path
+  container: FieldShape
 ) {
-  await builder.fill(model.filler, containerPath);
+  await builder.fill(model.filler, container);
   if (model.charges) {
     for (const charge of model.charges) {
-      await drawCharge(builder, charge, containerPath);
+      await drawCharge(builder, charge, container);
     }
   }
 }

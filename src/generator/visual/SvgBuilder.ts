@@ -6,15 +6,15 @@ import {
   ColorId,
   FillerModel,
   FillerPattern,
+  FillerSeme,
   FillerStrip,
 } from "../model.type";
-import { FillerPatternParameters } from "./type";
+import { FillerPatternParameters, MyShape } from "./type";
 import { getPatternVisualInfo } from "@/service/PatternService";
 import {
   ChargeVisualInfo,
   Palette,
   PatternVisualInfo,
-  SemeVisualInfo,
 } from "@/service/visual.type";
 
 export default class SvgBuilder {
@@ -48,122 +48,147 @@ export default class SvgBuilder {
     this.defs = this.container.ele("defs");
   }
 
-  async fill(
+  public async fill(
     fillerModel: FillerModel | "none",
-    path: paper.PathItem
+    shape: MyShape
   ): Promise<void> {
-    if (!fillerModel || fillerModel == "none" || !fillerModel.type) {
-      const defaultFillerId = this._getDefaultFiller();
-      this._fillPathItem(defaultFillerId, path);
-      return;
-    }
+    const fillerId = await this._getFillerId(fillerModel, shape.path);
+    this._fillPathItem(fillerId, shape.path);
+  }
 
-    if (fillerModel.type == "strip") {
-      this._fillWithStrips(fillerModel, path);
-    } else {
-      const fillerId = await this._getFillerId(fillerModel, path.bounds.size);
-      this._fillPathItem(fillerId, path);
+  public async drawSymbol(
+    symbolDef: ChargeVisualInfo,
+    position: paper.Point,
+    scaleCoef: number,
+    filler: FillerModel
+  ): Promise<void> {
+    const item = paper.project.importSVG(symbolDef.xml);
+
+    const fillerId = await this._getFillerId(filler, item);
+
+    const strokeWidth = this.defaultStrokeWidth / scaleCoef;
+    const transform =
+      `scale(${scaleCoef},${scaleCoef})` +
+      ` translate(${position.x / scaleCoef},${position.y / scaleCoef})`;
+
+    const group = this.container.ele("g");
+    group
+      .raw(symbolDef.xml)
+      .att("transform", transform)
+      .att("fill", `url(#${fillerId})`)
+      .att("style", this._stroke(strokeWidth));
+  }
+
+  private async _getFillerId(
+    fillerModel: FillerModel | "none",
+    item: paper.Item
+  ): Promise<string> {
+    if (!fillerModel || fillerModel == "none" || !fillerModel.type) {
+      return this._getDefaultFiller();
+    }
+    switch (fillerModel.type) {
+      case "pattern": {
+        const patternDef = getPatternVisualInfo(fillerModel.patternName);
+        const parameters = this._getPatternParameters(
+          fillerModel,
+          item.bounds.size
+        );
+        return this._getPatternFiller(patternDef, parameters);
+      }
+      case "plein":
+        return this._getSolidFiller(fillerModel.color);
+      case "seme":
+        return this._getSemeFiller(fillerModel, item.bounds.size);
+      case "strip":
+        return this._getStripFiller(fillerModel, item);
+      case "invalid":
+      default:
+        console.log("Unsupported-filler-type:" + fillerModel.type);
+        return this._getDefaultFiller();
     }
   }
 
-  _fillWithStrips(fillerModel: FillerStrip, path: paper.PathItem): void {
-    const center = new paper.Point(0, 0);
-
-    const angle = this._getStripAngle(fillerModel.angle, path);
+  private async _getStripFiller(model: FillerStrip, path: paper.Item) {
+    const angle = this._getStripAngle(model.angle, path.bounds);
 
     const clone = path.clone();
+    clone.rotate(-angle, new paper.Point(0, 0));
 
-    clone.rotate(angle, center);
-    const x = clone.bounds.x;
-    const y = clone.bounds.y;
-    const w = clone.bounds.width;
-    const h = clone.bounds.height;
-    const hStrip = h / (2 * fillerModel.count);
+    const pathHeight = clone.bounds.height;
+    const scaleCoef = pathHeight / model.count;
 
-    const color1Id = this._getSolidFiller(fillerModel.color1);
-    const color2Id = this._getSolidFiller(fillerModel.color2);
+    const x = 0;
+    const y =
+      (-Math.sin((angle * Math.PI) / 180) * path.bounds.x +
+        Math.cos((angle * Math.PI) / 180) * path.bounds.y) /
+      scaleCoef; //magic value should go here !
+    const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
 
-    for (let i = 0; i < 2 * fillerModel.count; i++) {
-      const stripPath = new paper.Path.Rectangle({
-        point: [x, y + hStrip * i],
-        size: [w, hStrip],
-      });
+    const id = this.nextPatternId();
+    const patternNode = this.defs
+      .ele("pattern")
+      .att("id", id)
+      .att("x", x)
+      .att("y", y)
+      .att("width", 1)
+      .att("height", 1)
+      .att("patternUnits", "userSpaceOnUse")
+      .att("patternTransform", transform);
 
-      const strip = clone.intersect(stripPath);
-      strip.rotate(-angle, center);
+    patternNode
+      .ele("rect")
+      .att("x", 0)
+      .att("y", 0)
+      .att("width", 1)
+      .att("height", 1)
+      .att("style", this._getFillColorProp(model.color1));
 
-      const colorId = i % 2 == 0 ? color1Id : color2Id;
-      this._fillPathItem(colorId, strip);
-    }
+    patternNode
+      .ele("rect")
+      .att("x", 0)
+      .att("y", 0.5)
+      .att("width", 1)
+      .att("height", 0.5)
+      .att("style", this._getFillColorProp(model.color2));
+
+    return id;
   }
 
-  _getStripAngle(angle: Angle, path: paper.PathItem): number {
-    const pathAngle =
-      (Math.atan(path.bounds.height / path.bounds.width) * 180) / Math.PI;
+  private _getStripAngle(angle: Angle, bounds: paper.Rectangle): number {
+    const pathAngle = (Math.atan(bounds.height / bounds.width) * 180) / Math.PI;
     switch (angle) {
       case "0":
         return 0;
       case "45":
         return pathAngle;
       case "90":
-        return 90;
+        return -90;
       case "135":
         return -pathAngle;
     }
   }
 
-  _fillPathItem(fillerId: string, path: paper.PathItem): void {
+  private _fillPathItem(fillerId: string, path: paper.PathItem): void {
     this.container
       .ele("path")
       .att("d", path.pathData)
       .att("fill", `url(#${fillerId})`);
   }
 
-  async _getFillerId(
-    fillerModel: FillerModel,
-    shapeBox: paper.Size
-  ): Promise<string> {
-    switch (fillerModel.type) {
-      case "plein": {
-        return this._getSolidFiller(fillerModel.color);
-      }
-      case "pattern": {
-        const patternDef = getPatternVisualInfo(fillerModel.patternName);
-        const parameters = this._getPatternParameters(fillerModel, shapeBox);
-        return this._addPattern(patternDef, parameters);
-      }
-      case "seme": {
-        const parameters = await getSemeVisualInfo(fillerModel.chargeId);
-        return this._addSeme(
-          parameters,
-          fillerModel.fieldColor,
-          fillerModel.chargeColor,
-          shapeBox.width
-        );
-      }
-      default: {
-        console.log(
-          "visual-generator - unsupported-filler-type:" + fillerModel.type
-        );
-        return this._getDefaultFiller();
-      }
-    }
-  }
-
-  _getFillColorProp(key: ColorId): string {
+  private _getFillColorProp(key: ColorId): string {
     const color = this._getColor(key);
     return `fill:#${color};`;
   }
 
-  _stroke(width: number): string {
+  private _stroke(width: number): string {
     return `stroke:black;stroke-width:${width}px;`;
   }
 
-  _getColor(key: ColorId): string {
+  private _getColor(key: ColorId): string {
     return this.palette[key];
   }
 
-  _getDefaultFiller(): string {
+  private _getDefaultFiller(): string {
     if (!this.defaultFillerId) {
       this.defaultFillerId = "default-filler";
 
@@ -206,7 +231,7 @@ export default class SvgBuilder {
     return this.defaultFillerId;
   }
 
-  _getSolidFiller(key: string): string {
+  private _getSolidFiller(key: string): string {
     const existingId = this.definedSolidFiller[key];
     if (existingId) {
       return existingId;
@@ -225,22 +250,21 @@ export default class SvgBuilder {
     return id;
   }
 
-  _addSeme(
-    parameters: SemeVisualInfo,
-    fieldColor: ColorId,
-    chargeColor: ColorId,
-    shapeWidth: number
-  ): string {
-    const id = `pattern${this.patternCount++}`;
+  private nextPatternId(): string {
+    return `pattern${this.patternCount++}`;
+  }
 
-    const box = {
-      width: parameters.width,
-      height: parameters.height,
-    };
+  private async _getSemeFiller(
+    model: FillerSeme,
+    shapeSize: paper.Size
+  ): Promise<string> {
+    const parameters = await getSemeVisualInfo(model.chargeId);
+    const id = this.nextPatternId();
 
-    const symbolId = this.addSymbol(parameters.charge);
+    const symbolId = this._addSymbol(parameters.charge);
 
-    const scaleCoef = shapeWidth / (box.width * parameters.repetition);
+    const scaleCoef =
+      shapeSize.width / (parameters.width * parameters.repetition);
     const transform = `scale(${scaleCoef},${scaleCoef})`;
 
     const patternNode = this.defs
@@ -248,8 +272,8 @@ export default class SvgBuilder {
       .att("id", id)
       .att("x", 0)
       .att("y", 0)
-      .att("width", box.width)
-      .att("height", box.height)
+      .att("width", parameters.width)
+      .att("height", parameters.height)
       .att("patternUnits", "userSpaceOnUse")
       .att("patternTransform", transform);
 
@@ -257,18 +281,17 @@ export default class SvgBuilder {
       .ele("rect")
       .att("x", 0)
       .att("y", 0)
-      .att("width", box.width)
-      .att("height", box.height)
-      .att("style", this._getFillColorProp(fieldColor));
-
-    const strokeWidth = this.defaultStrokeWidth / scaleCoef;
+      .att("width", parameters.width)
+      .att("height", parameters.height)
+      .att("style", this._getFillColorProp(model.fieldColor));
 
     const style =
-      this._getFillColorProp(chargeColor) + this._stroke(strokeWidth);
+      this._getFillColorProp(model.chargeColor) +
+      this._stroke(this.defaultStrokeWidth);
     for (const copyTransform of parameters.copies) {
       patternNode
         .ele("use")
-        .att("xlink:href", `#${symbolId}`)
+        .att("href", `#${symbolId}`)
         .att("transform", copyTransform)
         .att("style", style);
     }
@@ -276,7 +299,7 @@ export default class SvgBuilder {
     return id;
   }
 
-  _addPattern(
+  private _getPatternFiller(
     pattern: PatternVisualInfo,
     parameters: FillerPatternParameters
   ): string {
@@ -316,18 +339,18 @@ export default class SvgBuilder {
       .att("style", this._getFillColorProp(parameters.patternColor));
 
     if (pattern.copies) {
-      for (const copyTransform of pattern.copies) {
+      for (const transform of pattern.copies) {
         patternNode
           .ele("use")
-          .att("xlink:href", `#${originalId}`)
-          .att("transform", copyTransform);
+          .att("href", `#${originalId}`)
+          .att("transform", transform);
       }
     }
 
     return id;
   }
 
-  addSymbol(symbolDef: ChargeVisualInfo): string {
+  private _addSymbol(symbolDef: ChargeVisualInfo): string {
     let symbolId = this.definedSymbol[symbolDef.id];
 
     if (!symbolId) {
@@ -346,7 +369,7 @@ export default class SvgBuilder {
     return symbolId;
   }
 
-  _getPatternParameters(
+  private _getPatternParameters(
     description: FillerPattern,
     shapeBox: paper.Size
   ): FillerPatternParameters {
