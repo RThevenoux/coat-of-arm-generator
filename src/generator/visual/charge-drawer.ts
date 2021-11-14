@@ -1,10 +1,9 @@
-import * as paper from "paper";
 import { createStrips } from "./factory/StripFactory";
-import createCross from "./factory/CrossFactory";
+import { createCross, createCrossSaltire } from "./factory/CrossFactory";
 import drawSymbol from "./symbol-drawer";
 import SvgBuilder from "./SvgBuilder";
 import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";
-import { OtherShape, FieldShape, StripShape } from "./type";
+import { FieldShape } from "./type";
 
 export default async function drawCharge(
   builder: SvgBuilder,
@@ -30,16 +29,11 @@ async function drawStrip(
   container: FieldShape
 ): Promise<void> {
   const strips = createStrips(
-    container.path.bounds,
-    stripModel.angle,
+    container,
+    stripModel.direction,
     stripModel.count
   );
-  for (const strip of strips) {
-    const stripPath = container.path.intersect(strip);
-    if (!(stripPath instanceof paper.Path)) {
-      throw new Error("Clipped strip is not a simple Path");
-    }
-    const stripShape: StripShape = { type: "strip", path: stripPath };
+  for (const stripShape of strips) {
     await builder.fill(stripModel.filler, stripShape);
   }
 }
@@ -49,9 +43,11 @@ function drawCross(
   charge: ChargeCross,
   container: FieldShape
 ): Promise<void> {
-  const rotate = charge.angle === "45";
-  const cross = createCross(container.path.bounds, rotate);
-  const path = container.path.intersect(cross);
-  const shape: OtherShape = { type: "other", path: path };
-  return builder.fill(charge.filler, shape);
+  if (charge.direction === "45" || charge.direction === "135") {
+    const shape = createCrossSaltire(container);
+    return builder.fill(charge.filler, shape);
+  } else {
+    const shape = createCross(container);
+    return builder.fill(charge.filler, shape);
+  }
 }

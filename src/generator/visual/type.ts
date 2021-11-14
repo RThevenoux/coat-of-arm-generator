@@ -12,6 +12,8 @@ export interface FieldShape {
 export interface StripShape {
   type: "strip";
   path: paper.Path;
+  angle: number /*in radian*/ | "pal" | "fasce";
+  width: number;
 }
 
 export interface BorderShape {

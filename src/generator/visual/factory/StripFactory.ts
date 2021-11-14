@@ -1,89 +1,94 @@
 import * as paper from "paper";
-import { Angle } from "../../model.type";
+import { Direction } from "../../model.type";
+import { FieldShape, StripShape } from "../type";
 
-export {
-  createStrip,
-  createStrips,
-  createPal,
-  createPals,
-  createFasce,
-  createFasces,
-  createDiagonal,
-  createDiagonals,
-};
-
-function createStrip(bounds: paper.Rectangle, angle: Angle): paper.Path {
-  return createStrips(bounds, angle, 1)[0];
-}
-function createStrips(
-  bounds: paper.Rectangle,
-  angle: Angle,
+export function createStrips(
+  container: FieldShape,
+  angle: Direction,
   count: number
-): paper.Path[] {
+): StripShape[] {
   switch (angle) {
     case "0":
-      return createFasces(bounds, count);
+      return createFasces(container, count);
     case "90":
-      return createPals(bounds, count);
+      return createPals(container, count);
     case "135":
-      return createDiagonals(bounds, false, count);
+      return createDiagonals(container, false, count);
     case "45":
-      return createDiagonals(bounds, true, count);
+      return createDiagonals(container, true, count);
     default:
       console.log("invalid angle " + angle);
       return [];
   }
 }
 
-function createPal(bounds: paper.Rectangle): paper.Path {
-  return createPals(bounds, 1)[0];
-}
-function createPals(bounds: paper.Rectangle, count: number): paper.Path[] {
+function createFasces(container: FieldShape, count: number): StripShape[] {
   const result = [];
+
+  const bounds = container.path.bounds;
   const hStrip = bounds.height / (2 * count + 1);
+
   for (let i = 0; i < count; i++) {
-    result.push(
-      new paper.Path.Rectangle({
-        point: [bounds.x, bounds.y + (2 * i + 1) * hStrip],
-        size: [bounds.width, hStrip],
-      })
-    );
+    const strip = new paper.Path.Rectangle({
+      point: [bounds.x, bounds.y + (2 * i + 1) * hStrip],
+      size: [bounds.width, hStrip],
+    });
+
+    const clippedStrip = _clip(strip, container);
+
+    const stripShape: StripShape = {
+      type: "strip",
+      path: clippedStrip,
+      angle: "pal",
+      width: hStrip,
+    };
+
+    result.push(stripShape);
   }
+
   return result;
 }
 
-function createFasce(bounds: paper.Rectangle): paper.Path {
-  return createFasces(bounds, 1)[0];
-}
-function createFasces(bounds: paper.Rectangle, count: number): paper.Path[] {
+function createPals(container: FieldShape, count: number): StripShape[] {
   const result = [];
-  const wStrip = bounds.width / (2 * count + 1);
-  for (let i = 0; i < count; i++) {
-    result.push(
-      new paper.Path.Rectangle({
-        point: [bounds.x + (2 * i + 1) * wStrip, bounds.y],
-        size: [wStrip, bounds.height],
-      })
-    );
-  }
-  return result;
-}
 
-function createDiagonal(bounds: paper.Rectangle, reverse: boolean): paper.Path {
-  return createDiagonals(bounds, reverse, 1)[0];
+  const bounds = container.path.bounds;
+  const wStrip = bounds.width / (2 * count + 1);
+
+  for (let i = 0; i < count; i++) {
+    const strip = new paper.Path.Rectangle({
+      point: [bounds.x + (2 * i + 1) * wStrip, bounds.y],
+      size: [wStrip, bounds.height],
+    });
+
+    const clippedStrip = _clip(strip, container);
+
+    const stripShape: StripShape = {
+      type: "strip",
+      path: clippedStrip,
+      angle: "fasce",
+      width: wStrip,
+    };
+
+    result.push(stripShape);
+  }
+
+  return result;
 }
 
 function createDiagonals(
-  bounds: paper.Rectangle,
+  container: FieldShape,
   reverse: boolean,
   count: number
-): paper.Path[] {
+): StripShape[] {
+  const bounds = container.path.bounds;
+
   const w = bounds.width;
   const h = bounds.height;
   const x = bounds.x;
   const y = bounds.y;
 
-  const d = w / (2 * count + 1) / Math.sqrt(2);
+  const d = w / ((2 * count + 1) * Math.SQRT2);
   const x0 = x - d * (2 * count - 1);
 
   // create the '\' diagonal
@@ -102,11 +107,32 @@ function createDiagonals(
 
   const vector = new paper.Point(reverse ? [-4 * d, 0] : [4 * d, 0]);
 
+  const angle = Math.atan2(w, h);
+  const stripWidth = 2 * d * Math.sin(angle);
+
   const result = [];
   for (let i = 0; i < count; i++) {
     const stripPath = patternPath.clone();
-    result.push(stripPath);
     patternPath.translate(vector);
+
+    const clippedStrip = _clip(stripPath, container);
+
+    const stripShape: StripShape = {
+      type: "strip",
+      path: clippedStrip,
+      angle: reverse ? angle : Math.PI - angle, // rad
+      width: stripWidth,
+    };
+    result.push(stripShape);
   }
+
   return result;
+}
+
+function _clip(path: paper.Path, container: FieldShape) {
+  const clippedStrip = container.path.intersect(path);
+  if (!(clippedStrip instanceof paper.Path)) {
+    throw new Error("Clipped strip is not a simple Path");
+  }
+  return clippedStrip;
 }

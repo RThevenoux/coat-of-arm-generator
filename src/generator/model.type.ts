@@ -1,6 +1,6 @@
 export type ColorId = string;
 
-export type Angle = "0" | "45" | "90" | "135";
+export type Direction = "0" | "45" | "90" | "135";
 
 //
 // Field
@@ -48,7 +48,7 @@ export interface FillerSeme {
 
 export interface FillerStrip {
   type: "strip";
-  angle: Angle;
+  direction: Direction;
   count: number;
   color1: ColorId;
   color2: ColorId;
@@ -69,7 +69,7 @@ export type ChargeModel = ChargeStrip | ChargeCross | ChargeSymbol;
 
 export interface ChargeStrip {
   type: "strip";
-  angle: Angle;
+  direction: Direction;
   count: number;
   filler: FillerModel;
 }
@@ -77,7 +77,7 @@ export interface ChargeStrip {
 export interface ChargeCross {
   type: "cross";
   count: 1;
-  angle: Angle;
+  direction: Direction;
   filler: FillerModel;
 }
 

@@ -46,7 +46,7 @@ async function _singleCharge(charge: ChargeModel): Promise<string> {
 function _getChargeId(charge: ChargeModel): string {
   switch (charge.type) {
     case "strip": {
-      switch (charge.angle) {
+      switch (charge.direction) {
         case "0":
           return "fasce";
         case "45":
@@ -56,17 +56,17 @@ function _getChargeId(charge: ChargeModel): string {
         case "135":
           return "bande";
         default:
-          return "strip:" + charge.angle;
+          return "strip:" + charge.direction;
       }
     }
     case "cross": {
-      switch (charge.angle) {
+      switch (charge.direction) {
         case "0":
           return "croix";
         case "45":
           return "sautoir";
         default:
-          return "cross:" + charge.angle;
+          return "cross:" + charge.direction;
       }
     }
     case "symbol": {

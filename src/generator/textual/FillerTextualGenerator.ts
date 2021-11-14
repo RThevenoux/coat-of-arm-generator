@@ -4,7 +4,7 @@ import {
   FillerPlein,
   FillerSeme,
   FillerStrip,
-  Angle,
+  Direction,
 } from "../model.type";
 import { getSemeLabelInfo } from "./ChargeTextualGenerator";
 import { getColorText } from "../../service/ColorService";
@@ -86,11 +86,11 @@ function _simplePattern(model: FillerPattern, label: string): string {
 }
 
 function _patternTextWithAngle(
-  angle: "bande" | "barre" | "defaut" | undefined,
+  direction: "bande" | "barre" | "defaut" | undefined,
   label: string
 ): string {
-  if (angle) {
-    switch (angle) {
+  if (direction) {
+    switch (direction) {
       case "bande":
         return `${label} en bande`;
       case "barre":
@@ -105,7 +105,7 @@ function _patternTextWithAngle(
 }
 
 function _strip(model: FillerStrip): string {
-  const stripText = _stripFillerText(model.angle);
+  const stripText = _stripFillerText(model.direction);
   const color1 = getColorText(model.color1);
   const color2 = getColorText(model.color2);
 
@@ -117,8 +117,8 @@ function _strip(model: FillerStrip): string {
   }
 }
 
-function _stripFillerText(angle: Angle): string {
-  switch (angle) {
+function _stripFillerText(direction: Direction): string {
+  switch (direction) {
     case "0":
       return "fascé";
     case "45":

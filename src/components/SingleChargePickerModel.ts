@@ -1,15 +1,15 @@
-import { Angle } from "../generator/model.type";
+import { Direction } from "../generator/model.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 
 export interface SingleChargePickerModel {
   type: "strip" | "cross" | "symbol";
   strip: {
-    angle: Angle;
+    angle: Direction;
     count: number;
     filler: FillerEditorModel;
   };
   cross: {
-    angle: Angle;
+    angle: Direction;
     filler: FillerEditorModel;
   };
   symbol: {

@@ -109,7 +109,7 @@ function fillerToModel(viewModel: FillerEditorModel): FillerModel {
     case "strip":
       return {
         type: "strip",
-        angle: viewModel.stripAngle,
+        direction: viewModel.stripAngle,
         count: viewModel.stripCount,
         color1: viewModel.color1,
         color2: viewModel.color2,
@@ -124,7 +124,6 @@ function fillerToModel(viewModel: FillerEditorModel): FillerModel {
       if (viewModel.patternName == "fusele") {
         model.angle = viewModel.patternAngle;
       }
-
       return model;
     }
     default: {
@@ -140,7 +139,7 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
     case "strip":
       return {
         type: "strip",
-        angle: viewModel.strip.angle,
+        direction: viewModel.strip.angle,
         count: viewModel.strip.count,
         filler: fillerToModel(viewModel.strip.filler),
       };
@@ -148,7 +147,7 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
       return {
         type: "cross",
         count: 1,
-        angle: viewModel.cross.angle,
+        direction: viewModel.cross.angle,
         filler: fillerToModel(viewModel.cross.filler),
       };
     case "symbol":

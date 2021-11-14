@@ -2,7 +2,7 @@ import * as paper from "paper";
 import xmlBuilder from "xmlbuilder";
 import { getSemeVisualInfo } from "@/service/ChargeService";
 import {
-  Angle,
+  Direction,
   ColorId,
   FillerModel,
   FillerPattern,
@@ -105,7 +105,7 @@ export default class SvgBuilder {
   ) {
     const item = container.type == "symbol" ? container.item : container.path;
 
-    const angle = this._getStripAngle(model.angle, item.bounds);
+    const angle = this._getStripAngle(model.direction, item.bounds);
 
     const clone = item.clone();
     clone.rotate(-angle, new paper.Point(0, 0));
@@ -150,9 +150,12 @@ export default class SvgBuilder {
     return id;
   }
 
-  private _getStripAngle(angle: Angle, bounds: paper.Rectangle): number {
+  private _getStripAngle(
+    direction: Direction,
+    bounds: paper.Rectangle
+  ): number {
     const pathAngle = (Math.atan(bounds.height / bounds.width) * 180) / Math.PI;
-    switch (angle) {
+    switch (direction) {
       case "0":
         return 0;
       case "45":

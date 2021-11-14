@@ -1,4 +1,4 @@
-import { Angle, ColorId } from "../generator/model.type";
+import { Direction, ColorId } from "../generator/model.type";
 
 export interface FillerEditorModel {
   type: "none" | "plein" | "seme" | "pattern" | "strip";
@@ -7,6 +7,6 @@ export interface FillerEditorModel {
   patternAngle: "defaut" | "bande" | "barre";
   patternName: string;
   semeChargeId: string;
-  stripAngle: Angle;
+  stripAngle: Direction;
   stripCount: number;
 }
