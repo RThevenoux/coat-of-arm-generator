@@ -9,13 +9,9 @@ import {
   FillerSeme,
   FillerStrip,
 } from "../model.type";
-import { FillerPatternParameters, MyShape } from "./type";
+import { SimpleShape, SymbolShape } from "./type";
 import { getPatternVisualInfo } from "@/service/PatternService";
-import {
-  ChargeVisualInfo,
-  Palette,
-  PatternVisualInfo,
-} from "@/service/visual.type";
+import { ChargeVisualInfo, Palette } from "@/service/visual.type";
 
 export default class SvgBuilder {
   readonly palette: Palette;
@@ -50,9 +46,9 @@ export default class SvgBuilder {
 
   public async fill(
     fillerModel: FillerModel | "none",
-    shape: MyShape
+    shape: SimpleShape
   ): Promise<void> {
-    const fillerId = await this._getFillerId(fillerModel, shape.path);
+    const fillerId = await this._getFillerId(fillerModel, shape);
     this._fillPathItem(fillerId, shape.path);
   }
 
@@ -63,8 +59,9 @@ export default class SvgBuilder {
     filler: FillerModel
   ): Promise<void> {
     const item = paper.project.importSVG(symbolDef.xml);
+    const symbolShape: SymbolShape = { type: "symbol", item: item };
 
-    const fillerId = await this._getFillerId(filler, item);
+    const fillerId = await this._getFillerId(filler, symbolShape);
 
     const strokeWidth = this.defaultStrokeWidth / scaleCoef;
     const transform =
@@ -81,26 +78,20 @@ export default class SvgBuilder {
 
   private async _getFillerId(
     fillerModel: FillerModel | "none",
-    item: paper.Item
+    container: SimpleShape | SymbolShape
   ): Promise<string> {
     if (!fillerModel || fillerModel == "none" || !fillerModel.type) {
       return this._getDefaultFiller();
     }
     switch (fillerModel.type) {
-      case "pattern": {
-        const patternDef = getPatternVisualInfo(fillerModel.patternName);
-        const parameters = this._getPatternParameters(
-          fillerModel,
-          item.bounds.size
-        );
-        return this._getPatternFiller(patternDef, parameters);
-      }
+      case "pattern":
+        return this._getPatternFiller(fillerModel, container);
       case "plein":
         return this._getSolidFiller(fillerModel.color);
       case "seme":
-        return this._getSemeFiller(fillerModel, item.bounds.size);
+        return this._getSemeFiller(fillerModel, container);
       case "strip":
-        return this._getStripFiller(fillerModel, item);
+        return this._getStripFiller(fillerModel, container);
       case "invalid":
       default:
         console.log("Unsupported-filler-type:" + fillerModel.type);
@@ -108,10 +99,15 @@ export default class SvgBuilder {
     }
   }
 
-  private async _getStripFiller(model: FillerStrip, path: paper.Item) {
-    const angle = this._getStripAngle(model.angle, path.bounds);
+  private async _getStripFiller(
+    model: FillerStrip,
+    container: SimpleShape | SymbolShape
+  ) {
+    const item = container.type == "symbol" ? container.item : container.path;
 
-    const clone = path.clone();
+    const angle = this._getStripAngle(model.angle, item.bounds);
+
+    const clone = item.clone();
     clone.rotate(-angle, new paper.Point(0, 0));
 
     const pathHeight = clone.bounds.height;
@@ -119,8 +115,8 @@ export default class SvgBuilder {
 
     const x = 0;
     const y =
-      (-Math.sin((angle * Math.PI) / 180) * path.bounds.x +
-        Math.cos((angle * Math.PI) / 180) * path.bounds.y) /
+      (-Math.sin((angle * Math.PI) / 180) * item.bounds.x +
+        Math.cos((angle * Math.PI) / 180) * item.bounds.y) /
       scaleCoef; //magic value should go here !
     const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
 
@@ -256,12 +252,16 @@ export default class SvgBuilder {
 
   private async _getSemeFiller(
     model: FillerSeme,
-    shapeSize: paper.Size
+    container: SimpleShape | SymbolShape
   ): Promise<string> {
     const parameters = await getSemeVisualInfo(model.chargeId);
     const id = this.nextPatternId();
 
     const symbolId = this._addSymbol(parameters.charge);
+
+    const shapeSize = (
+      container.type == "symbol" ? container.item : container.path
+    ).bounds.size;
 
     const scaleCoef =
       shapeSize.width / (parameters.width * parameters.repetition);
@@ -300,17 +300,22 @@ export default class SvgBuilder {
   }
 
   private _getPatternFiller(
-    pattern: PatternVisualInfo,
-    parameters: FillerPatternParameters
+    fillerModel: FillerPattern,
+    container: SimpleShape | SymbolShape
   ): string {
+    const size = (container.type == "symbol" ? container.item : container.path)
+      .bounds.size;
+    const rotation = this._getPatternRotation(fillerModel);
+
+    const pattern = getPatternVisualInfo(fillerModel.patternName);
+
     const id = `pattern${this.patternCount++}`;
 
     const scaleCoef =
-      parameters.shapeWidth /
-      (pattern.patternWidth * pattern.patternRepetition);
+      size.width / (pattern.patternWidth * pattern.patternRepetition);
     let transform = `scale(${scaleCoef},${scaleCoef})`;
-    if (parameters.rotation) {
-      transform += `rotate(${parameters.rotation})`;
+    if (rotation) {
+      transform += `rotate(${rotation})`;
     }
 
     const patternNode = this.defs
@@ -329,14 +334,14 @@ export default class SvgBuilder {
       .att("y", 0)
       .att("width", pattern.patternWidth)
       .att("height", pattern.patternHeight)
-      .att("style", this._getFillColorProp(parameters.backgroundColor));
+      .att("style", this._getFillColorProp(fillerModel.color1));
 
     const originalId = `${id}_original`;
     patternNode
       .ele("path")
       .att("d", pattern.path)
       .att("id", originalId)
-      .att("style", this._getFillColorProp(parameters.patternColor));
+      .att("style", this._getFillColorProp(fillerModel.color2));
 
     if (pattern.copies) {
       for (const transform of pattern.copies) {
@@ -369,31 +374,21 @@ export default class SvgBuilder {
     return symbolId;
   }
 
-  private _getPatternParameters(
-    description: FillerPattern,
-    shapeBox: paper.Size
-  ): FillerPatternParameters {
-    let rotation: number | undefined = undefined;
-    if (description.angle) {
-      switch (description.angle) {
-        case "bande":
-          rotation = -45;
-          break;
-        case "barre":
-          rotation = 45;
-          break;
-        case "defaut":
-          break;
-        default:
-          console.log("Invalid angle" + description.angle);
-      }
+  /* Rotation is only used by "fusele" */
+  private _getPatternRotation(description: FillerPattern): number | undefined {
+    if (!description.angle) {
+      return undefined;
     }
-
-    return {
-      backgroundColor: description.color1,
-      patternColor: description.color2,
-      shapeWidth: shapeBox.width,
-      rotation,
-    };
+    switch (description.angle) {
+      case "bande":
+        return -45;
+      case "barre":
+        return 45;
+      case "defaut":
+        return undefined;
+      default:
+        console.log("Invalid angle" + description.angle);
+        return undefined;
+    }
   }
 }

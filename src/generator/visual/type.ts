@@ -1,13 +1,9 @@
-import { ColorId } from "../model.type";
-
-export interface FillerPatternParameters {
-  backgroundColor: ColorId;
-  patternColor: ColorId;
-  shapeWidth: number;
-  rotation?: number;
+export interface SymbolShape {
+  type: "symbol";
+  item: paper.Item;
 }
 
-export type MyShape = FieldShape | StripShape | BorderShape | OtherShape;
+export type SimpleShape = FieldShape | StripShape | BorderShape | OtherShape;
 
 export interface FieldShape {
   type: "field";

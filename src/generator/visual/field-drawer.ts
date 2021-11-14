@@ -8,7 +8,7 @@ import {
   MultiFieldModel,
   PlainFieldModel,
 } from "../model.type";
-import { FieldShape, MyShape } from "./type";
+import { FieldShape, SimpleShape } from "./type";
 
 export default async function drawField(
   builder: SvgBuilder,
@@ -25,7 +25,10 @@ export default async function drawField(
   }
 }
 
-function drawError(builder: SvgBuilder, containerPath: MyShape): Promise<void> {
+function drawError(
+  builder: SvgBuilder,
+  containerPath: SimpleShape
+): Promise<void> {
   return builder.fill("none", containerPath);
 }
 
