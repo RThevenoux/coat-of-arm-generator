@@ -12,36 +12,104 @@ import {
 import { SimpleShape, SymbolShape } from "./type";
 import { getPatternVisualInfo } from "@/service/PatternService";
 import { ChargeVisualInfo, Palette } from "@/service/visual.type";
+import {
+  addGradientStop,
+  addPath,
+  addPattern,
+  addRadialGradient,
+  addRectangle,
+  addSolidGradient,
+  addSymbol,
+  addUse,
+  createSVG,
+  fillColorStyle,
+  refStyle,
+  strokeStyle,
+} from "./svg/SvgHelper";
 
 export default class SvgBuilder {
-  readonly palette: Palette;
-  readonly defaultStrokeWidth: number;
-  readonly container: xmlBuilder.XMLElement;
-  readonly defs: xmlBuilder.XMLElement;
+  private readonly escutcheonPath: paper.Path;
+  private readonly palette: Palette;
+  private readonly defaultStrokeWidth: number;
+  private readonly container: xmlBuilder.XMLElement;
+  private readonly defs: xmlBuilder.XMLElement;
 
-  patternCount = 0;
-  definedSolidFiller: Record<string, string> = {};
-  definedSymbol: Record<string, string> = {};
-  defaultFillerId: string | null = null;
+  private patternCount = 0;
+  private definedSolidFiller: Record<string, string> = {};
+  private definedSymbol: Record<string, string> = {};
+  private defaultFillerId: string | null = null;
+  private escutcheonPathId: string | null = null;
 
   constructor(
-    viewBox: paper.Rectangle,
+    escutcheonPath: paper.Path,
     palette: Palette,
     defaultStrokeWidth: number
   ) {
     this.palette = palette;
     this.defaultStrokeWidth = defaultStrokeWidth;
+    this.escutcheonPath = escutcheonPath;
 
-    this.container = xmlBuilder
-      .create("svg", { headless: true })
-      .att("xmlns", "http://www.w3.org/2000/svg")
-      .att(
-        "viewBox",
-        `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
-      );
+    this.container = createSVG();
 
     // Create "defs" section
     this.defs = this.container.ele("defs");
+  }
+
+  public addBorder(borderSize: number): void {
+    // Update escutcheonPath to compute viewBox on 'build()'
+    this.escutcheonPath.strokeWidth = borderSize;
+    this.escutcheonPath.strokeColor = new paper.Color("#000");
+
+    // Add border to SVG
+    const style = "fill:none;" + strokeStyle(borderSize);
+    const escutcheonId = this.getEscutcheonPathId();
+    addUse(this.container, escutcheonId, undefined, style);
+  }
+
+  public addReflect(): void {
+    const escutcheonId = this.getEscutcheonPathId();
+    const fill = refStyle(this.createReflect());
+
+    addUse(this.container, escutcheonId, fill);
+  }
+
+  public build(outputSize: { width: number; height: number }): string {
+    const viewBox = this.escutcheonPath.strokeBounds;
+
+    return this.container
+      .att("width", outputSize.width)
+      .att("height", outputSize.height)
+      .att(
+        "viewBox",
+        `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
+      )
+      .end();
+  }
+
+  private createReflect(): string {
+    const gradienId = "gradient-reflect";
+    const bounds = this.escutcheonPath.bounds;
+
+    const cx = bounds.width / 3;
+    const cy = bounds.height / 3;
+    const radius = (bounds.width * 2) / 3;
+
+    const gradient = addRadialGradient(this.defs, gradienId, cx, cy, radius);
+
+    addGradientStop(gradient, 0.0, "#fff", 0.31);
+    addGradientStop(gradient, 0.19, "#fff", 0.25);
+    addGradientStop(gradient, 0.6, "#6b6b6b", 0.125);
+    addGradientStop(gradient, 1.0, "#000", 0.125);
+
+    return gradienId;
+  }
+
+  public getEscutcheonPathId(): string {
+    if (this.escutcheonPathId == null) {
+      this.escutcheonPathId = "escutcheon";
+      addPath(this.defs, this.escutcheonPath.pathData, this.escutcheonPathId);
+    }
+    return this.escutcheonPathId;
   }
 
   public async fill(
@@ -49,7 +117,7 @@ export default class SvgBuilder {
     shape: SimpleShape
   ): Promise<void> {
     const fillerId = await this._getFillerId(fillerModel, shape);
-    this._fillPathItem(fillerId, shape.path);
+    addPath(this.container, shape.path.pathData, undefined, refStyle(fillerId));
   }
 
   public async drawSymbol(
@@ -72,8 +140,8 @@ export default class SvgBuilder {
     group
       .raw(symbolDef.xml)
       .att("transform", transform)
-      .att("fill", `url(#${fillerId})`)
-      .att("style", this._stroke(strokeWidth));
+      .att("fill", refStyle(fillerId))
+      .att("style", strokeStyle(strokeWidth));
   }
 
   private async _getFillerId(
@@ -117,35 +185,14 @@ export default class SvgBuilder {
     const y =
       (-Math.sin((angle * Math.PI) / 180) * item.bounds.x +
         Math.cos((angle * Math.PI) / 180) * item.bounds.y) /
-      scaleCoef; //magic value should go here !
+      scaleCoef;
     const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
 
     const id = this.nextPatternId();
-    const patternNode = this.defs
-      .ele("pattern")
-      .att("id", id)
-      .att("x", x)
-      .att("y", y)
-      .att("width", 1)
-      .att("height", 1)
-      .att("patternUnits", "userSpaceOnUse")
-      .att("patternTransform", transform);
+    const patternNode = addPattern(this.defs, id, x, y, 1, 1, transform);
 
-    patternNode
-      .ele("rect")
-      .att("x", 0)
-      .att("y", 0)
-      .att("width", 1)
-      .att("height", 1)
-      .att("style", this._getFillColorProp(model.color1));
-
-    patternNode
-      .ele("rect")
-      .att("x", 0)
-      .att("y", 0.5)
-      .att("width", 1)
-      .att("height", 0.5)
-      .att("style", this._getFillColorProp(model.color2));
+    addRectangle(patternNode, 0.0, 0.0, 1.0, 1.0, this._getColor(model.color1));
+    addRectangle(patternNode, 0.0, 0.5, 1.0, 0.5, this._getColor(model.color2));
 
     return id;
   }
@@ -167,24 +214,13 @@ export default class SvgBuilder {
     }
   }
 
-  private _fillPathItem(fillerId: string, path: paper.PathItem): void {
-    this.container
-      .ele("path")
-      .att("d", path.pathData)
-      .att("fill", `url(#${fillerId})`);
-  }
-
   private _getFillColorProp(key: ColorId): string {
     const color = this._getColor(key);
-    return `fill:#${color};`;
-  }
-
-  private _stroke(width: number): string {
-    return `stroke:black;stroke-width:${width}px;`;
+    return fillColorStyle(color);
   }
 
   private _getColor(key: ColorId): string {
-    return this.palette[key];
+    return `#${this.palette[key]}`;
   }
 
   private _getDefaultFiller(): string {
@@ -196,36 +232,18 @@ export default class SvgBuilder {
       const color1 = "white";
       const color2 = "grey";
 
-      const patternNode = this.defs
-        .ele("pattern")
-        .att("id", this.defaultFillerId)
-        .att("x", 0)
-        .att("y", 0)
-        .att("width", size)
-        .att("height", size)
-        .att("patternUnits", "userSpaceOnUse");
+      const patternNode = addPattern(
+        this.defs,
+        this.defaultFillerId,
+        0,
+        0,
+        size,
+        size
+      );
 
-      patternNode
-        .ele("rect")
-        .att("x", 0)
-        .att("y", 0)
-        .att("width", size)
-        .att("height", size)
-        .att("fill", color1);
-      patternNode
-        .ele("rect")
-        .att("x", half)
-        .att("y", 0)
-        .att("width", half)
-        .att("height", half)
-        .att("fill", color2);
-      patternNode
-        .ele("rect")
-        .att("x", 0)
-        .att("y", half)
-        .att("width", half)
-        .att("height", half)
-        .att("fill", color2);
+      addRectangle(patternNode, 0, 0, size, size, color1);
+      addRectangle(patternNode, half, 0, half, half, color2);
+      addRectangle(patternNode, 0, half, half, half, color2);
     }
     return this.defaultFillerId;
   }
@@ -239,11 +257,7 @@ export default class SvgBuilder {
     // Create new Solid Filler
     const id = `solid-${key}`;
     const color = this._getColor(key);
-    this.defs
-      .ele("linearGradient")
-      .att("id", id)
-      .ele("stop")
-      .att("stop-color", `#${color}`);
+    addSolidGradient(this.defs, id, color);
 
     this.definedSolidFiller[key] = id;
     return id;
@@ -257,46 +271,37 @@ export default class SvgBuilder {
     model: FillerSeme,
     container: SimpleShape | SymbolShape
   ): Promise<string> {
-    const parameters = await getSemeVisualInfo(model.chargeId);
+    const seme = await getSemeVisualInfo(model.chargeId);
     const id = this.nextPatternId();
 
-    const symbolId = this._addSymbol(parameters.charge);
+    const symbolId = this._addSymbol(seme.charge);
 
-    const shapeSize = (
+    const containerSize = (
       container.type == "symbol" ? container.item : container.path
     ).bounds.size;
 
-    const scaleCoef =
-      shapeSize.width / (parameters.width * parameters.repetition);
+    const scaleCoef = containerSize.width / (seme.width * seme.repetition);
     const transform = `scale(${scaleCoef},${scaleCoef})`;
 
-    const patternNode = this.defs
-      .ele("pattern")
-      .att("id", id)
-      .att("x", 0)
-      .att("y", 0)
-      .att("width", parameters.width)
-      .att("height", parameters.height)
-      .att("patternUnits", "userSpaceOnUse")
-      .att("patternTransform", transform);
+    const patternNode = addPattern(
+      this.defs,
+      id,
+      0,
+      0,
+      seme.width,
+      seme.height,
+      transform
+    );
 
-    patternNode
-      .ele("rect")
-      .att("x", 0)
-      .att("y", 0)
-      .att("width", parameters.width)
-      .att("height", parameters.height)
-      .att("style", this._getFillColorProp(model.fieldColor));
+    const backgroundColor = this._getColor(model.fieldColor);
+    addRectangle(patternNode, 0, 0, seme.width, seme.height, backgroundColor);
 
     const style =
       this._getFillColorProp(model.chargeColor) +
-      this._stroke(this.defaultStrokeWidth);
-    for (const copyTransform of parameters.copies) {
-      patternNode
-        .ele("use")
-        .att("href", `#${symbolId}`)
-        .att("transform", copyTransform)
-        .att("style", style);
+      strokeStyle(this.defaultStrokeWidth);
+
+    for (const copyTransform of seme.copies) {
+      addUse(patternNode, symbolId, undefined, style, copyTransform);
     }
 
     return id;
@@ -321,37 +326,33 @@ export default class SvgBuilder {
       transform += `rotate(${rotation})`;
     }
 
-    const patternNode = this.defs
-      .ele("pattern")
-      .att("id", id)
-      .att("x", 0)
-      .att("y", 0)
-      .att("width", pattern.patternWidth)
-      .att("height", pattern.patternHeight)
-      .att("patternUnits", "userSpaceOnUse")
-      .att("patternTransform", transform);
+    const patternNode = addPattern(
+      this.defs,
+      id,
+      0,
+      0,
+      pattern.patternWidth,
+      pattern.patternHeight,
+      transform
+    );
 
-    patternNode
-      .ele("rect")
-      .att("x", 0)
-      .att("y", 0)
-      .att("width", pattern.patternWidth)
-      .att("height", pattern.patternHeight)
-      .att("style", this._getFillColorProp(fillerModel.color1));
+    const backgroundColor = this._getColor(fillerModel.color1);
+    addRectangle(
+      patternNode,
+      0,
+      0,
+      pattern.patternWidth,
+      pattern.patternHeight,
+      backgroundColor
+    );
 
     const originalId = `${id}_original`;
-    patternNode
-      .ele("path")
-      .att("d", pattern.path)
-      .att("id", originalId)
-      .att("style", this._getFillColorProp(fillerModel.color2));
+    const style = this._getFillColorProp(fillerModel.color2);
+    addPath(patternNode, pattern.path, originalId, undefined, style);
 
     if (pattern.copies) {
       for (const transform of pattern.copies) {
-        patternNode
-          .ele("use")
-          .att("href", `#${originalId}`)
-          .att("transform", transform);
+        addUse(patternNode, originalId, undefined, undefined, transform);
       }
     }
 
@@ -364,14 +365,7 @@ export default class SvgBuilder {
     if (!symbolId) {
       symbolId = `symbol_${symbolDef.id}`;
       this.definedSymbol[symbolDef.id] = symbolId;
-
-      this.defs
-        .ele("symbol")
-        .att("id", symbolId)
-        .att("width", symbolDef.width)
-        .att("height", symbolDef.height)
-        .att("viewBox", `0 0 ${symbolDef.width} ${symbolDef.height}`)
-        .raw(symbolDef.xml);
+      addSymbol(this.defs, symbolId, symbolDef);
     }
 
     return symbolId;
