@@ -222,26 +222,22 @@ export default class SvgBuilder {
   private _getDefaultFiller(): string {
     if (!this.defaultFillerId) {
       this.defaultFillerId = "default-filler";
-
-      const size = 50;
-      const half = size / 2;
-      const color1 = "white";
-      const color2 = "grey";
-
-      const patternNode = addPattern(
-        this.defs,
-        this.defaultFillerId,
-        0,
-        0,
-        size,
-        size
-      );
-
-      addRectangle(patternNode, 0, 0, size, size, color1);
-      addRectangle(patternNode, half, 0, half, half, color2);
-      addRectangle(patternNode, 0, half, half, half, color2);
+      this._addDefaultFiller(this.defaultFillerId);
     }
     return this.defaultFillerId;
+  }
+
+  private _addDefaultFiller(id: string) {
+    const size = 50;
+    const half = size / 2;
+    const color1 = "white";
+    const color2 = "grey";
+
+    const patternNode = addPattern(this.defs, id, 0, 0, size, size);
+
+    addRectangle(patternNode, 0, 0, size, size, color1);
+    addRectangle(patternNode, half, 0, half, half, color2);
+    addRectangle(patternNode, 0, half, half, half, color2);
   }
 
   private _getSolidFiller(key: string): string {
@@ -272,25 +268,24 @@ export default class SvgBuilder {
 
     const symbolId = this._addSymbol(seme.charge);
 
-    const containerSize = (
+    const containerBounds = (
       container.type == "symbol" ? container.item : container.path
-    ).bounds.size;
+    ).bounds;
 
-    const scaleCoef = containerSize.width / (seme.width * seme.repetition);
+    const w = seme.width;
+    const h = seme.height;
+
+    const scaleCoef = containerBounds.width / (w * seme.repetition);
     const transform = `scale(${scaleCoef},${scaleCoef})`;
 
-    const patternNode = addPattern(
-      this.defs,
-      id,
-      0,
-      0,
-      seme.width,
-      seme.height,
-      transform
-    );
+    // Align pattern
+    const x = containerBounds.x / scaleCoef;
+    const y = containerBounds.y / scaleCoef;
+
+    const patternNode = addPattern(this.defs, id, x, y, w, h, transform);
 
     const backgroundColor = this.palette.getColor(model.fieldColor);
-    addRectangle(patternNode, 0, 0, seme.width, seme.height, backgroundColor);
+    addRectangle(patternNode, 0, 0, w, h, backgroundColor);
 
     const style =
       this._getFillColorProp(model.chargeColor) +
@@ -307,8 +302,8 @@ export default class SvgBuilder {
     fillerModel: FillerPattern,
     container: SimpleShape | SymbolShape
   ): string {
-    const size = (container.type == "symbol" ? container.item : container.path)
-      .bounds.size;
+    const bounds = (container.type == "symbol" ? container.item : container.path)
+      .bounds;
     const rotation = this._getPatternRotation(fillerModel);
 
     const pattern = getPatternVisualInfo(fillerModel.patternName);
@@ -317,13 +312,17 @@ export default class SvgBuilder {
 
     const id = `pattern${this.patternCount++}`;
 
-    const scaleCoef = size.width / (w * pattern.patternRepetition);
+    const scaleCoef = bounds.width / (w * pattern.patternRepetition);
     let transform = `scale(${scaleCoef},${scaleCoef})`;
     if (rotation) {
       transform += `rotate(${rotation})`;
     }
 
-    const patternNode = addPattern(this.defs, id, 0, 0, w, h, transform);
+    // Align pattern (fail if rotation is applied)
+    const x = bounds.x / scaleCoef;
+    const y = bounds.y / scaleCoef;
+
+    const patternNode = addPattern(this.defs, id, x, y, w, h, transform);
 
     const backgroundColor = this.palette.getColor(fillerModel.color1);
     addRectangle(patternNode, 0, 0, w, h, backgroundColor);
