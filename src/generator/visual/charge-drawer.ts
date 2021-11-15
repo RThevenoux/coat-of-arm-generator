@@ -1,5 +1,5 @@
-import { createStrips } from "./factory/StripFactory";
-import { createCross, createCrossSaltire } from "./factory/CrossFactory";
+import { createStrips } from "./shape/StripFactory";
+import { createCross, createCrossSaltire } from "./shape/CrossFactory";
 import drawSymbol from "./symbol-drawer";
 import SvgBuilder from "./SvgBuilder";
 import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";

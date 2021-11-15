@@ -2,15 +2,12 @@ import * as paper from "paper";
 import xmlBuilder from "xmlbuilder";
 import { getSemeVisualInfo } from "@/service/ChargeService";
 import {
-  Direction,
-  ColorId,
   FillerModel,
   FillerPattern,
   FillerSeme,
   FillerStrip,
 } from "../model.type";
 import { SimpleShape, SymbolShape } from "./type";
-import { getPatternVisualInfo } from "@/service/PatternService";
 import { ChargeVisualInfo } from "@/service/visual.type";
 import {
   addGradientStop,
@@ -27,6 +24,9 @@ import {
   strokeStyle,
 } from "./svg/SvgHelper";
 import { Palette } from "./Palette";
+import { createPatternFiller } from "./filler/pattern-filler";
+import { createDefaultFiller } from "./filler/default-filler";
+import { createStripFiller } from "./filler/strip-filler";
 
 export default class SvgBuilder {
   private readonly container: xmlBuilder.XMLElement;
@@ -165,94 +165,31 @@ export default class SvgBuilder {
     }
   }
 
-  private async _getStripFiller(
+  private _getStripFiller(
     model: FillerStrip,
     container: SimpleShape | SymbolShape
   ) {
-    const item = container.type == "symbol" ? container.item : container.path;
-
-    const angle = this._getStripAngle(model.direction, item.bounds);
-
-    const clone = item.clone();
-    clone.rotate(-angle, new paper.Point(0, 0));
-
-    const pathHeight = clone.bounds.height;
-    const scaleCoef = pathHeight / model.count;
-
-    const x = 0;
-    const y =
-      (-Math.sin((angle * Math.PI) / 180) * item.bounds.x +
-        Math.cos((angle * Math.PI) / 180) * item.bounds.y) /
-      scaleCoef;
-    const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
-
     const id = this.nextPatternId();
-    const color1 = this.palette.getColor(model.color1);
-    const color2 = this.palette.getColor(model.color2);
-    const patternNode = addPattern(this.defs, id, x, y, 1, 1, transform);
-
-    addRectangle(patternNode, 0, 0, 1, 1, color1);
-    addRectangle(patternNode, 0, 0.5, 1, 0.5, color2);
-
+    createStripFiller(model, container, this.defs, id, this.palette);
     return id;
-  }
-
-  private _getStripAngle(
-    direction: Direction,
-    bounds: paper.Rectangle
-  ): number {
-    const pathAngle = (Math.atan(bounds.height / bounds.width) * 180) / Math.PI;
-    switch (direction) {
-      case "0":
-        return 0;
-      case "45":
-        return pathAngle;
-      case "90":
-        return -90;
-      case "135":
-        return -pathAngle;
-    }
-  }
-
-  private _getFillColorProp(key: ColorId): string {
-    const color = this.palette.getColor(key);
-    return fillColorStyle(color);
   }
 
   private _getDefaultFiller(): string {
     if (!this.defaultFillerId) {
-      this.defaultFillerId = "default-filler";
-      this._addDefaultFiller(this.defaultFillerId);
+      this.defaultFillerId = createDefaultFiller(this.defs, "default-filler");
     }
     return this.defaultFillerId;
   }
 
-  private _addDefaultFiller(id: string) {
-    const size = 50;
-    const half = size / 2;
-    const color1 = "white";
-    const color2 = "grey";
-
-    const patternNode = addPattern(this.defs, id, 0, 0, size, size);
-
-    addRectangle(patternNode, 0, 0, size, size, color1);
-    addRectangle(patternNode, half, 0, half, half, color2);
-    addRectangle(patternNode, 0, half, half, half, color2);
-  }
-
   private _getSolidFiller(key: string): string {
-    const existingId = this.definedSolidFiller[key];
-    if (existingId) {
-      return existingId;
+    let fillerId = this.definedSolidFiller[key];
+    if (!fillerId) {
+      fillerId = `solid-${key}`;
+      const color = this.palette.getColor(key);
+      addSolidGradient(this.defs, fillerId, color);
+      this.definedSolidFiller[key] = fillerId;
     }
-
-    // Create new Solid Filler
-    const id = `solid-${key}`;
-    const color = this.palette.getColor(key);
-    addSolidGradient(this.defs, id, color);
-
-    this.definedSolidFiller[key] = id;
-    return id;
+    return fillerId;
   }
 
   private nextPatternId(): string {
@@ -263,9 +200,9 @@ export default class SvgBuilder {
     model: FillerSeme,
     container: SimpleShape | SymbolShape
   ): Promise<string> {
-    const seme = await getSemeVisualInfo(model.chargeId);
     const id = this.nextPatternId();
 
+    const seme = await getSemeVisualInfo(model.chargeId);
     const symbolId = this._addSymbol(seme.charge);
 
     const containerBounds = (
@@ -287,8 +224,9 @@ export default class SvgBuilder {
     const backgroundColor = this.palette.getColor(model.fieldColor);
     addRectangle(patternNode, 0, 0, w, h, backgroundColor);
 
-    const style =
-      this._getFillColorProp(model.chargeColor) +
+    const chargeColor = this.palette.getColor(model.chargeColor);
+
+    const style = fillColorStyle(chargeColor) +
       strokeStyle(this.defaultStrokeWidth);
 
     for (const copyTransform of seme.copies) {
@@ -302,41 +240,8 @@ export default class SvgBuilder {
     fillerModel: FillerPattern,
     container: SimpleShape | SymbolShape
   ): string {
-    const bounds = (container.type == "symbol" ? container.item : container.path)
-      .bounds;
-    const rotation = this._getPatternRotation(fillerModel);
-
-    const pattern = getPatternVisualInfo(fillerModel.patternName);
-    const w = pattern.patternWidth;
-    const h = pattern.patternHeight;
-
-    const id = `pattern${this.patternCount++}`;
-
-    const scaleCoef = bounds.width / (w * pattern.patternRepetition);
-    let transform = `scale(${scaleCoef},${scaleCoef})`;
-    if (rotation) {
-      transform += `rotate(${rotation})`;
-    }
-
-    // Align pattern (fail if rotation is applied)
-    const x = bounds.x / scaleCoef;
-    const y = bounds.y / scaleCoef;
-
-    const patternNode = addPattern(this.defs, id, x, y, w, h, transform);
-
-    const backgroundColor = this.palette.getColor(fillerModel.color1);
-    addRectangle(patternNode, 0, 0, w, h, backgroundColor);
-
-    const originalId = `${id}_original`;
-    const style = this._getFillColorProp(fillerModel.color2);
-    addPath(patternNode, pattern.path, originalId, undefined, style);
-
-    if (pattern.copies) {
-      for (const transform of pattern.copies) {
-        addUse(patternNode, originalId, undefined, undefined, transform);
-      }
-    }
-
+    const id = this.nextPatternId();
+    createPatternFiller(fillerModel, container, this.defs, id, this.palette);
     return id;
   }
 
@@ -350,23 +255,5 @@ export default class SvgBuilder {
     }
 
     return symbolId;
-  }
-
-  /* Rotation is only used by "fusele" */
-  private _getPatternRotation(description: FillerPattern): number | undefined {
-    if (!description.angle) {
-      return undefined;
-    }
-    switch (description.angle) {
-      case "bande":
-        return -45;
-      case "barre":
-        return 45;
-      case "defaut":
-        return undefined;
-      default:
-        console.log("Invalid angle" + description.angle);
-        return undefined;
-    }
   }
 }
