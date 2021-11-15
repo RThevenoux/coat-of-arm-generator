@@ -10,9 +10,8 @@ export function createStripFiller(
   container: SimpleShape | SymbolShape,
   defNode: XMLElement,
   id: string,
-  palette: Palette,
-) {
-
+  palette: Palette
+): string {
   const item = container.type == "symbol" ? container.item : container.path;
 
   const angle = _getStripAngle(model.direction, item.bounds);
@@ -40,10 +39,7 @@ export function createStripFiller(
   return id;
 }
 
-function _getStripAngle(
-  direction: Direction,
-  bounds: paper.Rectangle
-): number {
+function _getStripAngle(direction: Direction, bounds: paper.Rectangle): number {
   const pathAngle = (Math.atan(bounds.height / bounds.width) * 180) / Math.PI;
   switch (direction) {
     case "0":

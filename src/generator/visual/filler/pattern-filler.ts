@@ -2,7 +2,13 @@ import { getPatternVisualInfo } from "@/service/PatternService";
 import { XMLElement } from "xmlbuilder";
 import { FillerPattern } from "../../model.type";
 import { Palette } from "../Palette";
-import { addPath, addPattern, addRectangle, addUse, fillColorStyle } from "../svg/SvgHelper";
+import {
+  addPath,
+  addPattern,
+  addRectangle,
+  addUse,
+  fillColorStyle,
+} from "../svg/SvgHelper";
 import { SimpleShape, SymbolShape } from "../type";
 
 export function createPatternFiller(
@@ -10,7 +16,7 @@ export function createPatternFiller(
   container: SimpleShape | SymbolShape,
   defNode: XMLElement,
   id: string,
-  palette: Palette,
+  palette: Palette
 ): void {
   if (container.type == "strip") {
     // Should do special case
@@ -22,11 +28,13 @@ export function createPatternFiller(
   }
 }
 
-function defaultFiller(fillerModel: FillerPattern,
+function defaultFiller(
+  fillerModel: FillerPattern,
   bounds: paper.Rectangle,
   defNode: XMLElement,
   id: string,
-  palette: Palette) {
+  palette: Palette
+) {
   const rotation = _getPatternRotation(fillerModel);
 
   const pattern = getPatternVisualInfo(fillerModel.patternName);

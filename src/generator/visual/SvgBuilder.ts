@@ -226,8 +226,8 @@ export default class SvgBuilder {
 
     const chargeColor = this.palette.getColor(model.chargeColor);
 
-    const style = fillColorStyle(chargeColor) +
-      strokeStyle(this.defaultStrokeWidth);
+    const style =
+      fillColorStyle(chargeColor) + strokeStyle(this.defaultStrokeWidth);
 
     for (const copyTransform of seme.copies) {
       addUse(patternNode, symbolId, undefined, style, copyTransform);
