@@ -30,12 +30,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { ColorId } from "../generator/model.type";
-import { Palette } from "../service/visual.type";
+import { PaletteData } from "../service/visual.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 import { FillerPickerState } from "./FillerPickerModel";
 import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
 
-const palette: Palette = {
+const palette: PaletteData = {
   or: "ff0",
   argent: "fff",
   sable: "000",

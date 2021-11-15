@@ -1,6 +1,6 @@
 import { ColorId } from "../generator/model.type";
 
-export type Palette = Record<ColorId, string>;
+export type PaletteData = Record<ColorId, string>;
 
 export interface PatternVisualInfo {
   patternWidth: number;

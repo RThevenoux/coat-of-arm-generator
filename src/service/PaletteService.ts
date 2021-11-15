@@ -1,10 +1,10 @@
 import { MyOption } from "./MyOptions.type";
-import { Palette } from "./visual.type";
+import { PaletteData } from "./visual.type";
 
 // Data
 import data from "./data/palettes.json";
 
-const visual: Record<string, Palette> = {};
+const visual: Record<string, PaletteData> = {};
 const options: MyOption[] = [];
 
 let defaultId: string | null = null;
@@ -33,6 +33,6 @@ export function getDefaultPaletteId(): string {
   return defaultId;
 }
 
-export default function getPalette(paletteId: string): Palette {
+export default function getPaletteData(paletteId: string): PaletteData {
   return visual[paletteId];
 }

@@ -33,7 +33,7 @@ export function addSolidGradient(
   return gradient;
 }
 
-function addLinearGradient(parentNode: XMLElement, id: string) {
+function addLinearGradient(parentNode: XMLElement, id: string): XMLElement {
   return parentNode.ele("linearGradient").att("id", id);
 }
 
@@ -146,8 +146,8 @@ export function addSymbol(
   parentNode: XMLElement,
   symbolId: string,
   symbolDef: ChargeVisualInfo
-) {
-  parentNode
+): XMLElement {
+  return parentNode
     .ele("symbol")
     .att("id", symbolId)
     .att("width", symbolDef.width)

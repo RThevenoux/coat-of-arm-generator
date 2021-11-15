@@ -11,7 +11,7 @@ import {
 } from "../model.type";
 import { SimpleShape, SymbolShape } from "./type";
 import { getPatternVisualInfo } from "@/service/PatternService";
-import { ChargeVisualInfo, Palette } from "@/service/visual.type";
+import { ChargeVisualInfo } from "@/service/visual.type";
 import {
   addGradientStop,
   addPath,
@@ -26,11 +26,9 @@ import {
   refStyle,
   strokeStyle,
 } from "./svg/SvgHelper";
+import { Palette } from "./Palette";
 
 export default class SvgBuilder {
-  private readonly escutcheonPath: paper.Path;
-  private readonly palette: Palette;
-  private readonly defaultStrokeWidth: number;
   private readonly container: xmlBuilder.XMLElement;
   private readonly defs: xmlBuilder.XMLElement;
 
@@ -41,9 +39,9 @@ export default class SvgBuilder {
   private escutcheonPathId: string | null = null;
 
   constructor(
-    escutcheonPath: paper.Path,
-    palette: Palette,
-    defaultStrokeWidth: number
+    private readonly escutcheonPath: paper.Path,
+    private readonly palette: Palette,
+    private readonly defaultStrokeWidth: number
   ) {
     this.palette = palette;
     this.defaultStrokeWidth = defaultStrokeWidth;
@@ -189,10 +187,12 @@ export default class SvgBuilder {
     const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
 
     const id = this.nextPatternId();
+    const color1 = this.palette.getColor(model.color1);
+    const color2 = this.palette.getColor(model.color2);
     const patternNode = addPattern(this.defs, id, x, y, 1, 1, transform);
 
-    addRectangle(patternNode, 0.0, 0.0, 1.0, 1.0, this._getColor(model.color1));
-    addRectangle(patternNode, 0.0, 0.5, 1.0, 0.5, this._getColor(model.color2));
+    addRectangle(patternNode, 0, 0, 1, 1, color1);
+    addRectangle(patternNode, 0, 0.5, 1, 0.5, color2);
 
     return id;
   }
@@ -215,12 +215,8 @@ export default class SvgBuilder {
   }
 
   private _getFillColorProp(key: ColorId): string {
-    const color = this._getColor(key);
+    const color = this.palette.getColor(key);
     return fillColorStyle(color);
-  }
-
-  private _getColor(key: ColorId): string {
-    return `#${this.palette[key]}`;
   }
 
   private _getDefaultFiller(): string {
@@ -256,7 +252,7 @@ export default class SvgBuilder {
 
     // Create new Solid Filler
     const id = `solid-${key}`;
-    const color = this._getColor(key);
+    const color = this.palette.getColor(key);
     addSolidGradient(this.defs, id, color);
 
     this.definedSolidFiller[key] = id;
@@ -293,7 +289,7 @@ export default class SvgBuilder {
       transform
     );
 
-    const backgroundColor = this._getColor(model.fieldColor);
+    const backgroundColor = this.palette.getColor(model.fieldColor);
     addRectangle(patternNode, 0, 0, seme.width, seme.height, backgroundColor);
 
     const style =
@@ -316,35 +312,21 @@ export default class SvgBuilder {
     const rotation = this._getPatternRotation(fillerModel);
 
     const pattern = getPatternVisualInfo(fillerModel.patternName);
+    const w = pattern.patternWidth;
+    const h = pattern.patternHeight;
 
     const id = `pattern${this.patternCount++}`;
 
-    const scaleCoef =
-      size.width / (pattern.patternWidth * pattern.patternRepetition);
+    const scaleCoef = size.width / (w * pattern.patternRepetition);
     let transform = `scale(${scaleCoef},${scaleCoef})`;
     if (rotation) {
       transform += `rotate(${rotation})`;
     }
 
-    const patternNode = addPattern(
-      this.defs,
-      id,
-      0,
-      0,
-      pattern.patternWidth,
-      pattern.patternHeight,
-      transform
-    );
+    const patternNode = addPattern(this.defs, id, 0, 0, w, h, transform);
 
-    const backgroundColor = this._getColor(fillerModel.color1);
-    addRectangle(
-      patternNode,
-      0,
-      0,
-      pattern.patternWidth,
-      pattern.patternHeight,
-      backgroundColor
-    );
+    const backgroundColor = this.palette.getColor(fillerModel.color1);
+    addRectangle(patternNode, 0, 0, w, h, backgroundColor);
 
     const originalId = `${id}_original`;
     const style = this._getFillColorProp(fillerModel.color2);

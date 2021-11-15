@@ -3,10 +3,11 @@ import { VisualConfModel } from "./VisualConfModel";
 import { getEscutcheonPath } from "../../service/EscutcheonService";
 
 import SvgBuilder from "./SvgBuilder";
-import getPalette from "../../service/PaletteService";
+import getPaletteData from "../../service/PaletteService";
 import * as paper from "paper";
 import drawField from "./field-drawer";
 import { FieldShape } from "./type";
+import { Palette } from "./Palette";
 
 export async function generateVisual(
   model: FieldModel,
@@ -22,7 +23,8 @@ export async function generateVisual(
   const escutcheonData = getEscutcheonPath(configuration.escutcheon);
   const escutcheonPath = new paper.Path(escutcheonData);
 
-  const palette = getPalette(configuration.palette);
+  const paletteData = getPaletteData(configuration.palette);
+  const palette = new Palette(paletteData);
 
   const builder = new SvgBuilder(
     escutcheonPath,
