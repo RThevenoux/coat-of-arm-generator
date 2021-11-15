@@ -1,16 +1,14 @@
 import * as paper from "paper";
 import { Direction, FillerStrip } from "@/generator/model.type";
-import { XMLElement } from "xmlbuilder";
-import { Palette } from "../Palette";
 import { addPattern, addRectangle } from "../svg/SvgHelper";
 import { SimpleShape, SymbolShape } from "../type";
+import SvgBuilder from "../SvgBuilder";
 
 export function createStripFiller(
+  builder: SvgBuilder,
   model: FillerStrip,
   container: SimpleShape | SymbolShape,
-  defNode: XMLElement,
-  id: string,
-  palette: Palette
+  id: string
 ): string {
   const item = container.type == "symbol" ? container.item : container.path;
 
@@ -29,9 +27,9 @@ export function createStripFiller(
     scaleCoef;
   const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
 
-  const color1 = palette.getColor(model.color1);
-  const color2 = palette.getColor(model.color2);
-  const patternNode = addPattern(defNode, id, x, y, 1, 1, transform);
+  const color1 = builder.palette.getColor(model.color1);
+  const color2 = builder.palette.getColor(model.color2);
+  const patternNode = addPattern(builder.defs, id, x, y, 1, 1, transform);
 
   addRectangle(patternNode, 0, 0, 1, 1, color1);
   addRectangle(patternNode, 0, 0.5, 1, 0.5, color2);

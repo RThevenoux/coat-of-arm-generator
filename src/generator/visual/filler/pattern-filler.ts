@@ -1,7 +1,5 @@
 import { getPatternVisualInfo } from "@/service/PatternService";
-import { XMLElement } from "xmlbuilder";
 import { FillerPattern } from "../../model.type";
-import { Palette } from "../Palette";
 import {
   addPath,
   addPattern,
@@ -9,31 +7,32 @@ import {
   addUse,
   fillColorStyle,
 } from "../svg/SvgHelper";
+import SvgBuilder from "../SvgBuilder";
 import { SimpleShape, SymbolShape } from "../type";
 
 export function createPatternFiller(
+  builder: SvgBuilder,
   fillerModel: FillerPattern,
   container: SimpleShape | SymbolShape,
-  defNode: XMLElement,
-  id: string,
-  palette: Palette
-): void {
+  id: string
+): string {
   if (container.type == "strip") {
     // Should do special case
-    defaultFiller(fillerModel, container.path.bounds, defNode, id, palette);
+    defaultFiller(builder, fillerModel, container.path.bounds, id);
   } else if (container.type == "symbol") {
-    defaultFiller(fillerModel, container.item.bounds, defNode, id, palette);
+    defaultFiller(builder, fillerModel, container.item.bounds, id);
   } else {
-    defaultFiller(fillerModel, container.path.bounds, defNode, id, palette);
+    defaultFiller(builder, fillerModel, container.path.bounds, id);
   }
+
+  return id;
 }
 
 function defaultFiller(
+  builder: SvgBuilder,
   fillerModel: FillerPattern,
   bounds: paper.Rectangle,
-  defNode: XMLElement,
-  id: string,
-  palette: Palette
+  id: string
 ) {
   const rotation = _getPatternRotation(fillerModel);
 
@@ -51,13 +50,13 @@ function defaultFiller(
   const x = bounds.x / scaleCoef;
   const y = bounds.y / scaleCoef;
 
-  const patternNode = addPattern(defNode, id, x, y, w, h, transform);
+  const patternNode = addPattern(builder.defs, id, x, y, w, h, transform);
 
-  const backgroundColor = palette.getColor(fillerModel.color1);
+  const backgroundColor = builder.palette.getColor(fillerModel.color1);
   addRectangle(patternNode, 0, 0, w, h, backgroundColor);
 
   const originalId = `${id}_original`;
-  const patternColor = palette.getColor(fillerModel.color2);
+  const patternColor = builder.palette.getColor(fillerModel.color2);
   const style = fillColorStyle(patternColor);
   addPath(patternNode, pattern.path, originalId, undefined, style);
 
