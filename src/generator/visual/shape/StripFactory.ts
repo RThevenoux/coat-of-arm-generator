@@ -8,13 +8,13 @@ export function createStrips(
   count: number
 ): StripShape[] {
   switch (angle) {
-    case "0":
+    case "fasce":
       return createFasces(container, count);
-    case "90":
+    case "pal":
       return createPals(container, count);
-    case "135":
+    case "bande":
       return createDiagonals(container, false, count);
-    case "45":
+    case "barre":
       return createDiagonals(container, true, count);
     default:
       console.log("invalid angle " + angle);
@@ -39,7 +39,7 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      angle: "pal",
+      angle: "fasce",
       width: hStrip,
     };
 
@@ -66,7 +66,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      angle: "fasce",
+      angle: "pal",
       width: wStrip,
     };
 
@@ -107,7 +107,7 @@ function createDiagonals(
 
   const vector = new paper.Point(reverse ? [-4 * d, 0] : [4 * d, 0]);
 
-  const angle = Math.atan2(w, h);
+  const angle = Math.atan2(h, w);
   const stripWidth = 2 * d * Math.sin(angle);
 
   const result = [];

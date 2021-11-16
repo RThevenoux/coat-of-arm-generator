@@ -1,6 +1,6 @@
 export type ColorId = string;
 
-export type Direction = "0" | "45" | "90" | "135";
+export type Direction = "fasce" | "barre" | "pal" | "bande";
 
 //
 // Field

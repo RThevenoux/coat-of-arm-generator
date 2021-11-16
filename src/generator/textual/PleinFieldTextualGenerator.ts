@@ -47,13 +47,13 @@ function _getChargeId(charge: ChargeModel): string {
   switch (charge.type) {
     case "strip": {
       switch (charge.direction) {
-        case "0":
+        case "fasce":
           return "fasce";
-        case "45":
+        case "barre":
           return "barre";
-        case "90":
+        case "pal":
           return "pal";
-        case "135":
+        case "bande":
           return "bande";
         default:
           return "strip:" + charge.direction;
@@ -61,9 +61,11 @@ function _getChargeId(charge: ChargeModel): string {
     }
     case "cross": {
       switch (charge.direction) {
-        case "0":
+        case "pal":
+        case "fasce":
           return "croix";
-        case "45":
+        case "barre":
+        case "bande":
           return "sautoir";
         default:
           return "cross:" + charge.direction;

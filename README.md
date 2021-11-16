@@ -6,7 +6,8 @@ npm install
 ```
 
 ### Compiles and hot-reloads for development
-Windows - PowerShell:
+If using NodeJS 17 :
+- Windows - PowerShell:
 ```
 $ENV:NODE_OPTIONS = '--openssl-legacy-provider'
 ```

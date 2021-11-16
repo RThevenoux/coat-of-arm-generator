@@ -22,12 +22,12 @@ export async function initialChargeModel(): Promise<SingleChargePickerModel> {
   return {
     type: "strip",
     strip: {
-      angle: "0",
+      angle: "pal",
       count: 1,
       filler: await initialFiller(),
     },
     cross: {
-      angle: "0",
+      angle: "fasce",
       filler: await initialFiller(),
     },
     symbol: {
@@ -57,7 +57,7 @@ async function initialFiller(): Promise<FillerEditorModel> {
     patternAngle: "bande",
     patternName: "echiquete",
     semeChargeId: await getDefaultChargeId(),
-    stripAngle: "0",
+    stripAngle: "pal",
     stripCount: 3,
   };
 }

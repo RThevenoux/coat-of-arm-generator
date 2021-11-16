@@ -119,13 +119,15 @@ function _strip(model: FillerStrip): string {
 
 function _stripFillerText(direction: Direction): string {
   switch (direction) {
-    case "0":
+    case "fasce":
       return "fascé";
-    case "45":
+    case "barre":
       return "barré";
-    case "90":
+    case "pal":
       return "palé";
-    case "135":
+    case "bande":
       return "bandé";
+    default:
+      return "[?]";
   }
 }

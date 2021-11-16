@@ -43,7 +43,7 @@ function drawCross(
   charge: ChargeCross,
   container: FieldShape
 ): Promise<void> {
-  if (charge.direction === "45" || charge.direction === "135") {
+  if (charge.direction === "barre" || charge.direction === "bande") {
     const shape = createCrossSaltire(container);
     return builder.fill(charge.filler, shape);
   } else {

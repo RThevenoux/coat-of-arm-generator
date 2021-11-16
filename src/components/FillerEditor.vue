@@ -103,10 +103,10 @@
           @change="update"
         />
         <select v-model="value.stripAngle" @change="update">
-          <option value="0">fascé</option>
-          <option value="45">barré</option>
-          <option value="90">palé</option>
-          <option value="135">bandé</option>
+          <option value="fasce">fascé</option>
+          <option value="barre">barré</option>
+          <option value="pal">palé</option>
+          <option value="bande">bandé</option>
         </select>
 
         <input

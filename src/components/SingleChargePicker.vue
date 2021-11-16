@@ -7,10 +7,10 @@
     </select>
     <div v-if="value.type === 'strip'" class="flex-container">
       <select v-model="value.strip.angle" @change="update" key="strip-angle">
-        <option value="0">en fasce</option>
-        <option value="45">en barre</option>
-        <option value="90">en pal</option>
-        <option value="135">en bande</option>
+        <option value="fasce">en fasce</option>
+        <option value="barre">en barre</option>
+        <option value="pal">en pal</option>
+        <option value="bande">en bande</option>
       </select>
       <input
         v-model.number="value.strip.count"
@@ -27,8 +27,8 @@
     </div>
     <div v-else-if="value.type === 'cross'" class="flex-container">
       <select v-model="value.cross.angle" @change="update" key="cross-angle">
-        <option value="0">droite</option>
-        <option value="45">sautoir</option>
+        <option value="fasce">droite</option>
+        <option value="barre">sautoir</option>
       </select>
       <FillerPicker
         v-model="value.cross.filler"

@@ -12,20 +12,20 @@ export function createStripFiller(
 ): string {
   const item = container.type == "symbol" ? container.item : container.path;
 
-  const angle = _getStripAngle(model.direction, item.bounds);
+  const angleRad = _getStripAngle(model.direction, item.bounds);
+  const angleDeg = (angleRad * 180) / Math.PI;
 
   const clone = item.clone();
-  clone.rotate(-angle, new paper.Point(0, 0));
+  clone.rotate(-angleDeg, new paper.Point(0, 0));
 
   const pathHeight = clone.bounds.height;
   const scaleCoef = pathHeight / model.count;
 
   const x = 0;
   const y =
-    (-Math.sin((angle * Math.PI) / 180) * item.bounds.x +
-      Math.cos((angle * Math.PI) / 180) * item.bounds.y) /
+    (Math.cos(angleRad) * item.bounds.y - Math.sin(angleRad) * item.bounds.x) /
     scaleCoef;
-  const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angle})`;
+  const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angleDeg})`;
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
@@ -38,15 +38,14 @@ export function createStripFiller(
 }
 
 function _getStripAngle(direction: Direction, bounds: paper.Rectangle): number {
-  const pathAngle = (Math.atan(bounds.height / bounds.width) * 180) / Math.PI;
   switch (direction) {
-    case "0":
+    case "fasce":
       return 0;
-    case "45":
-      return pathAngle;
-    case "90":
-      return -90;
-    case "135":
-      return -pathAngle;
+    case "barre":
+      return -Math.atan2(bounds.height, bounds.width);
+    case "pal":
+      return -Math.PI / 2;
+    case "bande":
+      return Math.atan2(bounds.height, bounds.width);
   }
 }
