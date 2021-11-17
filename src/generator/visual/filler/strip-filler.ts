@@ -1,5 +1,5 @@
 import * as paper from "paper";
-import { Direction, FillerStrip } from "@/generator/model.type";
+import { FillerStrip } from "@/generator/model.type";
 import { addPattern, addRectangle } from "../svg/SvgHelper";
 import { SimpleShape, SymbolShape } from "../type";
 import SvgBuilder from "../SvgBuilder";
@@ -10,22 +10,59 @@ export function createStripFiller(
   container: SimpleShape | SymbolShape,
   id: string
 ): string {
-  const item = container.type == "symbol" ? container.item : container.path;
+  const item = getItem(container);
+  switch (model.direction) {
+    case "pal":
+      createPal(builder, model, item, id);
+      break;
+    case "fasce":
+      createFasce(builder, model, item, id);
+      break;
+    case "bande":
+      createDiagonal(builder, model, true, item, id);
+      break;
+    case "barre":
+      createDiagonal(builder, model, false, item, id);
+      break;
+    default:
+      throw new Error("Unsupported direction: " + model.direction);
+  }
+  return id;
+}
 
-  const angleRad = _getStripAngle(model.direction, item.bounds);
-  const angleDeg = (angleRad * 180) / Math.PI;
+function createPal(
+  builder: SvgBuilder,
+  model: FillerStrip,
+  item: paper.Item,
+  id: string
+) {
+  const pathWidth = item.bounds.width;
+  const scaleCoef = pathWidth / model.count;
 
-  const clone = item.clone();
-  clone.rotate(-angleDeg, new paper.Point(0, 0));
+  const x = item.bounds.x / scaleCoef;
+  const y = 0; // pattern is invariant by y-translation
+  const transform = `scale(${scaleCoef},${scaleCoef})`;
 
-  const pathHeight = clone.bounds.height;
+  const color1 = builder.palette.getColor(model.color1);
+  const color2 = builder.palette.getColor(model.color2);
+  const patternNode = addPattern(builder.defs, id, x, y, 1, 1, transform);
+
+  addRectangle(patternNode, 0, 0, 1, 1, color1);
+  addRectangle(patternNode, 0.5, 0, 0.5, 1, color2);
+}
+
+function createFasce(
+  builder: SvgBuilder,
+  model: FillerStrip,
+  item: paper.Item,
+  id: string
+): void {
+  const pathHeight = item.bounds.height;
   const scaleCoef = pathHeight / model.count;
 
-  const x = 0;
-  const y =
-    (Math.cos(angleRad) * item.bounds.y - Math.sin(angleRad) * item.bounds.x) /
-    scaleCoef;
-  const transform = `scale(${scaleCoef},${scaleCoef})rotate(${angleDeg})`;
+  const x = 0; // pattern is invariant by x-translation
+  const y = item.bounds.y / scaleCoef;
+  const transform = `scale(${scaleCoef},${scaleCoef})`;
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
@@ -33,19 +70,48 @@ export function createStripFiller(
 
   addRectangle(patternNode, 0, 0, 1, 1, color1);
   addRectangle(patternNode, 0, 0.5, 1, 0.5, color2);
-
-  return id;
 }
 
-function _getStripAngle(direction: Direction, bounds: paper.Rectangle): number {
-  switch (direction) {
-    case "fasce":
-      return 0;
-    case "barre":
-      return -Math.atan2(bounds.height, bounds.width);
-    case "pal":
-      return -Math.PI / 2;
-    case "bande":
-      return Math.atan2(bounds.height, bounds.width);
+function createDiagonal(
+  builder: SvgBuilder,
+  model: FillerStrip,
+  bande: boolean,
+  item: paper.Item,
+  id: string
+): void {
+  const angleRad = Math.atan2(item.bounds.height, item.bounds.width);
+  const angleDeg = (angleRad * 180) / Math.PI;
+
+  const clone = item.clone();
+
+  const rotationDeg = bande ? 90 - angleDeg : angleDeg - 90;
+  // paperjs rotation is anti-clockwise
+  clone.rotate(rotationDeg, new paper.Point(0, 0));
+
+  const scaleCoef = clone.bounds.width / model.count;
+
+  const x = clone.bounds.left / scaleCoef;
+  const y = 0; // pattern is invariant by y-translation
+
+  // svg rotation is clockwise
+  const transform = `scale(${scaleCoef},${scaleCoef})rotate(${-rotationDeg})`;
+
+  const color1 = builder.palette.getColor(model.color1);
+  const color2 = builder.palette.getColor(model.color2);
+  const patternNode = addPattern(builder.defs, id, x, y, 1, 1, transform);
+
+  addRectangle(patternNode, 0, 0, 1, 1, color1);
+  if (bande) {
+    addRectangle(patternNode, 0, 0, 0.5, 1, color2);
+  } else {
+    addRectangle(patternNode, 0.5, 0, 0.5, 1, color2);
+  }
+}
+
+function getItem(container: SimpleShape | SymbolShape): paper.Item {
+  if (container.type === "symbol") {
+    return container.item;
+  } else {
+    return container.path;
   }
 }
