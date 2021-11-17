@@ -39,7 +39,8 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      angle: "fasce",
+      direction: "fasce",
+      angle: 0,
       width: hStrip,
     };
 
@@ -66,7 +67,8 @@ function createPals(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      angle: "pal",
+      direction: "pal",
+      angle: Math.PI / 2,
       width: wStrip,
     };
 
@@ -78,7 +80,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
 
 function createDiagonals(
   container: FieldShape,
-  reverse: boolean,
+  barre: boolean,
   count: number
 ): StripShape[] {
   const bounds = container.path.bounds;
@@ -99,13 +101,13 @@ function createDiagonals(
   const pathData = `M ${p0} L ${p1} ${p2} ${p3} z`;
 
   const patternPath = new paper.Path(pathData);
-  if (reverse) {
+  if (barre) {
     // Mirror to obtain the '/' diagonal
     const center = new paper.Point(x + w / 2, y + h / 2);
     patternPath.scale(-1, 1, center);
   }
 
-  const vector = new paper.Point(reverse ? [-4 * d, 0] : [4 * d, 0]);
+  const vector = new paper.Point(barre ? [-4 * d, 0] : [4 * d, 0]);
 
   const angle = Math.atan2(h, w);
   const stripWidth = 2 * d * Math.sin(angle);
@@ -120,7 +122,8 @@ function createDiagonals(
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      angle: reverse ? angle : Math.PI - angle, // rad
+      direction: barre ? "barre" : "bande",
+      angle: barre ? angle : Math.PI - angle, // rad
       width: stripWidth,
     };
     result.push(stripShape);

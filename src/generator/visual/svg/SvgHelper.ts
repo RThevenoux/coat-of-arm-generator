@@ -49,26 +49,32 @@ export function addGradientStop(
     .att("offset", offset);
 }
 
+export interface PatternTransform {
+  x: number;
+  y: number;
+  transform: string;
+}
+
 export function addPattern(
   parentNode: XMLElement,
   id: string,
-  x: number,
-  y: number,
   width: number,
   height: number,
-  transform?: string
+  transform?: PatternTransform
 ): XMLElement {
   const pattern = parentNode
     .ele("pattern")
     .att("id", id)
-    .att("x", x)
-    .att("y", y)
     .att("width", width)
     .att("height", height)
     .att("patternUnits", "userSpaceOnUse");
+
   if (transform) {
-    pattern.att("patternTransform", transform);
+    pattern.att("x", transform.x);
+    pattern.att("y", transform.y);
+    pattern.att("patternTransform", transform.transform);
   }
+
   return pattern;
 }
 

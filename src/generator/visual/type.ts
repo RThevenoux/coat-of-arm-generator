@@ -1,3 +1,5 @@
+import { Direction } from "../model.type";
+
 export interface SymbolShape {
   type: "symbol";
   item: paper.Item;
@@ -12,7 +14,8 @@ export interface FieldShape {
 export interface StripShape {
   type: "strip";
   path: paper.Path;
-  angle: number /*in radian*/ | "pal" | "fasce";
+  direction: Direction;
+  angle: number; // in radian "pal" = PI/2, "fasce" = 0;
   width: number;
 }
 

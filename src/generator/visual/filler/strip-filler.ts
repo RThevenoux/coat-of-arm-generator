@@ -42,10 +42,11 @@ function createPal(
   const x = item.bounds.x / scaleCoef;
   const y = 0; // pattern is invariant by y-translation
   const transform = `scale(${scaleCoef},${scaleCoef})`;
+  const transformParam = { x, y, transform };
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
-  const patternNode = addPattern(builder.defs, id, x, y, 1, 1, transform);
+  const patternNode = addPattern(builder.defs, id, 1, 1, transformParam);
 
   addRectangle(patternNode, 0, 0, 1, 1, color1);
   addRectangle(patternNode, 0.5, 0, 0.5, 1, color2);
@@ -63,10 +64,11 @@ function createFasce(
   const x = 0; // pattern is invariant by x-translation
   const y = item.bounds.y / scaleCoef;
   const transform = `scale(${scaleCoef},${scaleCoef})`;
+  const transformParam = { x, y, transform };
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
-  const patternNode = addPattern(builder.defs, id, x, y, 1, 1, transform);
+  const patternNode = addPattern(builder.defs, id, 1, 1, transformParam);
 
   addRectangle(patternNode, 0, 0, 1, 1, color1);
   addRectangle(patternNode, 0, 0.5, 1, 0.5, color2);
@@ -92,13 +94,13 @@ function createDiagonal(
 
   const x = clone.bounds.left / scaleCoef;
   const y = 0; // pattern is invariant by y-translation
-
   // svg rotation is clockwise
   const transform = `scale(${scaleCoef},${scaleCoef})rotate(${-rotationDeg})`;
+  const transformParam = { x, y, transform };
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
-  const patternNode = addPattern(builder.defs, id, x, y, 1, 1, transform);
+  const patternNode = addPattern(builder.defs, id, 1, 1, transformParam);
 
   addRectangle(patternNode, 0, 0, 1, 1, color1);
   if (bande) {

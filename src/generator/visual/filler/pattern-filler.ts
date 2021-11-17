@@ -43,14 +43,15 @@ function defaultFiller(
   const scaleCoef = bounds.width / (w * pattern.patternRepetition);
   let transform = `scale(${scaleCoef},${scaleCoef})`;
   if (rotation) {
-    transform += `rotate(${rotation})`;
+    transform += `rotate(${-rotation})`;
   }
 
   // Align pattern (fail if rotation is applied)
   const x = bounds.x / scaleCoef;
   const y = bounds.y / scaleCoef;
+  const transformParam = { x, y, transform };
 
-  const patternNode = addPattern(builder.defs, id, x, y, w, h, transform);
+  const patternNode = addPattern(builder.defs, id, w, h, transformParam);
 
   const backgroundColor = builder.palette.getColor(fillerModel.color1);
   addRectangle(patternNode, 0, 0, w, h, backgroundColor);
@@ -74,9 +75,9 @@ function _getPatternRotation(description: FillerPattern): number | undefined {
   }
   switch (description.angle) {
     case "bande":
-      return -45;
-    case "barre":
       return 45;
+    case "barre":
+      return -45;
     case "defaut":
       return undefined;
     default:
