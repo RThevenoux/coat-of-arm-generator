@@ -8,9 +8,12 @@ import {
   fillColorStyle,
   PatternTransform,
   strokeStyle,
+  svgTransform,
 } from "../svg/SvgHelper";
 import SvgBuilder from "../SvgBuilder";
 import { SimpleShape, StripShape, SymbolShape } from "../type";
+import { createPatternTransfrom } from "./util";
+import { SemeVisualInfo } from "@/service/visual.type";
 
 export async function createSemeFiller(
   builder: SvgBuilder,
@@ -18,38 +21,19 @@ export async function createSemeFiller(
   container: SimpleShape | SymbolShape,
   id: string
 ): Promise<string> {
-  if (container.type == "strip") {
-    await stripFiller(builder, model, container, id);
-  } else if (container.type == "symbol") {
-    const bounds = container.item.bounds;
-    await defaultFiller(builder, model, bounds, id);
-  } else {
-    const bounds = container.path.bounds;
-    await defaultFiller(builder, model, bounds, id);
-  }
-  return id;
-}
-
-async function defaultFiller(
-  builder: SvgBuilder,
-  model: FillerSeme,
-  bounds: paper.Rectangle,
-  id: string
-): Promise<void> {
   const seme = await getSemeVisualInfo(model.chargeId);
-  const symbolId = builder._addSymbol(seme.charge);
+
+  let transformParam = null;
+  if (container.type == "strip") {
+    transformParam = stripFiller(container, seme);
+  } else if (container.type == "symbol") {
+    transformParam = defaultFiller(container.item, seme);
+  } else {
+    transformParam = defaultFiller(container.path, seme);
+  }
 
   const w = seme.width;
   const h = seme.height;
-
-  const scaleCoef = bounds.width / (w * seme.repetition);
-  const transform = `scale(${scaleCoef},${scaleCoef})`;
-
-  // Align pattern
-  const x = bounds.x / scaleCoef;
-  const y = bounds.y / scaleCoef;
-
-  const transformParam = { x, y, transform };
 
   const patternNode = addPattern(builder.defs, id, w, h, transformParam);
 
@@ -60,65 +44,38 @@ async function defaultFiller(
   const style =
     fillColorStyle(chargeColor) + strokeStyle(builder.defaultStrokeWidth);
 
-  for (const copyTransform of seme.copies) {
-    addUse(patternNode, symbolId, undefined, style, copyTransform);
-  }
-}
-
-async function stripFiller(
-  builder: SvgBuilder,
-  model: FillerSeme,
-  strip: StripShape,
-  id: string
-) {
-  const seme = await getSemeVisualInfo(model.chargeId);
   const symbolId = builder._addSymbol(seme.charge);
-
-  const w = seme.width;
-  const h = seme.height;
-
-  const transform = getTransform(strip, w);
-
-  const patternNode = addPattern(builder.defs, id, w, h, transform);
-
-  const backgroundColor = builder.palette.getColor(model.fieldColor);
-  addRectangle(patternNode, 0, 0, w, h, backgroundColor);
-
-  const chargeColor = builder.palette.getColor(model.chargeColor);
-  const style =
-    fillColorStyle(chargeColor) + strokeStyle(builder.defaultStrokeWidth);
-
   for (const copyTransform of seme.copies) {
     addUse(patternNode, symbolId, undefined, style, copyTransform);
   }
+  return id;
 }
 
-function getTransform(strip: StripShape, semeWidth: number): PatternTransform {
+function defaultFiller(
+  item: paper.Item,
+  seme: SemeVisualInfo
+): PatternTransform {
+  const bounds = item.bounds;
+  const w = seme.width;
+  const scaleCoef = bounds.width / (w * seme.repetition);
+  return createPatternTransfrom(bounds.topLeft, scaleCoef);
+}
+
+function stripFiller(
+  strip: StripShape,
+  seme: SemeVisualInfo
+): PatternTransform {
   if (strip.direction == "pal" || strip.direction == "fasce") {
-    return getStraigthTransform(strip, semeWidth);
+    const scaleCoef = strip.width / (2 * seme.width);
+    return createPatternTransfrom(strip.path.bounds.topLeft, scaleCoef);
   } else {
-    return getDiagonalTransform(strip, semeWidth);
+    return getDiagonalTransform(strip, seme);
   }
 }
 
-function getStraigthTransform(
-  strip: StripShape,
-  semeWidth: number
-): PatternTransform {
-  const bounds = strip.path.bounds;
-
-  const scaleCoef = strip.width / (2 * semeWidth);
-
-  // lock pattern on x-translation to match top-left corner
-  const x = bounds.x / scaleCoef;
-  const y = bounds.y / scaleCoef;
-
-  return { x, y, transform: `scale(${scaleCoef},${scaleCoef})` };
-}
-
-function getDiagonalTransform(strip: StripShape, semeWidth: number) {
+function getDiagonalTransform(strip: StripShape, seme: SemeVisualInfo) {
   // Compute scaling to display 2 pattern on the strip width
-  const scaleCoef = strip.width / (2 * semeWidth);
+  const scaleCoef = strip.width / (2 * seme.width);
 
   // Compute angle of rotation to apply to pattern
   const angleDeg = (strip.angle * 180) / Math.PI;
@@ -127,11 +84,10 @@ function getDiagonalTransform(strip: StripShape, semeWidth: number) {
   // Compute strip left border x-position in pattern coordinate
   // do not lock pattern position on y-translation. It may be an improvement to do...
   const clone = strip.path.clone();
-  clone.rotate(deltaAngleDeg, new paper.Point(0, 0)); // paperjs rotation is anti-clockwise
+  clone.rotate(deltaAngleDeg, new paper.Point(0, 0));
   const x = clone.bounds.left / scaleCoef;
   const y = 0;
 
-  // svg rotation is clockwise
-  const transform = `scale(${scaleCoef},${scaleCoef})rotate(${-deltaAngleDeg})`;
+  const transform = svgTransform(scaleCoef, deltaAngleDeg);
   return { x, y, transform };
 }

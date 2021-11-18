@@ -1,8 +1,9 @@
 import * as paper from "paper";
 import { FillerStrip } from "@/generator/model.type";
-import { addPattern, addRectangle } from "../svg/SvgHelper";
+import { addPattern, addRectangle, svgTransform } from "../svg/SvgHelper";
 import { SimpleShape, SymbolShape } from "../type";
 import SvgBuilder from "../SvgBuilder";
+import { createPatternTransfrom } from "./util";
 
 export function createStripFiller(
   builder: SvgBuilder,
@@ -39,10 +40,7 @@ function createPal(
   const pathWidth = item.bounds.width;
   const scaleCoef = pathWidth / model.count;
 
-  const x = item.bounds.x / scaleCoef;
-  const y = 0; // pattern is invariant by y-translation
-  const transform = `scale(${scaleCoef},${scaleCoef})`;
-  const transformParam = { x, y, transform };
+  const transformParam = createPatternTransfrom(item.bounds.topLeft, scaleCoef);
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
@@ -61,10 +59,7 @@ function createFasce(
   const pathHeight = item.bounds.height;
   const scaleCoef = pathHeight / model.count;
 
-  const x = 0; // pattern is invariant by x-translation
-  const y = item.bounds.y / scaleCoef;
-  const transform = `scale(${scaleCoef},${scaleCoef})`;
-  const transformParam = { x, y, transform };
+  const transformParam = createPatternTransfrom(item.bounds.topLeft, scaleCoef);
 
   const color1 = builder.palette.getColor(model.color1);
   const color2 = builder.palette.getColor(model.color2);
@@ -95,7 +90,7 @@ function createDiagonal(
   const x = clone.bounds.left / scaleCoef;
   const y = 0; // pattern is invariant by y-translation
   // svg rotation is clockwise
-  const transform = `scale(${scaleCoef},${scaleCoef})rotate(${-rotationDeg})`;
+  const transform = svgTransform(scaleCoef, rotationDeg);
   const transformParam = { x, y, transform };
 
   const color1 = builder.palette.getColor(model.color1);

@@ -136,18 +136,6 @@ export function addRectangle(
     .att("style", fillColorStyle(color));
 }
 
-export function fillColorStyle(color: string): string {
-  return `fill:${color};`;
-}
-
-export function strokeStyle(width: number): string {
-  return `stroke:black;stroke-width:${width}px;`;
-}
-
-export function refStyle(refId: string): string {
-  return `url(#${refId})`;
-}
-
 export function addSymbol(
   parentNode: XMLElement,
   symbolId: string,
@@ -160,4 +148,31 @@ export function addSymbol(
     .att("height", symbolDef.height)
     .att("viewBox", `0 0 ${symbolDef.width} ${symbolDef.height}`)
     .raw(symbolDef.xml);
+}
+
+export function fillColorStyle(color: string): string {
+  return `fill:${color};`;
+}
+
+export function strokeStyle(width: number): string {
+  return `stroke:black;stroke-width:${width}px;`;
+}
+
+export function refStyle(refId: string): string {
+  return `url(#${refId})`;
+}
+
+export function svgTransform(scaleCoef: number, rotation?: number): string {
+  let result = "";
+
+  if (scaleCoef != 1) {
+    result += `scale(${scaleCoef},${scaleCoef})`;
+  }
+
+  if (rotation && rotation != 0) {
+    // svg rotation is clockwise
+    result += `rotate(${-rotation})`;
+  }
+
+  return result;
 }
