@@ -78,10 +78,9 @@ function createDiagonal(
 ): void {
   const angleRad = Math.atan2(item.bounds.height, item.bounds.width);
   const angleDeg = (angleRad * 180) / Math.PI;
+  const rotationDeg = bande ? 90 - angleDeg : angleDeg - 90;
 
   const clone = item.clone();
-
-  const rotationDeg = bande ? 90 - angleDeg : angleDeg - 90;
   // paperjs rotation is anti-clockwise
   clone.rotate(rotationDeg, new paper.Point(0, 0));
 

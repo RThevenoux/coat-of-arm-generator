@@ -17,6 +17,7 @@ export interface StripShape {
   direction: Direction;
   angle: number; // in radian "pal" = PI/2, "fasce" = 0;
   width: number;
+  patternAnchor: paper.Point; // This point can be use to align pattern. The point may be outside of the path, after the strip is clipped by its container
 }
 
 export interface BorderShape {

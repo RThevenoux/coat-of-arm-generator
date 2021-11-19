@@ -29,8 +29,9 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
   const hStrip = bounds.height / (2 * count + 1);
 
   for (let i = 0; i < count; i++) {
+    const topLeft = new paper.Point(bounds.x, bounds.y + (2 * i + 1) * hStrip);
     const strip = new paper.Path.Rectangle({
-      point: [bounds.x, bounds.y + (2 * i + 1) * hStrip],
+      point: topLeft,
       size: [bounds.width, hStrip],
     });
 
@@ -42,6 +43,7 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
       direction: "fasce",
       angle: 0,
       width: hStrip,
+      patternAnchor: topLeft
     };
 
     result.push(stripShape);
@@ -57,8 +59,9 @@ function createPals(container: FieldShape, count: number): StripShape[] {
   const wStrip = bounds.width / (2 * count + 1);
 
   for (let i = 0; i < count; i++) {
+    const topLeft = new paper.Point(bounds.x + (2 * i + 1) * wStrip, bounds.y);
     const strip = new paper.Path.Rectangle({
-      point: [bounds.x + (2 * i + 1) * wStrip, bounds.y],
+      point: topLeft,
       size: [wStrip, bounds.height],
     });
 
@@ -70,6 +73,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
       direction: "pal",
       angle: Math.PI / 2,
       width: wStrip,
+      patternAnchor: topLeft
     };
 
     result.push(stripShape);
@@ -125,6 +129,7 @@ function createDiagonals(
       direction: barre ? "barre" : "bande",
       angle: barre ? angle : Math.PI - angle, // rad
       width: stripWidth,
+      patternAnchor: barre ? stripPath.bounds.topRight : stripPath.bounds.topLeft,
     };
     result.push(stripShape);
   }

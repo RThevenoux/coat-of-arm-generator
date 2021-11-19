@@ -1,4 +1,3 @@
-import * as paper from "paper";
 import { getPatternVisualInfo } from "@/service/PatternService";
 import { PatternVisualInfo } from "@/service/visual.type";
 import { FillerPattern } from "../../model.type";
@@ -8,11 +7,9 @@ import {
   addRectangle,
   addUse,
   fillColorStyle,
-  PatternTransform,
-  svgTransform,
 } from "../svg/SvgHelper";
 import SvgBuilder from "../SvgBuilder";
-import { SimpleShape, StripShape, SymbolShape } from "../type";
+import { SimpleShape, SymbolShape } from "../type";
 import { createPatternTransfrom } from "./util";
 
 export function createPatternFiller(
@@ -70,53 +67,18 @@ function getPatternTransform(
   pattern: PatternVisualInfo,
   rotation?: number
 ) {
-  if (container.type == "strip") {
-    return getStripPatternTransform(container, pattern, rotation);
-  } else if (container.type == "symbol") {
-    return getDefaultPatternTranfrom(container.item.bounds, pattern, rotation);
-  } else {
-    return getDefaultPatternTranfrom(container.path.bounds, pattern, rotation);
-  }
-}
-
-function getDefaultPatternTranfrom(
-  bounds: paper.Rectangle,
-  pattern: PatternVisualInfo,
-  rotation?: number
-) {
-  const w = pattern.patternWidth;
-  const scale = bounds.width / (w * pattern.patternRepetition);
-  return createPatternTransfrom(bounds.topLeft, scale, rotation);
-}
-
-function getStripPatternTransform(
-  strip: StripShape,
-  pattern: PatternVisualInfo,
-  rotation?: number
-): PatternTransform {
   const w = pattern.patternWidth;
   const n = pattern.patternRepetition;
-  const scale = strip.width / (w * n);
 
-  switch (strip.direction) {
-    case "bande":
-    case "barre": {
-      rotation = (strip.angle * 180) / Math.PI - 90 + (rotation ? rotation : 0);
-
-      const clone = strip.path.clone();
-      clone.rotate(rotation, new paper.Point(0, 0));
-
-      const x = clone.bounds.x / scale;
-      const y = 0; // Do not try to align on y-translation
-
-      const transform = svgTransform(scale, rotation);
-      return { x, y, transform };
+  if (container.type == "strip") {
+    const scale = container.width / (w * n);
+    if (container.direction == "bande" || container.direction == "barre") {
+      rotation = (container.angle * 180) / Math.PI - 90 + (rotation ? rotation : 0);
     }
-    case "pal":
-    case "fasce":
-    default: {
-      const anchor = strip.path.bounds.topLeft;
-      return createPatternTransfrom(anchor, scale, rotation);
-    }
+    return createPatternTransfrom(container.patternAnchor, scale, rotation);
+  } else {
+    const bounds = (container.type == "symbol" ? container.item : container.path).bounds;
+    const scale = bounds.width / (w * n);
+    return createPatternTransfrom(bounds.topLeft, scale, rotation);
   }
 }
