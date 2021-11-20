@@ -23,6 +23,7 @@
           <div class="flex-container">
             <VisualConf v-model="visualConf" @input="updateVisual"></VisualConf>
             <div v-html="visual"></div>
+            <button @click="download">Get .svg</button>
           </div>
         </div>
       </div>
@@ -41,6 +42,7 @@ import { generateVisual } from "./generator/visual/VisualGenerator";
 import { generateTextual } from "./generator/textual/TextualGenerator";
 import RootEditor from "./components/RootEditor.vue";
 import { FieldModel } from "./generator/model.type";
+import { toVersionOneOne } from "./service/SvgUtil";
 
 @Component({
   components: {
@@ -75,6 +77,23 @@ export default class App extends Vue {
       const model: FieldModel = fieldToModel(this.editorModel);
       this.visual = await generateVisual(model, this.visualConf);
     }
+  }
+
+  download(): void {
+    const data = toVersionOneOne(this.visual);
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:image/svg+xml;charset=utf-8," + encodeURIComponent(data)
+    );
+    element.setAttribute("download", "test.svg");
+
+    element.style.display = "none";
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
   }
 }
 </script>
