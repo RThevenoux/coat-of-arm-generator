@@ -68,9 +68,9 @@ function getPatternTransform(
   rotation?: number
 ) {
   const w = pattern.patternWidth;
-  const n = pattern.patternRepetition;
-
+  
   if (container.type == "strip") {
+    const n =Math.ceil(pattern.patternRepetition/3);
     const scale = container.width / (w * n);
     if (container.direction == "bande" || container.direction == "barre") {
       rotation = (container.angle * 180) / Math.PI - 90 + (rotation ? rotation : 0);
@@ -78,7 +78,7 @@ function getPatternTransform(
     return createPatternTransfrom(container.patternAnchor, scale, rotation);
   } else {
     const bounds = (container.type == "symbol" ? container.item : container.path).bounds;
-    const scale = bounds.width / (w * n);
+    const scale = bounds.width / (w *  pattern.patternRepetition);
     return createPatternTransfrom(bounds.topLeft, scale, rotation);
   }
 }
