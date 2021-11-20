@@ -152,28 +152,12 @@ function computeSemeInfo(
   chargeDef: ChargeVisualInfo,
   semeDef: SemeData
 ): SemeVisualInfo {
-  const tx = semeDef.tx;
-  const ty = semeDef.ty;
-  const y0 = -chargeDef.height / 2;
-  const x0 = -chargeDef.width / 2;
-
-  const translateCenter = `translate(${x0 + tx},${y0 + ty})`;
-  const translateTopLeft = `translate(${x0},${y0})`;
-  const translateBottomLeft = `translate(${x0},${y0 + 2 * ty})`;
-  const translateTopRigth = `translate(${x0 + 2 * tx},${y0})`;
-  const translateBottomRigth = `translate(${x0 + 2 * tx},${y0 + 2 * ty})`;
-
   return {
     charge: chargeDef,
-    width: tx * 2,
-    height: ty * 2,
+    tx: semeDef.tx,
+    ty: semeDef.ty,
     repetition: semeDef.repetition,
-    copies: [
-      translateCenter,
-      translateTopLeft,
-      translateBottomLeft,
-      translateTopRigth,
-      translateBottomRigth,
-    ],
   };
 }
+
+

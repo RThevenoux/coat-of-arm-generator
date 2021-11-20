@@ -162,6 +162,10 @@ export function refStyle(refId: string): string {
   return `url(#${refId})`;
 }
 
+export function svgTranslate(tx: number, ty: number): string {
+  return `translate(${tx},${ty})`;
+}
+
 export function svgTransform(scaleCoef: number, rotation?: number): string {
   let result = "";
 

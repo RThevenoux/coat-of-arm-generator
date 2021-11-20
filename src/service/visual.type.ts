@@ -25,8 +25,7 @@ export type ChargeVisualInfo = {
 
 export type SemeVisualInfo = {
   charge: ChargeVisualInfo;
-  width: number;
-  height: number;
+  tx: number;
+  ty: number;
   repetition: number;
-  copies: string[];
 };
