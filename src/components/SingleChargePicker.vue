@@ -19,7 +19,7 @@
         key="strip-number"
       />
       <FillerPicker
-        v-model="value.strip.filler"
+        v-model="value.filler"
         @input="update"
         key="strip-filler"
         @select="select"
@@ -31,7 +31,7 @@
         <option value="barre">sautoir</option>
       </select>
       <FillerPicker
-        v-model="value.cross.filler"
+        v-model="value.filler"
         @input="update"
         key="cross-filler"
         @select="select"
@@ -58,7 +58,7 @@
         key="symbol-number"
       />
       <FillerPicker
-        v-model="value.symbol.filler"
+        v-model="value.filler"
         @input="update"
         key="symbol-filler"
         @select="select"

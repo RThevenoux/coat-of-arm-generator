@@ -159,5 +159,3 @@ function computeSemeInfo(
     repetition: semeDef.repetition,
   };
 }
-
-

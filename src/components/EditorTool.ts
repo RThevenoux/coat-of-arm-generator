@@ -21,19 +21,17 @@ export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
 export async function initialChargeModel(): Promise<SingleChargePickerModel> {
   return {
     type: "strip",
+    filler: await initialFiller(),
     strip: {
       angle: "pal",
       count: 1,
-      filler: await initialFiller(),
     },
     cross: {
       angle: "fasce",
-      filler: await initialFiller(),
     },
     symbol: {
       chargeId: await getDefaultChargeId(),
       count: 1,
-      filler: await initialFiller(),
     },
   };
 }
@@ -141,21 +139,21 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         type: "strip",
         direction: viewModel.strip.angle,
         count: viewModel.strip.count,
-        filler: fillerToModel(viewModel.strip.filler),
+        filler: fillerToModel(viewModel.filler),
       };
     case "cross":
       return {
         type: "cross",
         count: 1,
         direction: viewModel.cross.angle,
-        filler: fillerToModel(viewModel.cross.filler),
+        filler: fillerToModel(viewModel.filler),
       };
     case "symbol":
       return {
         type: "symbol",
         count: viewModel.symbol.count,
         chargeId: viewModel.symbol.chargeId,
-        filler: fillerToModel(viewModel.symbol.filler),
+        filler: fillerToModel(viewModel.filler),
       };
   }
 }

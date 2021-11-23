@@ -3,18 +3,16 @@ import { FillerEditorModel } from "./FillerEditorModel";
 
 export interface SingleChargePickerModel {
   type: "strip" | "cross" | "symbol";
+  filler: FillerEditorModel;
   strip: {
     angle: Direction;
     count: number;
-    filler: FillerEditorModel;
   };
   cross: {
     angle: Direction;
-    filler: FillerEditorModel;
   };
   symbol: {
     chargeId: string;
     count: number;
-    filler: FillerEditorModel;
   };
 }

@@ -43,7 +43,7 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
       direction: "fasce",
       angle: 0,
       width: hStrip,
-      patternAnchor: topLeft
+      patternAnchor: topLeft,
     };
 
     result.push(stripShape);
@@ -73,7 +73,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
       direction: "pal",
       angle: Math.PI / 2,
       width: wStrip,
-      patternAnchor: topLeft
+      patternAnchor: topLeft,
     };
 
     result.push(stripShape);
@@ -129,7 +129,9 @@ function createDiagonals(
       direction: barre ? "barre" : "bande",
       angle: barre ? angle : Math.PI - angle, // rad
       width: stripWidth,
-      patternAnchor: barre ? stripPath.bounds.topRight : stripPath.bounds.topLeft,
+      patternAnchor: barre
+        ? stripPath.bounds.topRight
+        : stripPath.bounds.topLeft,
     };
     result.push(stripShape);
   }

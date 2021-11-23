@@ -60,7 +60,10 @@ export async function createSemeFiller(
   return id;
 }
 
-function computeTransform(container: SimpleShape | SymbolShape, seme: SemeVisualInfo) {
+function computeTransform(
+  container: SimpleShape | SymbolShape,
+  seme: SemeVisualInfo
+) {
   if (container.type == "strip") {
     // Compute scaling to display 2 pattern on the strip width
     const scaleCoef = container.width / (2 * seme.tx * 2);
@@ -71,9 +74,10 @@ function computeTransform(container: SimpleShape | SymbolShape, seme: SemeVisual
     }
 
     return createPatternTransfrom(container.patternAnchor, scaleCoef, rotation);
-
   } else {
-    const bounds = (container.type == "symbol" ? container.item : container.path).bounds;
+    const bounds = (
+      container.type == "symbol" ? container.item : container.path
+    ).bounds;
     const scaleCoef = bounds.width / (seme.repetition * seme.tx * 2);
     return createPatternTransfrom(bounds.topLeft, scaleCoef);
   }
