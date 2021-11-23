@@ -6,7 +6,6 @@
         <SingleChargePicker
           v-model="charge.model"
           @input="update"
-          @select="select"
         ></SingleChargePicker>
       </div>
     </div>
@@ -19,7 +18,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 import { initialChargeModel } from "./EditorTool";
 import SingleChargePicker from "./SingleChargePicker.vue";
-import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
 
 @Component({
   components: {
@@ -59,10 +57,6 @@ export default class MultiChargePicker extends Vue {
 
   update(): void {
     this.$emit("input", this.value);
-  }
-
-  select(event: FillerPickerSelectedEvent): void {
-    this.$emit("select", event);
   }
 }
 </script>

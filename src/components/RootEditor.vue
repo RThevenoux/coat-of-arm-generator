@@ -1,7 +1,6 @@
 <template>
   <div>
-    <FieldEditor v-model="value" @input="update" @select="select">
-    </FieldEditor>
+    <FieldEditor v-model="value" @input="update"></FieldEditor>
     <div>
       <h2>Filler Editor</h2>
       <div v-if="fillerModel == null">
@@ -19,9 +18,12 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import FieldEditor from "./FieldEditor.vue";
 import FillerEditor from "./FillerEditor.vue";
 import { FieldEditorModel } from "./FieldEditorModel";
-import { FillerPickerState } from "./FillerPickerModel";
 import { FillerEditorModel } from "./FillerEditorModel";
-import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
+import { EditorStoreListener } from "../store/EditorStoreListener";
+import {
+  addEditorStoreListener,
+  getSelectedFillerModel,
+} from "../store/EditorStore";
 
 @Component({
   components: {
@@ -29,22 +31,18 @@ import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
     FillerEditor,
   },
 })
-export default class RootEditor extends Vue {
+export default class RootEditor extends Vue implements EditorStoreListener {
   @Prop() value!: FieldEditorModel;
 
-  selectedState: FillerPickerState | null = null;
   fillerModel: FillerEditorModel | null = null;
 
-  select(event: FillerPickerSelectedEvent): void {
-    // Flip selected state of old and new picker
-    if (this.selectedState) {
-      this.selectedState.isSelected = false;
-    }
-    this.selectedState = event.source.state;
-    this.selectedState.isSelected = true;
+  created(): void {
+    addEditorStoreListener(this);
+  }
 
-    // Change fillerModel from old to new
-    this.fillerModel = event.source.model;
+  public editorStoreUpdated(): void {
+    const newModel = getSelectedFillerModel();
+    this.fillerModel = newModel ? newModel : null;
   }
 
   update(): void {

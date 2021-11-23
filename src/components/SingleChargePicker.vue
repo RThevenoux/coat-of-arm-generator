@@ -22,7 +22,6 @@
         v-model="value.filler"
         @input="update"
         key="strip-filler"
-        @select="select"
       ></FillerPicker>
     </div>
     <div v-else-if="value.type === 'cross'" class="flex-container">
@@ -34,7 +33,6 @@
         v-model="value.filler"
         @input="update"
         key="cross-filler"
-        @select="select"
       ></FillerPicker>
     </div>
     <div v-else-if="value.type === 'symbol'" class="flex-container">
@@ -61,7 +59,6 @@
         v-model="value.filler"
         @input="update"
         key="symbol-filler"
-        @select="select"
       ></FillerPicker>
     </div>
   </div>
@@ -72,7 +69,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 import { getChargeOptions } from "../service/ChargeService";
 import FillerPicker from "./FillerPicker.vue";
-import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
 import { MyOption } from "../service/MyOptions.type";
 
 @Component({
@@ -91,10 +87,6 @@ export default class SingleChargePicker extends Vue {
 
   update(): void {
     this.$emit("input", this.value);
-  }
-
-  select(event: FillerPickerSelectedEvent): void {
-    this.$emit("select", event);
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <button @click="click" v-bind:class="{ selected: state.isSelected }">
+  <button @click="click" v-bind:class="{ selected: selected }">
     <svg
       width="24"
       height="24"
@@ -32,8 +32,11 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { ColorId } from "../generator/model.type";
 import { PaletteData } from "../service/visual.type";
 import { FillerEditorModel } from "./FillerEditorModel";
-import { FillerPickerState } from "./FillerPickerModel";
-import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
+import {
+  fillerPickerDestroyed,
+  fillerPickerSelected,
+} from "../store/EditorStore";
+import { IFillerPicker } from "../store/IFillerPicker";
 
 const palette: PaletteData = {
   or: "ff0",
@@ -52,12 +55,10 @@ interface IconColors {
 }
 
 @Component
-export default class FieldEditor extends Vue {
+export default class FillerPicker extends Vue implements IFillerPicker {
   @Prop() value!: FillerEditorModel;
 
-  state: FillerPickerState = {
-    isSelected: false,
-  };
+  selected = false;
 
   get colors(): IconColors {
     switch (this.value.type) {
@@ -93,14 +94,20 @@ export default class FieldEditor extends Vue {
   }
 
   click(): void {
-    const emitEvent: FillerPickerSelectedEvent = {
-      type: "filler-picker",
-      source: {
-        state: this.state,
-        model: this.value,
-      },
-    };
-    this.$emit("select", emitEvent);
+    fillerPickerSelected(this);
+    this.selected = true;
+  }
+
+  public getFillerModel(): FillerEditorModel {
+    return this.value;
+  }
+
+  public fillerModelUnselect(): void {
+    this.selected = false;
+  }
+
+  destroyed(): void {
+    fillerPickerDestroyed(this);
   }
 }
 </script>

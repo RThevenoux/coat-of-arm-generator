@@ -10,7 +10,6 @@
       <FillerPicker
         v-if="value.partitionType === 'plain'"
         v-model="value.plain.filler"
-        @select="select"
       >
       </FillerPicker>
     </div>
@@ -19,7 +18,6 @@
       <input type="checkbox" v-model="value.plain.border.present" />
       <FillerPicker
         v-model="value.plain.border.filler"
-        @select="select"
         v-show="value.plain.border.present"
       ></FillerPicker>
     </div>
@@ -27,7 +25,6 @@
       v-if="value.partitionType === 'plain'"
       v-model="value.plain.charges"
       @input="update"
-      @select="select"
     ></MultiChargePicker>
     <template v-if="value.partitionType !== 'plain'">
       <div
@@ -36,11 +33,7 @@
         class="flex-container"
       >
         <img :src="partition.img" />
-        <FieldEditor
-          v-model="partition.model"
-          @input="$emit('input', value)"
-          @select="select"
-        >
+        <FieldEditor v-model="partition.model" @input="$emit('input', value)">
         </FieldEditor>
       </div>
     </template>
@@ -50,7 +43,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { FieldEditorModel } from "./FieldEditorModel";
-import { FillerPickerSelectedEvent } from "./FillerPickerSelected";
 import {
   getPartitionOptions,
   getFieldCountInPartition,
@@ -164,10 +156,6 @@ export default class FieldEditor extends Vue {
 
   update(): void {
     this.$emit("input", this.value);
-  }
-
-  select(event: FillerPickerSelectedEvent): void {
-    this.$emit("select", event);
   }
 }
 </script>
