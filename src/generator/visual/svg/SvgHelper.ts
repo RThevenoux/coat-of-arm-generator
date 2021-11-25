@@ -166,6 +166,7 @@ export function svgTranslate(tx: number, ty: number): string {
   return `translate(${tx},${ty})`;
 }
 
+// rotation : in degree and clockwise
 export function svgTransform(scaleCoef: number, rotation?: number): string {
   let result = "";
 
@@ -174,8 +175,7 @@ export function svgTransform(scaleCoef: number, rotation?: number): string {
   }
 
   if (rotation && rotation != 0) {
-    // svg rotation is clockwise
-    result += `rotate(${-rotation})`;
+    result += `rotate(${rotation})`;
   }
 
   return result;

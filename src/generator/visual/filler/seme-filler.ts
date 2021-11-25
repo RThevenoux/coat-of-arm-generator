@@ -73,7 +73,7 @@ function computeTransform(
       container.stripDirection == "bande" ||
       container.stripDirection == "barre"
     ) {
-      rotation = (container.stripAngle * 180) / Math.PI - 90;
+      rotation = container.stripAngle;
     }
 
     return createPatternTransfrom(container.patternAnchor, scale, rotation);

@@ -20,7 +20,7 @@ export interface StripShape {
   type: "strip";
   path: paper.Path;
   stripDirection: Direction;
-  stripAngle: number; // in radian "pal" = PI/2, "fasce" = 0;
+  stripAngle: number; // in degre "pal" == 0, "barre" ~= 45, "bande" ~= -45
   stripWidth: number;
   patternAnchor: paper.Point; // This point can be use to align pattern. The point may be outside of the path, after the strip is clipped by its container
 }

@@ -41,7 +41,7 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
       type: "strip",
       path: clippedStrip,
       stripDirection: "fasce",
-      stripAngle: 0,
+      stripAngle: 90,
       stripWidth: hStrip,
       patternAnchor: topLeft,
     };
@@ -71,7 +71,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
       type: "strip",
       path: clippedStrip,
       stripDirection: "pal",
-      stripAngle: Math.PI / 2,
+      stripAngle: 0,
       stripWidth: wStrip,
       patternAnchor: topLeft,
     };
@@ -82,11 +82,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
   return result;
 }
 
-function createDiagonals(
-  container: FieldShape,
-  barre: boolean,
-  count: number
-) {
+function createDiagonals(container: FieldShape, barre: boolean, count: number) {
   const path = container.path;
 
   const angleRad = Math.atan2(path.bounds.height, path.bounds.width);
@@ -94,8 +90,9 @@ function createDiagonals(
   const rotationDeg = barre ? 90 - angleDeg : angleDeg - 90;
 
   const clone = path.clone();
-  // paperjs rotation is anti-clockwise
-  clone.rotate(-rotationDeg, new paper.Point(0, 0));
+  // paperjs rotation is clockwise
+  const rotCenter = new paper.Point(0, 0);
+  clone.rotate(-rotationDeg, rotCenter);
 
   const result = [];
 
@@ -108,7 +105,7 @@ function createDiagonals(
       point: topLeft,
       size: [wStrip, bounds.height],
     });
-    strip.rotate(rotationDeg, new paper.Point(0, 0));
+    strip.rotate(rotationDeg, rotCenter);
 
     const clippedStrip = _clip(strip, container);
 
@@ -116,9 +113,9 @@ function createDiagonals(
       type: "strip",
       path: clippedStrip,
       stripDirection: barre ? "barre" : "bande",
-      stripAngle: barre ? angleRad : Math.PI - angleRad,
+      stripAngle: rotationDeg,
       stripWidth: wStrip,
-      patternAnchor: topLeft.rotate(rotationDeg, new paper.Point(0, 0)),
+      patternAnchor: topLeft.rotate(-rotationDeg, rotCenter), // Not clear why rotation must be negate...
     };
 
     result.push(stripShape);
