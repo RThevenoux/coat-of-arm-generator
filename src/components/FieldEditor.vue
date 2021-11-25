@@ -15,7 +15,11 @@
     </div>
     <div class="flex-container" v-if="value.partitionType === 'plain'">
       <label>Border</label>
-      <input type="checkbox" v-model="value.plain.border.present" />
+      <input
+        type="checkbox"
+        v-model="value.plain.border.present"
+        @change="update"
+      />
       <FillerPicker
         v-model="value.plain.border.filler"
         v-show="value.plain.border.present"
