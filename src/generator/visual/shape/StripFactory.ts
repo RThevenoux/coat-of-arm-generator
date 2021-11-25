@@ -86,53 +86,41 @@ function createDiagonals(
   container: FieldShape,
   barre: boolean,
   count: number
-): StripShape[] {
-  const bounds = container.path.bounds;
+) {
+  const path = container.path;
 
-  const w = bounds.width;
-  const h = bounds.height;
-  const x = bounds.x;
-  const y = bounds.y;
+  const angleRad = Math.atan2(path.bounds.height, path.bounds.width);
+  const angleDeg = (angleRad * 180) / Math.PI;
+  const rotationDeg = barre ? 90 - angleDeg : angleDeg - 90;
 
-  const d = w / ((2 * count + 1) * Math.SQRT2);
-  const x0 = x - d * (2 * count - 1);
-
-  // create the '\' diagonal
-  const p0 = `${x0},${y}`;
-  const p1 = `${x0 + 2 * d},${y}`;
-  const p2 = `${x0 + w + 2 * d},${y + h}`;
-  const p3 = `${x0 + w},${y + h}`;
-  const pathData = `M ${p0} L ${p1} ${p2} ${p3} z`;
-
-  const patternPath = new paper.Path(pathData);
-  if (barre) {
-    // Mirror to obtain the '/' diagonal
-    const center = new paper.Point(x + w / 2, y + h / 2);
-    patternPath.scale(-1, 1, center);
-  }
-
-  const vector = new paper.Point(barre ? [-4 * d, 0] : [4 * d, 0]);
-
-  const angle = Math.atan2(h, w);
-  const stripWidth = 2 * d * Math.sin(angle);
+  const clone = path.clone();
+  // paperjs rotation is anti-clockwise
+  clone.rotate(-rotationDeg, new paper.Point(0, 0));
 
   const result = [];
-  for (let i = 0; i < count; i++) {
-    const stripPath = patternPath.clone();
-    patternPath.translate(vector);
 
-    const clippedStrip = _clip(stripPath, container);
+  const bounds = clone.bounds;
+  const wStrip = bounds.width / (2 * count + 1);
+
+  for (let i = 0; i < count; i++) {
+    const topLeft = new paper.Point(bounds.x + (2 * i + 1) * wStrip, bounds.y);
+    const strip = new paper.Path.Rectangle({
+      point: topLeft,
+      size: [wStrip, bounds.height],
+    });
+    strip.rotate(rotationDeg, new paper.Point(0, 0));
+
+    const clippedStrip = _clip(strip, container);
 
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
       stripDirection: barre ? "barre" : "bande",
-      stripAngle: barre ? angle : Math.PI - angle, // rad
-      stripWidth: stripWidth,
-      patternAnchor: barre
-        ? stripPath.bounds.topRight
-        : stripPath.bounds.topLeft,
+      stripAngle: barre ? angleRad : Math.PI - angleRad,
+      stripWidth: wStrip,
+      patternAnchor: topLeft.rotate(rotationDeg, new paper.Point(0, 0)),
     };
+
     result.push(stripShape);
   }
 

@@ -78,17 +78,17 @@ function createDiagonal(
 ): void {
   const angleRad = Math.atan2(item.bounds.height, item.bounds.width);
   const angleDeg = (angleRad * 180) / Math.PI;
+
+  // svg & paperjs rotation is clockwise
   const rotationDeg = bande ? 90 - angleDeg : angleDeg - 90;
 
   const clone = item.clone();
-  // paperjs rotation is anti-clockwise
   clone.rotate(rotationDeg, new paper.Point(0, 0));
 
   const scaleCoef = clone.bounds.width / model.count;
 
   const x = clone.bounds.left / scaleCoef;
   const y = 0; // pattern is invariant by y-translation
-  // svg rotation is clockwise
   const transform = svgTransform(scaleCoef, rotationDeg);
   const transformParam = { x, y, transform };
 
