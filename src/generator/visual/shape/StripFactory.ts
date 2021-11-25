@@ -40,9 +40,9 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      direction: "fasce",
-      angle: 0,
-      width: hStrip,
+      stripDirection: "fasce",
+      stripAngle: 0,
+      stripWidth: hStrip,
       patternAnchor: topLeft,
     };
 
@@ -70,9 +70,9 @@ function createPals(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      direction: "pal",
-      angle: Math.PI / 2,
-      width: wStrip,
+      stripDirection: "pal",
+      stripAngle: Math.PI / 2,
+      stripWidth: wStrip,
       patternAnchor: topLeft,
     };
 
@@ -126,9 +126,9 @@ function createDiagonals(
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      direction: barre ? "barre" : "bande",
-      angle: barre ? angle : Math.PI - angle, // rad
-      width: stripWidth,
+      stripDirection: barre ? "barre" : "bande",
+      stripAngle: barre ? angle : Math.PI - angle, // rad
+      stripWidth: stripWidth,
       patternAnchor: barre
         ? stripPath.bounds.topRight
         : stripPath.bounds.topLeft,

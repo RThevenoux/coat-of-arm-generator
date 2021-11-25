@@ -71,11 +71,20 @@ function getPatternTransform(
 
   if (container.type == "strip") {
     const n = Math.ceil(pattern.patternRepetition / 3);
-    const scale = container.width / (w * n);
-    if (container.direction == "bande" || container.direction == "barre") {
+    const scale = container.stripWidth / (w * n);
+    if (
+      container.stripDirection == "bande" ||
+      container.stripDirection == "barre"
+    ) {
       rotation =
-        (container.angle * 180) / Math.PI - 90 + (rotation ? rotation : 0);
+        (container.stripAngle * 180) / Math.PI - 90 + (rotation ? rotation : 0);
     }
+    return createPatternTransfrom(container.patternAnchor, scale, rotation);
+  } else if (container.type == "cross") {
+    const n = Math.ceil(pattern.patternRepetition / 3);
+
+    const scale = container.stripWidth / (w * n);
+
     return createPatternTransfrom(container.patternAnchor, scale, rotation);
   } else {
     const bounds = (

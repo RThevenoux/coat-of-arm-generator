@@ -66,19 +66,25 @@ function computeTransform(
 ) {
   if (container.type == "strip") {
     // Compute scaling to display 2 pattern on the strip width
-    const scaleCoef = container.width / (2 * seme.tx * 2);
+    const scale = container.stripWidth / (2 * seme.tx * 2);
 
     let rotation = 0;
-    if (container.direction == "bande" || container.direction == "barre") {
-      rotation = (container.angle * 180) / Math.PI - 90;
+    if (
+      container.stripDirection == "bande" ||
+      container.stripDirection == "barre"
+    ) {
+      rotation = (container.stripAngle * 180) / Math.PI - 90;
     }
 
-    return createPatternTransfrom(container.patternAnchor, scaleCoef, rotation);
+    return createPatternTransfrom(container.patternAnchor, scale, rotation);
+  } else if (container.type == "cross") {
+    const scale = container.stripWidth / (2 * seme.tx * 2);
+    return createPatternTransfrom(container.patternAnchor, scale);
   } else {
     const bounds = (
       container.type == "symbol" ? container.item : container.path
     ).bounds;
-    const scaleCoef = bounds.width / (seme.repetition * seme.tx * 2);
-    return createPatternTransfrom(bounds.topLeft, scaleCoef);
+    const scale = bounds.width / (seme.repetition * seme.tx * 2);
+    return createPatternTransfrom(bounds.topLeft, scale);
   }
 }

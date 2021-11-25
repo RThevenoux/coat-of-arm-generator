@@ -1,26 +1,33 @@
 import * as paper from "paper";
-import { FieldShape, OtherShape } from "../type";
+import { CrossShape, FieldShape, OtherShape } from "../type";
 
-export function createCross(container: FieldShape): OtherShape {
+export function createCross(container: FieldShape): CrossShape {
   const bounds = container.path.bounds;
 
   const width =
     bounds.height > bounds.width ? bounds.width / 3 : bounds.height / 3;
 
+  const xPal = bounds.x + (bounds.width - width) / 2;
+  const yFasce = bounds.y + (bounds.height - width) / 2;
+
   const pal = new paper.Path.Rectangle({
-    point: [bounds.x + (bounds.width - width) / 2, bounds.y],
+    point: [xPal, bounds.y],
     size: [width, bounds.height],
   });
   const fasce = new paper.Path.Rectangle({
-    point: [bounds.x, bounds.y + (bounds.height - width) / 2],
+    point: [bounds.x, yFasce],
     size: [bounds.width, width],
   });
   const cross = pal.unite(fasce);
   const clipped = _clip(cross, container);
 
+  const patternAnchor = new paper.Point(xPal, yFasce);
+
   return {
-    type: "other",
+    type: "cross",
     path: clipped,
+    stripWidth: width,
+    patternAnchor,
   };
 }
 
@@ -58,7 +65,7 @@ export function createCrossSaltire(container: FieldShape): OtherShape {
   };
 }
 
-function _clip(path: paper.PathItem, container: FieldShape) {
+function _clip(path: paper.PathItem, container: FieldShape): paper.Path {
   const clippedStrip = container.path.intersect(path);
   if (!(clippedStrip instanceof paper.Path)) {
     throw new Error("Clipped strip is not a simple Path");
