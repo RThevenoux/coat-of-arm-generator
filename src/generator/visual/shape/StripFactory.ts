@@ -24,9 +24,9 @@ export function createStrips(
 
 function createFasces(container: FieldShape, count: number): StripShape[] {
   const result = [];
-
+  const ratio = 1 / (2 * count + 1);
   const bounds = container.path.bounds;
-  const hStrip = bounds.height / (2 * count + 1);
+  const hStrip = bounds.height * ratio;
 
   for (let i = 0; i < count; i++) {
     const topLeft = new paper.Point(bounds.x, bounds.y + (2 * i + 1) * hStrip);
@@ -40,6 +40,7 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
+      root: container.root,
       stripDirection: "fasce",
       stripAngle: 90,
       stripWidth: hStrip,
@@ -54,9 +55,9 @@ function createFasces(container: FieldShape, count: number): StripShape[] {
 
 function createPals(container: FieldShape, count: number): StripShape[] {
   const result = [];
-
+  const ratio = 1 / (2 * count + 1);
   const bounds = container.path.bounds;
-  const wStrip = bounds.width / (2 * count + 1);
+  const wStrip = bounds.width * ratio;
 
   for (let i = 0; i < count; i++) {
     const topLeft = new paper.Point(bounds.x + (2 * i + 1) * wStrip, bounds.y);
@@ -70,6 +71,7 @@ function createPals(container: FieldShape, count: number): StripShape[] {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
+      root: container.root,
       stripDirection: "pal",
       stripAngle: 0,
       stripWidth: wStrip,
@@ -95,9 +97,9 @@ function createDiagonals(container: FieldShape, barre: boolean, count: number) {
   clone.rotate(-rotationDeg, rotCenter);
 
   const result = [];
-
+  const ratio = 1 / (2 * count + 1);
   const bounds = clone.bounds;
-  const wStrip = bounds.width / (2 * count + 1);
+  const wStrip = bounds.width * ratio;
 
   for (let i = 0; i < count; i++) {
     const topLeft = new paper.Point(bounds.x + (2 * i + 1) * wStrip, bounds.y);
@@ -112,6 +114,7 @@ function createDiagonals(container: FieldShape, barre: boolean, count: number) {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
+      root:container.root,
       stripDirection: barre ? "barre" : "bande",
       stripAngle: rotationDeg,
       stripWidth: wStrip,

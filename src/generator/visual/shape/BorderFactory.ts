@@ -3,7 +3,7 @@ import BezierTool from "../tool/bezier-tool";
 import getLineIntersection from "../tool/affine-tool";
 import { Bezier } from "bezier-js";
 import { Segment } from "paper/dist/paper-core";
-import { BorderShape } from "../type";
+import { BorderShape, SimpleShape } from "../type";
 
 /**
  *
@@ -14,7 +14,8 @@ import { BorderShape } from "../type";
  */
 export default function createBorder(
   path: paper.Path,
-  offset: number
+  offset: number,
+  rootShape: SimpleShape
 ): BorderShape {
   if (!path.clockwise) {
     path.reverse();
@@ -68,9 +69,11 @@ export default function createBorder(
   return {
     type: "border",
     path: result,
+    root: rootShape,
     inner: {
       type: "field",
       path: inner,
+      root: rootShape,
     },
   };
 }

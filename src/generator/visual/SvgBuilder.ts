@@ -1,7 +1,7 @@
 import * as paper from "paper";
 import xmlBuilder from "xmlbuilder";
 import { FillerModel, FillerPlein } from "../model.type";
-import { SimpleShape, SymbolShape } from "./type";
+import { EscutcheonShape, SimpleShape, SymbolShape } from "./type";
 import { ChargeVisualInfo } from "@/service/visual.type";
 import {
   addPath,
@@ -30,7 +30,7 @@ export default class SvgBuilder {
   private escutcheonPathId: string | null = null;
 
   constructor(
-    private readonly escutcheonPath: paper.Path,
+    private readonly escutcheon: EscutcheonShape,
     readonly palette: Palette,
     readonly defaultStrokeWidth: number
   ) {
@@ -42,8 +42,8 @@ export default class SvgBuilder {
 
   public addBorder(borderSize: number): void {
     // Update escutcheonPath to compute viewBox on 'build()'
-    this.escutcheonPath.strokeWidth = borderSize;
-    this.escutcheonPath.strokeColor = new paper.Color("#000");
+    this.escutcheon.path.strokeWidth = borderSize;
+    this.escutcheon.path.strokeColor = new paper.Color("#000");
 
     // Add border to SVG
     const escutcheonId = this.getEscutcheonPathId();
@@ -55,7 +55,7 @@ export default class SvgBuilder {
     const escutcheonId = this.getEscutcheonPathId();
     const gradienId = createReflect(
       this,
-      this.escutcheonPath,
+      this.escutcheon.path,
       "gradient-reflect"
     );
     const fill = refStyle(gradienId);
@@ -63,7 +63,7 @@ export default class SvgBuilder {
   }
 
   public build(outputSize: { width: number; height: number }): string {
-    const viewBox = this.escutcheonPath.strokeBounds;
+    const viewBox = this.escutcheon.path.strokeBounds;
     return this.container
       .att("width", outputSize.width)
       .att("height", outputSize.height)
@@ -77,7 +77,7 @@ export default class SvgBuilder {
   public getEscutcheonPathId(): string {
     if (this.escutcheonPathId == null) {
       this.escutcheonPathId = "escutcheon";
-      addPath(this.defs, this.escutcheonPath.pathData, this.escutcheonPathId);
+      addPath(this.defs, this.escutcheon.path.pathData, this.escutcheonPathId);
     }
     return this.escutcheonPathId;
   }
@@ -98,7 +98,7 @@ export default class SvgBuilder {
     filler: FillerModel
   ): Promise<void> {
     const item = paper.project.importSVG(symbolDef.xml);
-    const symbolShape: SymbolShape = { type: "symbol", item: item };
+    const symbolShape: SymbolShape = { type: "symbol", item: item, root: this.escutcheon };
 
     const fillerId = await this._getFillerId(filler, symbolShape);
 
@@ -123,10 +123,8 @@ export default class SvgBuilder {
       return this._getDefaultFiller();
     }
     switch (model.type) {
-      case "pattern": {
-        const id = this.nextPatternId();
-        return createPatternFiller(this, model, container, id);
-      }
+      case "pattern":
+        return createPatternFiller(this, model, container, this.nextPatternId());
       case "plein":
         return this._getSolidFiller(model);
       case "seme":

@@ -26,6 +26,7 @@ export function createCross(container: FieldShape): CrossShape {
   return {
     type: "cross",
     path: clipped,
+    root: container.root,
     stripWidth: width,
     patternAnchor,
   };
@@ -62,6 +63,7 @@ export function createCrossSaltire(container: FieldShape): OtherShape {
   return {
     type: "other",
     path: clipped,
+    root: container.root,
   };
 }
 

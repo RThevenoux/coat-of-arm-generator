@@ -6,7 +6,7 @@ import SvgBuilder from "./SvgBuilder";
 import getPaletteData from "../../service/PaletteService";
 import * as paper from "paper";
 import drawField from "./field-drawer";
-import { FieldShape } from "./type";
+import { EscutcheonShape } from "./type";
 import { Palette } from "./Palette";
 
 export async function generateVisual(
@@ -22,19 +22,19 @@ export async function generateVisual(
 
   const escutcheonData = getEscutcheonPath(configuration.escutcheon);
   const escutcheonPath = new paper.Path(escutcheonData);
+  const escutcheon = new EscutcheonShape(escutcheonPath);
 
   const paletteData = getPaletteData(configuration.palette);
   const palette = new Palette(paletteData);
 
   const builder = new SvgBuilder(
-    escutcheonPath,
+    escutcheon,
     palette,
     configuration.defaultStrokeSize
   );
 
   // Draw
-  const rootField: FieldShape = { type: "field", path: escutcheonPath };
-  await drawField(builder, model, rootField);
+  await drawField(builder, model, escutcheon);
 
   builder.addBorder(configuration.border.size);
   if (configuration.reflect) {

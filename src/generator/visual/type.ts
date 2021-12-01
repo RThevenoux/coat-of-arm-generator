@@ -3,6 +3,7 @@ import { Direction } from "../model.type";
 export interface SymbolShape {
   type: "symbol";
   item: paper.Item;
+  root: SimpleShape;
 }
 
 export type SimpleShape =
@@ -15,10 +16,12 @@ export type SimpleShape =
 export interface FieldShape {
   type: "field";
   path: paper.Path;
+  root: SimpleShape;
 }
 export interface StripShape {
   type: "strip";
   path: paper.Path;
+  root: SimpleShape;
   stripDirection: Direction;
   stripAngle: number; // in degre "pal" == 0, "barre" ~= 45, "bande" ~= -45
   stripWidth: number;
@@ -28,6 +31,7 @@ export interface StripShape {
 export interface CrossShape {
   type: "cross";
   path: paper.Path;
+  root: SimpleShape;
   stripWidth: number;
   patternAnchor: paper.Point; // This point can be use to align pattern. Top-Left of center square.
 }
@@ -35,10 +39,23 @@ export interface CrossShape {
 export interface BorderShape {
   type: "border";
   path: paper.PathItem;
+  root: SimpleShape;
   inner: FieldShape;
 }
 
 export interface OtherShape {
   type: "other";
   path: paper.PathItem;
+  root: SimpleShape;
+}
+
+export class EscutcheonShape implements FieldShape {
+  readonly type = "field";
+
+  constructor(readonly path: paper.Path) { }
+
+  get root(): EscutcheonShape {
+    return this;
+  };
+
 }

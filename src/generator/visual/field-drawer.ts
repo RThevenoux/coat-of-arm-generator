@@ -71,7 +71,7 @@ async function drawBorder(
   const borderSize = Math.min(bounds.height, bounds.width) / 6;
 
   try {
-    const border = createBorder(container.path, borderSize);
+    const border = createBorder(container.path, borderSize, container.root);
 
     await builder.fill(model.filler, border);
     return border.inner;

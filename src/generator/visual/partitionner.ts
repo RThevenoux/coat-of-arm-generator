@@ -32,7 +32,11 @@ export default function partitionShape(
     // Compute intersection.
     const intersection = container.path.intersect(path);
     if (intersection instanceof paper.Path) {
-      result.push({ type: "field", path: intersection });
+      result.push({
+        type: "field",
+        path: intersection,
+        root: container.root
+      });
     } else {
       return [];
     }
