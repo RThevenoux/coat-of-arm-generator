@@ -52,10 +52,9 @@ export interface OtherShape {
 export class EscutcheonShape implements FieldShape {
   readonly type = "field";
 
-  constructor(readonly path: paper.Path) { }
+  constructor(readonly path: paper.Path) {}
 
   get root(): EscutcheonShape {
     return this;
-  };
-
+  }
 }

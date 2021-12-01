@@ -1,7 +1,7 @@
 import partitionShape from "./partitionner";
 import drawCharge from "./charge-drawer";
 import createBorder from "./shape/BorderFactory";
-import SvgBuilder from "./SvgBuilder";
+import SvgBuilder from "./svg/SvgBuilder";
 import {
   BorderModel,
   FieldModel,

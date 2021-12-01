@@ -114,7 +114,7 @@ function createDiagonals(container: FieldShape, barre: boolean, count: number) {
     const stripShape: StripShape = {
       type: "strip",
       path: clippedStrip,
-      root:container.root,
+      root: container.root,
       stripDirection: barre ? "barre" : "bande",
       stripAngle: rotationDeg,
       stripWidth: wStrip,

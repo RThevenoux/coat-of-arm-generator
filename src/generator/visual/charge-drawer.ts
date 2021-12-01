@@ -1,7 +1,7 @@
 import { createStrips } from "./shape/StripFactory";
 import { createCross, createCrossSaltire } from "./shape/CrossFactory";
 import drawSymbol from "./symbol-drawer";
-import SvgBuilder from "./SvgBuilder";
+import SvgBuilder from "./svg/SvgBuilder";
 import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";
 import { FieldShape } from "./type";
 

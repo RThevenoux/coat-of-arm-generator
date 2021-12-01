@@ -35,7 +35,7 @@ export default function partitionShape(
       result.push({
         type: "field",
         path: intersection,
-        root: container.root
+        root: container.root,
       });
     } else {
       return [];

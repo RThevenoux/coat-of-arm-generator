@@ -2,7 +2,7 @@ import { FieldModel } from "../model.type";
 import { VisualConfModel } from "./VisualConfModel";
 import { getEscutcheonPath } from "../../service/EscutcheonService";
 
-import SvgBuilder from "./SvgBuilder";
+import SvgBuilder from "./svg/SvgBuilder";
 import getPaletteData from "../../service/PaletteService";
 import * as paper from "paper";
 import drawField from "./field-drawer";

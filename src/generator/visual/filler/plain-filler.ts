@@ -1,6 +1,6 @@
 import { FillerPlein } from "@/generator/model.type";
 import { addSolidGradient } from "../svg/SvgHelper";
-import SvgBuilder from "../SvgBuilder";
+import SvgBuilder from "../svg/SvgBuilder";
 
 export function createPlainFiller(
   builder: SvgBuilder,

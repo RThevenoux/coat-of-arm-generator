@@ -2,7 +2,7 @@ import { ChargeVisualInfo } from "@/service/visual.type";
 import paper from "paper";
 import { getChargeVisualInfo } from "../../service/ChargeService";
 import { ChargeSymbol, FillerModel } from "../model.type";
-import SvgBuilder from "./SvgBuilder";
+import SvgBuilder from "./svg/SvgBuilder";
 import { getIncircle } from "./tool/path-tool";
 import { FieldShape } from "./type";
 

@@ -1,23 +1,26 @@
 import * as paper from "paper";
 import xmlBuilder from "xmlbuilder";
-import { FillerModel, FillerPlein } from "../model.type";
-import { EscutcheonShape, SimpleShape, SymbolShape } from "./type";
+import { FillerModel, FillerPlein } from "../../model.type";
+import { EscutcheonShape, SimpleShape, SymbolShape } from "../type";
 import { ChargeVisualInfo } from "@/service/visual.type";
 import {
   addPath,
+  addPattern,
   addSymbol,
   addUse,
   createSVG,
+  PatternTransform,
   refStyle,
   strokeStyle,
-} from "./svg/SvgHelper";
-import { Palette } from "./Palette";
-import { createPatternFiller } from "./filler/pattern-filler";
-import { createDefaultFiller } from "./filler/default-filler";
-import { createStripFiller } from "./filler/strip-filler";
-import { createSemeFiller } from "./filler/seme-filler";
-import { createPlainFiller } from "./filler/plain-filler";
-import { createReflect } from "./filler/reflect";
+} from "./SvgHelper";
+import { Palette } from "../Palette";
+import { createPatternFiller } from "../filler/pattern-filler";
+import { createDefaultFiller } from "../filler/default-filler";
+import { createStripFiller } from "../filler/strip-filler";
+import { createSemeFiller } from "../filler/seme-filler";
+import { createPlainFiller } from "../filler/plain-filler";
+import { createReflect } from "../filler/reflect";
+import { PatternWrapper } from "./PatternWrapper";
 
 export default class SvgBuilder {
   private readonly container: xmlBuilder.XMLElement;
@@ -98,7 +101,11 @@ export default class SvgBuilder {
     filler: FillerModel
   ): Promise<void> {
     const item = paper.project.importSVG(symbolDef.xml);
-    const symbolShape: SymbolShape = { type: "symbol", item: item, root: this.escutcheon };
+    const symbolShape: SymbolShape = {
+      type: "symbol",
+      item: item,
+      root: this.escutcheon,
+    };
 
     const fillerId = await this._getFillerId(filler, symbolShape);
 
@@ -124,13 +131,13 @@ export default class SvgBuilder {
     }
     switch (model.type) {
       case "pattern":
-        return createPatternFiller(this, model, container, this.nextPatternId());
+        return createPatternFiller(this, model, container);
       case "plein":
         return this._getSolidFiller(model);
       case "seme":
-        return createSemeFiller(this, model, container, this.nextPatternId());
+        return createSemeFiller(this, model, container);
       case "strip":
-        return createStripFiller(this, model, container, this.nextPatternId());
+        return createStripFiller(this, model, container);
       case "invalid":
       default:
         console.log("Unsupported-filler-type:" + model.type);
@@ -140,7 +147,7 @@ export default class SvgBuilder {
 
   private _getDefaultFiller(): string {
     if (!this.defaultFillerId) {
-      this.defaultFillerId = createDefaultFiller(this, "default-filler");
+      this.defaultFillerId = createDefaultFiller(this);
     }
     return this.defaultFillerId;
   }
@@ -159,7 +166,7 @@ export default class SvgBuilder {
     return `pattern${this.patternCount++}`;
   }
 
-  public _addSymbol(symbolDef: ChargeVisualInfo): string {
+  public getSymbolId(symbolDef: ChargeVisualInfo): string {
     let symbolId = this.definedSymbol[symbolDef.id];
     if (!symbolId) {
       symbolId = `symbol_${symbolDef.id}`;
@@ -167,5 +174,17 @@ export default class SvgBuilder {
       addSymbol(this.defs, symbolId, symbolDef);
     }
     return symbolId;
+  }
+
+  public createPattern(
+    width: number,
+    height: number,
+    transform?: PatternTransform
+  ): PatternWrapper {
+    const id = this.nextPatternId();
+    const size = new paper.Size(width, height);
+
+    const node = addPattern(this.defs, id, width, height, transform);
+    return new PatternWrapper(this, node, id, size);
   }
 }

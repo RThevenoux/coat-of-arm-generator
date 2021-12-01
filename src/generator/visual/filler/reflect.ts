@@ -1,5 +1,5 @@
 import { addGradientStop, addRadialGradient } from "../svg/SvgHelper";
-import SvgBuilder from "../SvgBuilder";
+import SvgBuilder from "../svg/SvgBuilder";
 
 export function createReflect(
   builder: SvgBuilder,

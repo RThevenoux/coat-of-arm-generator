@@ -1,47 +1,39 @@
 import { getPatternVisualInfo } from "@/service/PatternService";
 import { PatternVisualInfo } from "@/service/visual.type";
 import { FillerPattern } from "../../model.type";
-import {
-  addPath,
-  addPattern,
-  addRectangle,
-  addUse,
-  fillColorStyle,
-} from "../svg/SvgHelper";
-import SvgBuilder from "../SvgBuilder";
+import { addPath, addUse, fillColorStyle } from "../svg/SvgHelper";
+import SvgBuilder from "../svg/SvgBuilder";
 import { SimpleShape, SymbolShape } from "../type";
 import { createPatternTransfrom } from "./util";
 
 export function createPatternFiller(
   builder: SvgBuilder,
   fillerModel: FillerPattern,
-  container: SimpleShape | SymbolShape,
-  id: string
+  container: SimpleShape | SymbolShape
 ): string {
   const rotation = _getPatternRotation(fillerModel);
-  const pattern = getPatternVisualInfo(fillerModel.patternName);
+  const patternInfo = getPatternVisualInfo(fillerModel.patternName);
 
-  const transform = getPatternTransform(container, pattern, rotation);
+  const transform = getPatternTransform(container, patternInfo, rotation);
 
-  const w = pattern.patternWidth;
-  const h = pattern.patternHeight;
-  const patternNode = addPattern(builder.defs, id, w, h, transform);
+  const w = patternInfo.patternWidth;
+  const h = patternInfo.patternHeight;
+  const pattern = builder.createPattern(w, h, transform);
 
-  const backgroundColor = builder.palette.getColor(fillerModel.color1);
-  addRectangle(patternNode, 0, 0, w, h, backgroundColor);
+  pattern.addBackground(fillerModel.color1);
 
-  const originalId = `${id}_original`;
+  const originalId = `${pattern.id}_original`;
   const patternColor = builder.palette.getColor(fillerModel.color2);
   const style = fillColorStyle(patternColor);
-  addPath(patternNode, pattern.path, originalId, undefined, style);
+  addPath(pattern.node, patternInfo.path, originalId, undefined, style);
 
-  if (pattern.copies) {
-    for (const transform of pattern.copies) {
-      addUse(patternNode, originalId, undefined, undefined, transform);
+  if (patternInfo.copies) {
+    for (const transform of patternInfo.copies) {
+      addUse(pattern.node, originalId, undefined, undefined, transform);
     }
   }
 
-  return id;
+  return pattern.id;
 }
 
 /* Rotation is only used by "fusele" */
