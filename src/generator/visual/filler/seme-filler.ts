@@ -1,16 +1,12 @@
 import { FillerSeme } from "@/generator/model.type";
 import { getSemeVisualInfo } from "@/service/ChargeService";
-import {
-  addUse,
-  fillColorStyle,
-  PatternTransform,
-  strokeStyle,
-  svgTranslate,
-} from "../svg/SvgHelper";
+import { svgTranslate } from "../svg/SvgHelper";
 import SvgBuilder from "../svg/SvgBuilder";
 import { SimpleShape, SymbolShape } from "../type";
 import { createPatternTransfrom } from "./util";
 import { ChargeVisualInfo, SemeVisualInfo } from "@/service/visual.type";
+import { MyStyle } from "../svg/MyStyle";
+import { PatternTransform } from "../svg/svg.type";
 
 export async function createSemeFiller(
   builder: SvgBuilder,
@@ -32,17 +28,16 @@ export async function createSemeFiller(
 
   const pattern = builder.createPattern(w, h, patternTransform);
 
-  pattern.addBackground(model.fieldColor);
+  pattern.addBackground({ colorId: model.fieldColor });
 
   // Get Symbol definition id (create definition if necessary)
   const symbolId = builder.getSymbolId(seme.charge);
 
   // Add each copy to the pattern
-  const chargeColor = builder.palette.getColor(model.chargeColor);
-  const style =
-    fillColorStyle(chargeColor) + strokeStyle(builder.defaultStrokeWidth);
+  const style: MyStyle = { colorId: model.chargeColor, border: true };
+
   for (const copyTransform of copyTransforms) {
-    addUse(pattern.node, symbolId, undefined, style, copyTransform);
+    pattern.addUse(symbolId, copyTransform, style);
   }
 
   return pattern.id;
@@ -52,7 +47,7 @@ function createChargeTransforms(
   charge: ChargeVisualInfo,
   tx: number,
   ty: number
-) {
+): string[] {
   const y0 = -charge.height / 2;
   const x0 = -charge.width / 2;
 

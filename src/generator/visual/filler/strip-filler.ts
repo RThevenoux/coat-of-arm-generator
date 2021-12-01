@@ -37,8 +37,8 @@ function createPal(
   const transformParam = createPatternTransfrom(item.bounds.topLeft, scaleCoef);
 
   const pattern = builder.createPattern(1, 1, transformParam);
-  pattern.addBackground(model.color1);
-  pattern.addRectangle(0.5, 0, 0.5, 1, model.color2);
+  pattern.addBackground({ colorId: model.color1 });
+  pattern.addRectangle(0.5, 0, 0.5, 1, { colorId: model.color2 });
 
   return pattern;
 }
@@ -54,8 +54,8 @@ function createFasce(
   const transformParam = createPatternTransfrom(item.bounds.topLeft, scaleCoef);
 
   const pattern = builder.createPattern(1, 1, transformParam);
-  pattern.addBackground(model.color1);
-  pattern.addRectangle(0, 0.5, 1, 0.5, model.color2);
+  pattern.addBackground({ colorId: model.color1 });
+  pattern.addRectangle(0, 0.5, 1, 0.5, { colorId: model.color2 });
 
   return pattern;
 }
@@ -83,11 +83,11 @@ function createDiagonal(
   const transformParam = { x, y, transform };
 
   const pattern = builder.createPattern(1, 1, transformParam);
-  pattern.addBackground(model.color1);
+  pattern.addBackground({ colorId: model.color1 });
   if (bande) {
-    pattern.addRectangle(0, 0, 0.5, 1, model.color2);
+    pattern.addRectangle(0, 0, 0.5, 1, { colorId: model.color2 });
   } else {
-    pattern.addRectangle(0.5, 0, 0.5, 1, model.color2);
+    pattern.addRectangle(0.5, 0, 0.5, 1, { colorId: model.color2 });
   }
   return pattern;
 }

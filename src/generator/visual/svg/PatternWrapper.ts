@@ -1,9 +1,12 @@
-import { ColorId } from "@/generator/model.type";
 import { XMLElement } from "xmlbuilder";
+import { MyStyle } from "./MyStyle";
 import SvgBuilder from "./SvgBuilder";
-import { addRectangle } from "./SvgHelper";
+import { addPath, addRectangle, addUse } from "./SvgHelper";
+import { SvgStyle } from "./svg.type";
 
 export class PatternWrapper {
+  private pathCount = 0;
+
   constructor(
     readonly root: SvgBuilder,
     readonly node: XMLElement,
@@ -11,8 +14,8 @@ export class PatternWrapper {
     readonly size: paper.Size
   ) {}
 
-  addBackground(colorId: ColorId): void {
-    this.addRectangle(0, 0, this.size.width, this.size.width, colorId);
+  addBackground(style: MyStyle): void {
+    this.addRectangle(0, 0, this.size.width, this.size.height, style);
   }
 
   addRectangle(
@@ -20,19 +23,43 @@ export class PatternWrapper {
     y: number,
     width: number,
     height: number,
-    colorId: ColorId
+    style: MyStyle
   ): void {
-    const color = this.root.palette.getColor(colorId);
-    this.addRectangleRawColor(x, y, width, height, color);
+    const svgSyle = this.toSvgStyle(style);
+    addRectangle(this.node, x, y, width, height, svgSyle);
   }
 
-  addRectangleRawColor(
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    rawColor: string
-  ): void {
-    addRectangle(this.node, x, y, width, height, rawColor);
+  addPath(pathData: string, style?: MyStyle): string {
+    const id = this.nextPathId();
+    const svgStyle = this.toSvgStyle(style);
+    addPath(this.node, pathData, svgStyle, id);
+    return id;
+  }
+
+  addUse(symbolId: string, transform: string, style?: MyStyle): void {
+    const svgSyle = this.toSvgStyle(style);
+    addUse(this.node, symbolId, svgSyle, transform);
+  }
+
+  private nextPathId() {
+    return `${this.id}_path${this.pathCount++}`;
+  }
+
+  private toSvgStyle(myStyle?: MyStyle): SvgStyle | undefined {
+    if (!myStyle) {
+      return undefined;
+    }
+
+    const svg: SvgStyle = {};
+    if (myStyle.border) {
+      svg.strokeWidth = this.root.defaultStrokeWidth;
+    }
+    if (myStyle.colorId) {
+      svg.color = this.root.palette.getColor(myStyle.colorId);
+    } else if (myStyle.rawColor) {
+      svg.color = myStyle.rawColor;
+    }
+
+    return svg;
   }
 }

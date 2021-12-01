@@ -1,7 +1,6 @@
 import { getPatternVisualInfo } from "@/service/PatternService";
 import { PatternVisualInfo } from "@/service/visual.type";
 import { FillerPattern } from "../../model.type";
-import { addPath, addUse, fillColorStyle } from "../svg/SvgHelper";
 import SvgBuilder from "../svg/SvgBuilder";
 import { SimpleShape, SymbolShape } from "../type";
 import { createPatternTransfrom } from "./util";
@@ -20,16 +19,15 @@ export function createPatternFiller(
   const h = patternInfo.patternHeight;
   const pattern = builder.createPattern(w, h, transform);
 
-  pattern.addBackground(fillerModel.color1);
+  pattern.addBackground({ colorId: fillerModel.color1 });
 
-  const originalId = `${pattern.id}_original`;
-  const patternColor = builder.palette.getColor(fillerModel.color2);
-  const style = fillColorStyle(patternColor);
-  addPath(pattern.node, patternInfo.path, originalId, undefined, style);
+  const originalId = pattern.addPath(patternInfo.path, {
+    colorId: fillerModel.color2,
+  });
 
   if (patternInfo.copies) {
-    for (const transform of patternInfo.copies) {
-      addUse(pattern.node, originalId, undefined, undefined, transform);
+    for (const copyTransform of patternInfo.copies) {
+      pattern.addUse(originalId, copyTransform);
     }
   }
 

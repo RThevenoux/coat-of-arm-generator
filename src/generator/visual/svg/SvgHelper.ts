@@ -1,5 +1,6 @@
 import { ChargeVisualInfo } from "@/service/visual.type";
 import xmlbuilder, { XMLElement } from "xmlbuilder";
+import { PatternTransform, SvgStyle } from "./svg.type";
 
 export function createSVG(): XMLElement {
   return xmlbuilder
@@ -23,20 +24,6 @@ export function addRadialGradient(
     .att("r", radius);
 }
 
-export function addSolidGradient(
-  parentNode: XMLElement,
-  id: string,
-  color: string
-): XMLElement {
-  const gradient = addLinearGradient(parentNode, id);
-  gradient.ele("stop").att("stop-color", `${color}`);
-  return gradient;
-}
-
-function addLinearGradient(parentNode: XMLElement, id: string): XMLElement {
-  return parentNode.ele("linearGradient").att("id", id);
-}
-
 export function addGradientStop(
   gradient: XMLElement,
   offset: number,
@@ -47,12 +34,6 @@ export function addGradientStop(
     .ele("stop")
     .att("style", `stop-color:${color};stop-opacity:${opacity}`)
     .att("offset", offset);
-}
-
-export interface PatternTransform {
-  x: number;
-  y: number;
-  transform: string;
 }
 
 export function addPattern(
@@ -81,18 +62,11 @@ export function addPattern(
 export function addUse(
   parentNode: XMLElement,
   refId: string,
-  fill?: string,
-  style?: string,
+  style?: SvgStyle,
   transform?: string
 ): XMLElement {
   const use = parentNode.ele("use").att("href", `#${refId}`);
-
-  if (fill) {
-    use.att("fill", fill);
-  }
-  if (style) {
-    use.att("style", style);
-  }
+  addStyle(use, style);
   if (transform) {
     use.att("transform", transform);
   }
@@ -102,19 +76,13 @@ export function addUse(
 export function addPath(
   parentNode: XMLElement,
   pathData: string,
-  id?: string,
-  fill?: string,
-  style?: string
+  style?: SvgStyle,
+  id?: string
 ): XMLElement {
   const path = parentNode.ele("path").att("d", pathData);
+  addStyle(path, style);
   if (id) {
     path.att("id", id);
-  }
-  if (fill) {
-    path.att("fill", fill);
-  }
-  if (style) {
-    path.att("style", style);
   }
   return path;
 }
@@ -125,15 +93,18 @@ export function addRectangle(
   y: number,
   width: number,
   height: number,
-  color: string
+  style?: SvgStyle
 ): XMLElement {
-  return parentNode
+  const rect = parentNode
     .ele("rect")
     .att("x", x)
     .att("y", y)
     .att("width", width)
-    .att("height", height)
-    .att("style", fillColorStyle(color));
+    .att("height", height);
+
+  addStyle(rect, style);
+
+  return rect;
 }
 
 export function addSymbol(
@@ -148,18 +119,6 @@ export function addSymbol(
     .att("height", symbolDef.height)
     .att("viewBox", `0 0 ${symbolDef.width} ${symbolDef.height}`)
     .raw(symbolDef.xml);
-}
-
-export function fillColorStyle(color: string): string {
-  return `fill:${color};`;
-}
-
-export function strokeStyle(width: number): string {
-  return `stroke:black;stroke-width:${width}px;`;
-}
-
-export function refStyle(refId: string): string {
-  return `url(#${refId})`;
 }
 
 export function svgTranslate(tx: number, ty: number): string {
@@ -179,4 +138,22 @@ export function svgTransform(scaleCoef: number, rotation?: number): string {
   }
 
   return result;
+}
+
+export function addStyle(node: XMLElement, style?: SvgStyle): void {
+  if (style?.fillerId) {
+    node.att("fill", `url(#${style.fillerId})`);
+  }
+
+  if (style?.color || style?.strokeWidth) {
+    let styleValue = "";
+    if (style.color) {
+      styleValue += `fill:${style.color};`;
+    }
+    if (style.strokeWidth && style.strokeWidth > 0) {
+      styleValue += `stroke:black;stroke-width:${style.strokeWidth}px;`;
+    }
+
+    node.att("style", styleValue);
+  }
 }

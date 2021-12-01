@@ -1,6 +1,7 @@
 import * as paper from "paper";
 
-import { PatternTransform, svgTransform } from "../svg/SvgHelper";
+import { svgTransform } from "../svg/SvgHelper";
+import { PatternTransform } from "../svg/svg.type";
 
 /**
  * @param anchor

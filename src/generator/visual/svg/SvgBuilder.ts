@@ -1,33 +1,30 @@
 import * as paper from "paper";
 import xmlBuilder from "xmlbuilder";
-import { FillerModel, FillerPlein } from "../../model.type";
+import { FillerModel } from "../../model.type";
 import { EscutcheonShape, SimpleShape, SymbolShape } from "../type";
 import { ChargeVisualInfo } from "@/service/visual.type";
 import {
   addPath,
   addPattern,
+  addStyle,
   addSymbol,
   addUse,
   createSVG,
-  PatternTransform,
-  refStyle,
-  strokeStyle,
 } from "./SvgHelper";
 import { Palette } from "../Palette";
 import { createPatternFiller } from "../filler/pattern-filler";
 import { createDefaultFiller } from "../filler/default-filler";
 import { createStripFiller } from "../filler/strip-filler";
 import { createSemeFiller } from "../filler/seme-filler";
-import { createPlainFiller } from "../filler/plain-filler";
 import { createReflect } from "../filler/reflect";
 import { PatternWrapper } from "./PatternWrapper";
+import { PatternTransform, SvgStyle } from "./svg.type";
 
 export default class SvgBuilder {
   private readonly container: xmlBuilder.XMLElement;
   readonly defs: xmlBuilder.XMLElement;
 
   private patternCount = 0;
-  private definedSolidFiller: Record<string, string> = {};
   private definedSymbol: Record<string, string> = {};
   private defaultFillerId: string | null = null;
   private escutcheonPathId: string | null = null;
@@ -50,8 +47,8 @@ export default class SvgBuilder {
 
     // Add border to SVG
     const escutcheonId = this.getEscutcheonPathId();
-    const style = "fill:none;" + strokeStyle(borderSize);
-    addUse(this.container, escutcheonId, undefined, style);
+    const style = { color: "none", strokeWidth: borderSize };
+    addUse(this.container, escutcheonId, style);
   }
 
   public addReflect(): void {
@@ -61,8 +58,7 @@ export default class SvgBuilder {
       this.escutcheon.path,
       "gradient-reflect"
     );
-    const fill = refStyle(gradienId);
-    addUse(this.container, escutcheonId, fill);
+    addUse(this.container, escutcheonId, { fillerId: gradienId });
   }
 
   public build(outputSize: { width: number; height: number }): string {
@@ -80,7 +76,13 @@ export default class SvgBuilder {
   public getEscutcheonPathId(): string {
     if (this.escutcheonPathId == null) {
       this.escutcheonPathId = "escutcheon";
-      addPath(this.defs, this.escutcheon.path.pathData, this.escutcheonPathId);
+      const style = {};
+      addPath(
+        this.defs,
+        this.escutcheon.path.pathData,
+        style,
+        this.escutcheonPathId
+      );
     }
     return this.escutcheonPathId;
   }
@@ -89,9 +91,8 @@ export default class SvgBuilder {
     fillerModel: FillerModel | "none",
     shape: SimpleShape
   ): Promise<void> {
-    const fillerId = await this._getFillerId(fillerModel, shape);
-    const style = refStyle(fillerId);
-    addPath(this.container, shape.path.pathData, undefined, style);
+    const style = await this.getStyle(fillerModel, shape);
+    addPath(this.container, shape.path.pathData, style);
   }
 
   public async drawSymbol(
@@ -107,37 +108,43 @@ export default class SvgBuilder {
       root: this.escutcheon,
     };
 
-    const fillerId = await this._getFillerId(filler, symbolShape);
+    const style = await this.getStyle(filler, symbolShape);
+    style.strokeWidth = this.defaultStrokeWidth / scaleCoef;
 
-    const strokeWidth = this.defaultStrokeWidth / scaleCoef;
     const transform =
       `scale(${scaleCoef},${scaleCoef})` +
       ` translate(${position.x / scaleCoef},${position.y / scaleCoef})`;
 
     const group = this.container.ele("g");
-    group
-      .raw(symbolDef.xml)
-      .att("transform", transform)
-      .att("fill", refStyle(fillerId))
-      .att("style", strokeStyle(strokeWidth));
+    group.raw(symbolDef.xml).att("transform", transform);
+
+    addStyle(group, style);
   }
 
-  private async _getFillerId(
+  private async getStyle(
     model: FillerModel | "none",
     container: SimpleShape | SymbolShape
-  ): Promise<string> {
+  ): Promise<SvgStyle> {
     if (!model || model == "none" || !model.type) {
       return this._getDefaultFiller();
     }
     switch (model.type) {
-      case "pattern":
-        return createPatternFiller(this, model, container);
-      case "plein":
-        return this._getSolidFiller(model);
-      case "seme":
-        return createSemeFiller(this, model, container);
-      case "strip":
-        return createStripFiller(this, model, container);
+      case "plein": {
+        const color = this.palette.getColor(model.color);
+        return { color };
+      }
+      case "pattern": {
+        const fillerId = createPatternFiller(this, model, container);
+        return { fillerId };
+      }
+      case "seme": {
+        const fillerId = await createSemeFiller(this, model, container);
+        return { fillerId };
+      }
+      case "strip": {
+        const fillerId = createStripFiller(this, model, container);
+        return { fillerId };
+      }
       case "invalid":
       default:
         console.log("Unsupported-filler-type:" + model.type);
@@ -145,21 +152,11 @@ export default class SvgBuilder {
     }
   }
 
-  private _getDefaultFiller(): string {
+  private _getDefaultFiller(): SvgStyle {
     if (!this.defaultFillerId) {
       this.defaultFillerId = createDefaultFiller(this);
     }
-    return this.defaultFillerId;
-  }
-
-  private _getSolidFiller(model: FillerPlein): string {
-    const key = model.color;
-    let fillerId = this.definedSolidFiller[key];
-    if (!fillerId) {
-      fillerId = createPlainFiller(this, model, `solid-${key}`);
-      this.definedSolidFiller[key] = fillerId;
-    }
-    return fillerId;
+    return { fillerId: this.defaultFillerId };
   }
 
   private nextPatternId(): string {
