@@ -2,7 +2,7 @@ import { XMLElement } from "xmlbuilder";
 import { MyStyle } from "./MyStyle";
 import SvgBuilder from "./SvgBuilder";
 import { addPath, addRectangle, addUse } from "./SvgHelper";
-import { SvgStyle } from "./svg.type";
+import { SvgStyle, TransformList } from "./svg.type";
 
 export class PatternWrapper {
   private pathCount = 0;
@@ -36,7 +36,7 @@ export class PatternWrapper {
     return id;
   }
 
-  addUse(symbolId: string, transform: string, style?: MyStyle): void {
+  addUse(symbolId: string, transform: TransformList, style?: MyStyle): void {
     const svgSyle = this.toSvgStyle(style);
     addUse(this.node, symbolId, svgSyle, transform);
   }

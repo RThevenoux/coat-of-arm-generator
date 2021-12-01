@@ -1,10 +1,10 @@
 import * as paper from "paper";
 import { FillerStrip } from "@/generator/model.type";
-import { svgTransform } from "../svg/SvgHelper";
 import { SimpleShape, SymbolShape } from "../type";
 import SvgBuilder from "../svg/SvgBuilder";
 import { createPatternTransfrom } from "./util";
 import { PatternWrapper } from "../svg/PatternWrapper";
+import { TransformList } from "../svg/svg.type";
 
 export function createStripFiller(
   builder: SvgBuilder,
@@ -79,8 +79,11 @@ function createDiagonal(
 
   const x = clone.bounds.left / scaleCoef;
   const y = 0; // pattern is invariant by y-translation
-  const transform = svgTransform(scaleCoef, rotationDeg);
-  const transformParam = { x, y, transform };
+  const transformList: TransformList = [];
+  transformList.push({ type: "scale", sx: scaleCoef });
+  transformList.push({ type: "rotate", angle: rotationDeg });
+
+  const transformParam = { x, y, transformList };
 
   const pattern = builder.createPattern(1, 1, transformParam);
   pattern.addBackground({ colorId: model.color1 });

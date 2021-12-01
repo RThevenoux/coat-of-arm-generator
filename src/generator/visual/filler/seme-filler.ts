@@ -1,12 +1,11 @@
 import { FillerSeme } from "@/generator/model.type";
 import { getSemeVisualInfo } from "@/service/ChargeService";
-import { svgTranslate } from "../svg/SvgHelper";
 import SvgBuilder from "../svg/SvgBuilder";
 import { SimpleShape, SymbolShape } from "../type";
 import { createPatternTransfrom } from "./util";
 import { ChargeVisualInfo, SemeVisualInfo } from "@/service/visual.type";
 import { MyStyle } from "../svg/MyStyle";
-import { PatternTransform } from "../svg/svg.type";
+import { PatternTransform, Transform, Translate } from "../svg/svg.type";
 
 export async function createSemeFiller(
   builder: SvgBuilder,
@@ -21,7 +20,7 @@ export async function createSemeFiller(
   const ty = seme.ty;
 
   // compute each copy position
-  const copyTransforms = createChargeTransforms(seme.charge, tx, ty);
+  const copiesTranslate = createChargeTransforms(seme.charge, tx, ty);
 
   const w = tx * 2;
   const h = ty * 2;
@@ -36,8 +35,8 @@ export async function createSemeFiller(
   // Add each copy to the pattern
   const style: MyStyle = { colorId: model.chargeColor, border: true };
 
-  for (const copyTransform of copyTransforms) {
-    pattern.addUse(symbolId, copyTransform, style);
+  for (const copyTranslate of copiesTranslate) {
+    pattern.addUse(symbolId, [copyTranslate], style);
   }
 
   return pattern.id;
@@ -47,17 +46,21 @@ function createChargeTransforms(
   charge: ChargeVisualInfo,
   tx: number,
   ty: number
-): string[] {
+): Transform[] {
   const y0 = -charge.height / 2;
   const x0 = -charge.width / 2;
 
-  const center = svgTranslate(x0 + tx, y0 + ty);
-  const bottomLeft = svgTranslate(x0, y0 + 2 * ty);
-  const bottomRigth = svgTranslate(x0 + 2 * tx, y0 + 2 * ty);
-  const topLeft = svgTranslate(x0, y0);
-  const topRigth = svgTranslate(x0 + 2 * tx, y0);
+  const center = translate(x0 + tx, y0 + ty);
+  const bottomLeft = translate(x0, y0 + 2 * ty);
+  const bottomRigth = translate(x0 + 2 * tx, y0 + 2 * ty);
+  const topLeft = translate(x0, y0);
+  const topRigth = translate(x0 + 2 * tx, y0);
 
   return [center, bottomLeft, bottomRigth, topLeft, topRigth];
+}
+
+function translate(tx: number, ty: number): Translate {
+  return { type: "translate", tx, ty };
 }
 
 function computeTransform(

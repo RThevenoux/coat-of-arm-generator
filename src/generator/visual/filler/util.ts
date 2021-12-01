@@ -1,7 +1,6 @@
 import * as paper from "paper";
 
-import { svgTransform } from "../svg/SvgHelper";
-import { PatternTransform } from "../svg/svg.type";
+import { PatternTransform, TransformList } from "../svg/svg.type";
 
 /**
  * @param anchor
@@ -13,11 +12,18 @@ export function createPatternTransfrom(
   scale: number,
   rotate?: number
 ): PatternTransform {
-  if (rotate) {
+  const transformList: TransformList = [];
+
+  if (rotate && rotate != 0) {
+    transformList.push({ type: "rotate", angle: rotate });
     anchor = anchor.rotate(rotate, new paper.Point(0, 0));
   }
   const x = anchor.x / scale;
   const y = anchor.y / scale;
-  const transform = svgTransform(scale, rotate);
-  return { x, y, transform };
+
+  if (scale != 1) {
+    transformList.push({ type: "scale", sx: scale });
+  }
+
+  return { x, y, transformList };
 }

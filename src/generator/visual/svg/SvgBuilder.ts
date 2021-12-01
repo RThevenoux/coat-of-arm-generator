@@ -8,6 +8,7 @@ import {
   addPattern,
   addStyle,
   addSymbol,
+  addTransform,
   addUse,
   createSVG,
 } from "./SvgHelper";
@@ -18,7 +19,7 @@ import { createStripFiller } from "../filler/strip-filler";
 import { createSemeFiller } from "../filler/seme-filler";
 import { createReflect } from "../filler/reflect";
 import { PatternWrapper } from "./PatternWrapper";
-import { PatternTransform, SvgStyle } from "./svg.type";
+import { PatternTransform, SvgStyle, TransformList } from "./svg.type";
 
 export default class SvgBuilder {
   private readonly container: xmlBuilder.XMLElement;
@@ -111,13 +112,18 @@ export default class SvgBuilder {
     const style = await this.getStyle(filler, symbolShape);
     style.strokeWidth = this.defaultStrokeWidth / scaleCoef;
 
-    const transform =
-      `scale(${scaleCoef},${scaleCoef})` +
-      ` translate(${position.x / scaleCoef},${position.y / scaleCoef})`;
+    const transforms: TransformList = [
+      { type: "scale", sx: scaleCoef },
+      {
+        type: "translate",
+        tx: position.x / scaleCoef,
+        ty: position.y / scaleCoef,
+      },
+    ];
 
     const group = this.container.ele("g");
-    group.raw(symbolDef.xml).att("transform", transform);
-
+    group.raw(symbolDef.xml);
+    addTransform(group, transforms);
     addStyle(group, style);
   }
 

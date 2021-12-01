@@ -8,7 +8,7 @@ const visual: Record<string, PatternVisualInfo> = {};
 const labelInfo: Record<string, LabelInfo> = {};
 
 for (const item of data) {
-  visual[item.id] = item.visual;
+  visual[item.id] = item.visual as PatternVisualInfo;
   labelInfo[item.id] = item.blazon as LabelInfo;
 }
 

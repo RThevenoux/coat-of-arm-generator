@@ -1,6 +1,11 @@
 import { ChargeVisualInfo } from "@/service/visual.type";
 import xmlbuilder, { XMLElement } from "xmlbuilder";
-import { PatternTransform, SvgStyle } from "./svg.type";
+import {
+  PatternTransform,
+  SvgStyle,
+  Transform,
+  TransformList,
+} from "./svg.type";
 
 export function createSVG(): XMLElement {
   return xmlbuilder
@@ -51,9 +56,10 @@ export function addPattern(
     .att("patternUnits", "userSpaceOnUse");
 
   if (transform) {
+    const transformValue = transformListToString(transform.transformList);
     pattern.att("x", transform.x);
     pattern.att("y", transform.y);
-    pattern.att("patternTransform", transform.transform);
+    pattern.att("patternTransform", transformValue);
   }
 
   return pattern;
@@ -63,13 +69,11 @@ export function addUse(
   parentNode: XMLElement,
   refId: string,
   style?: SvgStyle,
-  transform?: string
+  transform?: TransformList
 ): XMLElement {
   const use = parentNode.ele("use").att("href", `#${refId}`);
   addStyle(use, style);
-  if (transform) {
-    use.att("transform", transform);
-  }
+  addTransform(use, transform);
   return use;
 }
 
@@ -125,21 +129,6 @@ export function svgTranslate(tx: number, ty: number): string {
   return `translate(${tx},${ty})`;
 }
 
-// rotation : in degree and clockwise
-export function svgTransform(scaleCoef: number, rotation?: number): string {
-  let result = "";
-
-  if (scaleCoef != 1) {
-    result += `scale(${scaleCoef},${scaleCoef})`;
-  }
-
-  if (rotation && rotation != 0) {
-    result += `rotate(${rotation})`;
-  }
-
-  return result;
-}
-
 export function addStyle(node: XMLElement, style?: SvgStyle): void {
   if (style?.fillerId) {
     node.att("fill", `url(#${style.fillerId})`);
@@ -155,5 +144,34 @@ export function addStyle(node: XMLElement, style?: SvgStyle): void {
     }
 
     node.att("style", styleValue);
+  }
+}
+
+export function addTransform(
+  node: XMLElement,
+  transform?: TransformList
+): void {
+  if (transform) {
+    const transformValue = transformListToString(transform);
+    node.att("transform", transformValue);
+  }
+}
+
+function transformListToString(transforms: TransformList): string {
+  return transforms.map((t) => transformToString(t)).join(" ");
+}
+
+function transformToString(transform: Transform): string {
+  switch (transform.type) {
+    case "rotate":
+      return `rotate(${transform.angle})`;
+    case "scale":
+      return `scale(${transform.sx},${
+        transform.sy ? transform.sy : transform.sx
+      })`;
+    case "translate":
+      return `translate(${transform.tx},${transform.ty})`;
+    default:
+      throw new Error("Unsupported tranfrom " + JSON.stringify(transform));
   }
 }

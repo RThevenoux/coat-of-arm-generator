@@ -1,3 +1,4 @@
+import { TransformList } from "@/generator/visual/svg/svg.type";
 import { ColorId } from "../generator/model.type";
 
 export type PaletteData = Record<ColorId, string>;
@@ -7,7 +8,7 @@ export interface PatternVisualInfo {
   patternHeight: number;
   patternRepetition: number;
   path: string;
-  copies?: string[];
+  copies?: TransformList[];
 }
 
 export interface PartitionVisualInfo {

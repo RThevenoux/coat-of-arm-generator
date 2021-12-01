@@ -50,15 +50,27 @@
       "patternRepetition": 5,
       "path": "M 30,0 L 0,52 60,52 z",
       "copies": [
-        "translate(-30,52)",
-        "translate(30,52)"
+        [
+          {
+            "type": "translate",
+            "tx": -30,
+            "ty": 52
+          }
+        ],
+        [
+          {
+            "type": "translate",
+            "tx": 30,
+            "ty": 52
+          }
+        ]
       ]
     }
   },
   {
     "id": "vair",
     "blazon": {
-      "type":"switch",
+      "type": "switch",
       "cases": [
         {
           "colors": [
@@ -76,15 +88,27 @@
       "patternRepetition": 6,
       "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
       "copies": [
-        "translate(-2,4)",
-        "translate(2,4)"
+        [
+          {
+            "type": "translate",
+            "tx": -2,
+            "ty": 4
+          }
+        ],
+        [
+          {
+            "type": "translate",
+            "tx": 2,
+            "ty": 4
+          }
+        ]
       ]
     }
   },
   {
     "id": "vair_en_pal",
     "blazon": {
-      "type":"switch",
+      "type": "switch",
       "cases": [
         {
           "colors": [
@@ -102,14 +126,20 @@
       "patternRepetition": 6,
       "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
       "copies": [
-        "translate(0,4)"
+        [
+          {
+            "type": "translate",
+            "tx": 0,
+            "ty": 4
+          }
+        ]
       ]
     }
   },
   {
     "id": "vair_en_pointe",
     "blazon": {
-      "type":"switch",
+      "type": "switch",
       "cases": [
         {
           "colors": [
@@ -127,15 +157,37 @@
       "patternRepetition": 6,
       "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
       "copies": [
-        "scale(1,-1) translate(2,-8)",
-        "scale(1,-1) translate(-2,-8)"
+        [
+          {
+            "type": "scale",
+            "sx": 1,
+            "sy": -1
+          },
+          {
+            "type": "translate",
+            "tx": 2,
+            "ty": -8
+          }
+        ],
+        [
+          {
+            "type": "scale",
+            "sx": 1,
+            "sy": -1
+          },
+          {
+            "type": "translate",
+            "tx": -2,
+            "ty": -8
+          }
+        ]
       ]
     }
   },
   {
     "id": "contrevair",
     "blazon": {
-      "type":"switch",
+      "type": "switch",
       "cases": [
         {
           "colors": [
@@ -153,7 +205,18 @@
       "patternRepetition": 6,
       "path": "M2,0 L1,1 1,3 0,4 4,4 3,3 3,1z",
       "copies": [
-        "scale(1,-1) translate(0,-8)"
+        [
+          {
+            "type": "scale",
+            "sx": 1,
+            "sy": -1
+          },
+          {
+            "type": "translate",
+            "tx": 0,
+            "ty": -8
+          }
+        ]
       ]
     }
   }
