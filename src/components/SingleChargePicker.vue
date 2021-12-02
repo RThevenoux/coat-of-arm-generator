@@ -12,6 +12,13 @@
         <option value="pal">en pal</option>
         <option value="bande">en bande</option>
       </select>
+      <select v-model="value.strip.size" @change="update" key="strip-size">
+        <option value="default">standard</option>
+        <option value="reduced">réduit</option>
+        <option value="minimal">filet</option>
+        <option value="gemel">jumelles</option>
+        <option value="triplet">tierces</option>
+      </select>
       <input
         v-model.number="value.strip.count"
         type="number"
@@ -28,6 +35,11 @@
       <select v-model="value.cross.angle" @change="update" key="cross-angle">
         <option value="fasce">droite</option>
         <option value="barre">sautoir</option>
+      </select>
+      <select v-model="value.cross.size" @change="update" key="strip-size">
+        <option value="default">standard</option>
+        <option value="reduced">réduite</option>
+        <option value="minimal">filet</option>
       </select>
       <FillerPicker
         v-model="value.filler"

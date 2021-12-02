@@ -67,11 +67,15 @@ export interface FillerPattern {
 //
 export type ChargeModel = ChargeStrip | ChargeCross | ChargeSymbol;
 
+export type StripSize = "default" | "reduced" | "minimal" | "gemel" | "triplet";
+export type CrossSize = "default" | "reduced" | "minimal";
+
 export interface ChargeStrip {
   type: "strip";
   direction: Direction;
   count: number;
   filler: FillerModel;
+  size: StripSize;
 }
 
 export interface ChargeCross {
@@ -79,6 +83,7 @@ export interface ChargeCross {
   count: 1;
   direction: Direction;
   filler: FillerModel;
+  size: CrossSize;
 }
 
 export interface ChargeSymbol {

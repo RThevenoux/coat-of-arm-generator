@@ -1,5 +1,5 @@
 import { MyOption } from "./MyOptions.type";
-import { ChargeData, SemeData, SVGVisualData } from "./ChargeData";
+import { ChargeData, SemeData, ChargeVisualData } from "./ChargeData";
 import { ChargeTextualInfo } from "@/service/textual.type";
 import { ChargeVisualInfo, SemeVisualInfo } from "./visual.type";
 
@@ -37,17 +37,17 @@ async function loadData(): Promise<ChargeRepo> {
   for (const item of data) {
     const chargeData = item as ChargeData;
     const visualData = chargeData.visual;
-    if (visualData.type === "svg") {
-      const visualInfo = await buildVisualInfo(chargeData.id, visualData);
-      visual[chargeData.id] = visualInfo;
-      semeVisual[chargeData.id] = computeSemeInfo(visualInfo, visualData.seme);
 
-      options.push(buildOption(chargeData));
+    const visualInfo = await buildVisualInfo(chargeData.id, visualData);
+    visual[chargeData.id] = visualInfo;
+    semeVisual[chargeData.id] = computeSemeInfo(visualInfo, visualData.seme);
 
-      if (defaultChargeId == null || chargeData.default) {
-        defaultChargeId = chargeData.id;
-      }
+    options.push(buildOption(chargeData));
+
+    if (defaultChargeId == null || chargeData.default) {
+      defaultChargeId = chargeData.id;
     }
+
     blazon[chargeData.id] = chargeData.blazon;
   }
 
@@ -66,7 +66,7 @@ async function loadData(): Promise<ChargeRepo> {
 
 async function buildVisualInfo(
   id: string,
-  visual: SVGVisualData
+  visual: ChargeVisualData
 ): Promise<ChargeVisualInfo> {
   const xml = await getVisualXml(id, visual);
   return {
@@ -88,7 +88,7 @@ function buildOption(item: ChargeData): MyOption {
 
 async function getVisualXml(
   id: string,
-  visual: SVGVisualData
+  visual: ChargeVisualData
 ): Promise<string> {
   if (visual.file) {
     const ref = await import("./data/charges/" + visual.file);

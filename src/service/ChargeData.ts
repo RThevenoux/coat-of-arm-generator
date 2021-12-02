@@ -7,14 +7,7 @@ export interface ChargeData {
   blazon: ChargeTextualInfo;
 }
 
-export type ChargeVisualData = SVGVisualData | CalculateVisualData;
-
-export interface CalculateVisualData {
-  type: "calculate";
-}
-
-export interface SVGVisualData {
-  type: "svg";
+export interface ChargeVisualData {
   file?: string;
   xml?: string;
   width: number;

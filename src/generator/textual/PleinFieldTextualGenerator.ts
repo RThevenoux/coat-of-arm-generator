@@ -1,6 +1,8 @@
 import { BorderModel, ChargeModel, PlainFieldModel } from "../model.type";
 import { getCountableChargeLabel } from "./ChargeTextualGenerator";
+import { crossToLabel } from "./CrossTextualGenerator";
 import { fillerToLabel } from "./FillerTextualGenerator";
+import { stripToLabel } from "./StripTextualGenerator";
 
 export async function plainFieldToLabel(
   model: PlainFieldModel
@@ -37,44 +39,19 @@ async function _chargeList(charges: ChargeModel[]): Promise<string> {
 }
 
 async function _singleCharge(charge: ChargeModel): Promise<string> {
-  const chargeId = _getChargeId(charge);
-  const chargeLabel = await getCountableChargeLabel(chargeId, charge.count);
+  const chargeLabel = await _chargeLabel(charge);
   const filler = await fillerToLabel(charge.filler);
-  return chargeLabel + " " + filler;
+  return `${chargeLabel} ${filler}`;
 }
 
-function _getChargeId(charge: ChargeModel): string {
+async function _chargeLabel(charge: ChargeModel): Promise<string> {
   switch (charge.type) {
-    case "strip": {
-      switch (charge.direction) {
-        case "fasce":
-          return "fasce";
-        case "barre":
-          return "barre";
-        case "pal":
-          return "pal";
-        case "bande":
-          return "bande";
-        default:
-          return "strip:" + charge.direction;
-      }
-    }
-    case "cross": {
-      switch (charge.direction) {
-        case "pal":
-        case "fasce":
-          return "croix";
-        case "barre":
-        case "bande":
-          return "sautoir";
-        default:
-          return "cross:" + charge.direction;
-      }
-    }
+    case "strip":
+      return stripToLabel(charge);
+    case "cross":
+      return crossToLabel(charge);
     case "symbol": {
-      return charge.chargeId;
+      return getCountableChargeLabel(charge.chargeId, charge.count);
     }
-    default:
-      return "[invalid charge]";
   }
 }

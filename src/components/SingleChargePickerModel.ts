@@ -1,4 +1,4 @@
-import { Direction } from "../generator/model.type";
+import { CrossSize, Direction, StripSize } from "../generator/model.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 
 export interface SingleChargePickerModel {
@@ -7,9 +7,11 @@ export interface SingleChargePickerModel {
   strip: {
     angle: Direction;
     count: number;
+    size: StripSize;
   };
   cross: {
     angle: Direction;
+    size: CrossSize;
   };
   symbol: {
     chargeId: string;

@@ -25,9 +25,11 @@ export async function initialChargeModel(): Promise<SingleChargePickerModel> {
     strip: {
       angle: "pal",
       count: 1,
+      size: "default",
     },
     cross: {
       angle: "fasce",
+      size: "default",
     },
     symbol: {
       chargeId: await getDefaultChargeId(),
@@ -140,6 +142,7 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         direction: viewModel.strip.angle,
         count: viewModel.strip.count,
         filler: fillerToModel(viewModel.filler),
+        size: viewModel.strip.size,
       };
     case "cross":
       return {
@@ -147,6 +150,7 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         count: 1,
         direction: viewModel.cross.angle,
         filler: fillerToModel(viewModel.filler),
+        size: viewModel.cross.size,
       };
     case "symbol":
       return {
