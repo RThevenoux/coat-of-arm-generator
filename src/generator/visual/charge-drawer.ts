@@ -1,5 +1,5 @@
 import { createStrips } from "./shape/StripFactory";
-import { createCross, createCrossSaltire } from "./shape/CrossFactory";
+import { createCross } from "./shape/CrossFactory";
 import drawSymbol from "./symbol-drawer";
 import SvgBuilder from "./svg/SvgBuilder";
 import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";
@@ -25,29 +25,20 @@ export default async function drawCharge(
 
 async function drawStrip(
   builder: SvgBuilder,
-  stripModel: ChargeStrip,
+  strip: ChargeStrip,
   container: FieldShape
 ): Promise<void> {
-  const strips = createStrips(
-    container,
-    stripModel.direction,
-    stripModel.count
-  );
+  const strips = createStrips(strip, container);
   for (const stripShape of strips) {
-    await builder.fill(stripModel.filler, stripShape);
+    await builder.fill(strip.filler, stripShape);
   }
 }
 
 function drawCross(
   builder: SvgBuilder,
-  charge: ChargeCross,
+  cross: ChargeCross,
   container: FieldShape
 ): Promise<void> {
-  if (charge.direction === "barre" || charge.direction === "bande") {
-    const shape = createCrossSaltire(container);
-    return builder.fill(charge.filler, shape);
-  } else {
-    const shape = createCross(container);
-    return builder.fill(charge.filler, shape);
-  }
+  const shape = createCross(cross, container);
+  return builder.fill(cross.filler, shape);
 }

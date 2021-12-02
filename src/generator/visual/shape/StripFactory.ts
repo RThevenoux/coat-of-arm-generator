@@ -1,130 +1,152 @@
 import * as paper from "paper";
-import { Direction } from "../../model.type";
+import { ChargeStrip } from "../../model.type";
 import { FieldShape, StripShape } from "../type";
 
 export function createStrips(
-  container: FieldShape,
-  angle: Direction,
-  count: number
+  strip: ChargeStrip,
+  container: FieldShape
 ): StripShape[] {
-  switch (angle) {
+  switch (strip.direction) {
     case "fasce":
-      return createFasces(container, count);
+      return createFasces(container, strip);
     case "pal":
-      return createPals(container, count);
+      return createPals(container, strip);
     case "bande":
-      return createDiagonals(container, false, count);
     case "barre":
-      return createDiagonals(container, true, count);
+      return createDiagonals(container, strip);
     default:
-      console.log("invalid angle " + angle);
+      console.log("invalid angle " + strip.direction);
       return [];
   }
 }
 
-function createFasces(container: FieldShape, count: number): StripShape[] {
-  const result = [];
-  const ratio = 1 / (2 * count + 1);
+function createFasces(container: FieldShape, model: ChargeStrip): StripShape[] {
   const bounds = container.path.bounds;
-  const hStrip = bounds.height * ratio;
-
-  for (let i = 0; i < count; i++) {
-    const topLeft = new paper.Point(bounds.x, bounds.y + (2 * i + 1) * hStrip);
-    const strip = new paper.Path.Rectangle({
-      point: topLeft,
-      size: [bounds.width, hStrip],
-    });
-
-    const clippedStrip = _clip(strip, container);
-
-    const stripShape: StripShape = {
-      type: "strip",
-      path: clippedStrip,
-      root: container.root,
-      stripDirection: "fasce",
-      stripAngle: 90,
-      stripWidth: hStrip,
-      patternAnchor: topLeft,
-    };
-
-    result.push(stripShape);
-  }
-
-  return result;
+  const helper = new StripHelper(model, bounds.height, bounds.y);
+  return helper.build((yStrip, stripWidth) =>
+    createStraight(yStrip, stripWidth, container, "fasce")
+  );
 }
 
-function createPals(container: FieldShape, count: number): StripShape[] {
-  const result = [];
-  const ratio = 1 / (2 * count + 1);
+function createPals(container: FieldShape, model: ChargeStrip): StripShape[] {
   const bounds = container.path.bounds;
-  const wStrip = bounds.width * ratio;
-
-  for (let i = 0; i < count; i++) {
-    const topLeft = new paper.Point(bounds.x + (2 * i + 1) * wStrip, bounds.y);
-    const strip = new paper.Path.Rectangle({
-      point: topLeft,
-      size: [wStrip, bounds.height],
-    });
-
-    const clippedStrip = _clip(strip, container);
-
-    const stripShape: StripShape = {
-      type: "strip",
-      path: clippedStrip,
-      root: container.root,
-      stripDirection: "pal",
-      stripAngle: 0,
-      stripWidth: wStrip,
-      patternAnchor: topLeft,
-    };
-
-    result.push(stripShape);
-  }
-
-  return result;
+  const helper = new StripHelper(model, bounds.width, bounds.x);
+  return helper.build((xStrip, stripWidth) =>
+    createStraight(xStrip, stripWidth, container, "pal")
+  );
 }
 
-function createDiagonals(container: FieldShape, barre: boolean, count: number) {
+function createStraight(
+  position: number,
+  stripWidth: number,
+  container: FieldShape,
+  direction: "fasce" | "pal"
+): StripShape {
+  const bounds = container.path.bounds;
+
+  const topLeft =
+    direction == "pal"
+      ? new paper.Point(position, bounds.y)
+      : new paper.Point(bounds.x, position);
+  const strip = new paper.Path.Rectangle({
+    point: topLeft,
+    size:
+      direction == "pal"
+        ? [stripWidth, bounds.height]
+        : [bounds.width, stripWidth],
+  });
+
+  const clippedStrip = _clip(strip, container);
+
+  return {
+    type: "strip",
+    path: clippedStrip,
+    root: container.root,
+    stripDirection: direction,
+    stripAngle: direction == "pal" ? 0 : 90,
+    stripWidth: stripWidth,
+    patternAnchor: topLeft,
+  };
+}
+
+function createDiagonals(container: FieldShape, model: ChargeStrip) {
+  const rotation = computeDiagonalRotation(container, model);
+
+  const clone = container.path.clone();
+  clone.rotate(-rotation.angle, rotation.center);
+
+  const bounds = clone.bounds;
+
+  const helper = new StripHelper(model, bounds.width, bounds.x);
+
+  return helper.build((xStrip, stripWidth) => {
+    const stripData = createDiagonalData(xStrip, stripWidth, clone, rotation);
+    return createDiagonalShape(
+      stripData,
+      container,
+      stripWidth,
+      rotation.angle
+    );
+  });
+}
+
+function computeDiagonalRotation(
+  container: FieldShape,
+  model: ChargeStrip
+): RotationDef {
   const path = container.path;
 
   const angleRad = Math.atan2(path.bounds.height, path.bounds.width);
   const angleDeg = (angleRad * 180) / Math.PI;
-  const rotationDeg = barre ? 90 - angleDeg : angleDeg - 90;
+  const angle = model.direction == "barre" ? 90 - angleDeg : angleDeg - 90;
+  const center = new paper.Point(0, 0);
+  return { angle, center };
+}
 
-  const clone = path.clone();
-  // paperjs rotation is clockwise
-  const rotCenter = new paper.Point(0, 0);
-  clone.rotate(-rotationDeg, rotCenter);
-
-  const result = [];
-  const ratio = 1 / (2 * count + 1);
+function createDiagonalData(
+  x: number,
+  stripWidth: number,
+  clone: paper.Path,
+  rotation: RotationDef
+): {
+  stripPath: paper.Path;
+  anchor: paper.Point;
+} {
   const bounds = clone.bounds;
-  const wStrip = bounds.width * ratio;
 
-  for (let i = 0; i < count; i++) {
-    const topLeft = new paper.Point(bounds.x + (2 * i + 1) * wStrip, bounds.y);
-    const strip = new paper.Path.Rectangle({
-      point: topLeft,
-      size: [wStrip, bounds.height],
-    });
-    strip.rotate(rotationDeg, rotCenter);
+  const topLeft = new paper.Point(x, bounds.y);
+  const stripPath = new paper.Path.Rectangle({
+    point: topLeft,
+    size: [stripWidth, bounds.height],
+  });
+  stripPath.rotate(rotation.angle, rotation.center);
+  const anchor = topLeft.rotate(-rotation.angle, rotation.center); // Not clear why rotation must be negate...
 
-    const clippedStrip = _clip(strip, container);
+  return { stripPath, anchor };
+}
 
-    const stripShape: StripShape = {
-      type: "strip",
-      path: clippedStrip,
-      root: container.root,
-      stripDirection: barre ? "barre" : "bande",
-      stripAngle: rotationDeg,
-      stripWidth: wStrip,
-      patternAnchor: topLeft.rotate(-rotationDeg, rotCenter), // Not clear why rotation must be negate...
-    };
+function createDiagonalShape(
+  data: { stripPath: paper.Path; anchor: paper.Point },
+  container: FieldShape,
+  stripWidth: number,
+  angle: number
+): StripShape {
+  const clippedStrip = _clip(data.stripPath, container);
 
-    result.push(stripShape);
-  }
+  return {
+    type: "strip",
+    path: clippedStrip,
+    root: container.root,
+    stripDirection: angle > 0 ? "barre" : "bande",
+    stripAngle: angle,
+    stripWidth: stripWidth,
+    patternAnchor: data.anchor,
+  };
+}
 
-  return result;
+interface RotationDef {
+  angle: number;
+  center: paper.Point;
 }
 
 function _clip(path: paper.Path, container: FieldShape) {
@@ -133,4 +155,74 @@ function _clip(path: paper.Path, container: FieldShape) {
     throw new Error("Clipped strip is not a simple Path");
   }
   return clippedStrip;
+}
+
+class StripHelper {
+  private readonly mainDelta: number;
+  private readonly groupOrigin: number;
+  private readonly groupCount: number;
+  private readonly stripByGroup: number;
+  private readonly stripWidth: number;
+
+  constructor(model: ChargeStrip, totalSize: number, origin: number) {
+    this.groupCount = model.count;
+
+    const minimalStripRatio = _minimalGroupRatio(model);
+
+    const groupWidth =
+      totalSize / Math.max(minimalStripRatio, 2 * this.groupCount + 1);
+    this.mainDelta = totalSize / (2 * this.groupCount + 1);
+    this.stripByGroup = _stripByGroup(model);
+
+    this.stripWidth = groupWidth / (2 * this.stripByGroup - 1);
+    this.groupOrigin = origin + (this.mainDelta - groupWidth) / 2;
+  }
+
+  private stripPosition(groupIndex: number, stripIndex: number): number {
+    const groupPosition =
+      this.groupOrigin + (2 * groupIndex + 1) * this.mainDelta;
+    return groupPosition + this.stripWidth * 2 * stripIndex;
+  }
+
+  public build(
+    stripBuilder: (postion: number, width: number) => StripShape
+  ): StripShape[] {
+    const result = [];
+
+    for (let groupIndex = 0; groupIndex < this.groupCount; groupIndex++) {
+      for (let stripIndex = 0; stripIndex < this.stripByGroup; stripIndex++) {
+        const position = this.stripPosition(groupIndex, stripIndex);
+        const strip = stripBuilder(position, this.stripWidth);
+        result.push(strip);
+      }
+    }
+
+    return result;
+  }
+}
+
+function _stripByGroup(model: ChargeStrip): number {
+  switch (model.size) {
+    case "default":
+    case "reduced":
+    case "minimal":
+      return 1;
+    case "gemel":
+      return 2;
+    case "triplet":
+      return 3;
+  }
+}
+
+function _minimalGroupRatio(model: ChargeStrip): number {
+  switch (model.size) {
+    case "default":
+    case "gemel":
+    case "triplet":
+      return 3;
+    case "reduced":
+      return 6;
+    case "minimal":
+      return 12;
+  }
 }

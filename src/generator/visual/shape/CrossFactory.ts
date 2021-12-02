@@ -1,11 +1,36 @@
+import { ChargeCross, CrossSize } from "@/generator/model.type";
 import * as paper from "paper";
-import { CrossShape, FieldShape, OtherShape } from "../type";
+import { CrossShape, FieldShape, OtherShape, SimpleShape } from "../type";
 
-export function createCross(container: FieldShape): CrossShape {
+export function createCross(
+  cross: ChargeCross,
+  container: FieldShape
+): SimpleShape {
+  if (cross.direction === "barre" || cross.direction === "bande") {
+    return createDiagonalCross(cross.size, container);
+  } else {
+    return createStraigthCross(cross.size, container);
+  }
+}
+
+function createStraigthCross(
+  size: CrossSize,
+  container: FieldShape
+): CrossShape {
   const bounds = container.path.bounds;
 
-  const width =
-    bounds.height > bounds.width ? bounds.width / 3 : bounds.height / 3;
+  const shortestSide = Math.min(bounds.height, bounds.width);
+
+  let coef;
+  if (size == "default") {
+    coef = 3;
+  } else if (size == "reduced") {
+    coef = 6;
+  } else {
+    coef = 12;
+  }
+
+  const width = shortestSide / coef;
 
   const xPal = bounds.x + (bounds.width - width) / 2;
   const yFasce = bounds.y + (bounds.height - width) / 2;
@@ -32,7 +57,10 @@ export function createCross(container: FieldShape): CrossShape {
   };
 }
 
-export function createCrossSaltire(container: FieldShape): OtherShape {
+function createDiagonalCross(
+  size: CrossSize,
+  container: FieldShape
+): OtherShape {
   const bounds = container.path.bounds;
 
   const w = bounds.width;
@@ -40,7 +68,16 @@ export function createCrossSaltire(container: FieldShape): OtherShape {
   const x = bounds.x;
   const y = bounds.y;
 
-  const d = w / (5 * Math.SQRT2);
+  let coef;
+  if (size == "default") {
+    coef = 6;
+  } else if (size == "reduced") {
+    coef = 12;
+  } else {
+    coef = 24;
+  }
+
+  const d = w / coef;
   const x0 = x - d;
 
   // create the '\' diagonal
