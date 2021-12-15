@@ -1,11 +1,11 @@
-export type Outline = string;
+import { OutlineId } from "@/generator/model.type";
 
 export interface HorizontalStripOutline {
-  top?: Outline;
-  bottom?: Outline;
+  top: OutlineId;
+  bottom: OutlineId;
 }
 
 export interface VerticalStripOutline {
-  left?: Outline;
-  right?: Outline;
+  left: OutlineId;
+  right: OutlineId;
 }

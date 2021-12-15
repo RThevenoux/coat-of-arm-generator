@@ -1,5 +1,4 @@
-import { Outline } from "@/generator/visual/shape/Outline.type";
-import { CrossSize, Direction, StripSize } from "../generator/model.type";
+import { CrossSize, Direction, OutlineId, StripSize } from "../generator/model.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 
 export interface SingleChargePickerModel {
@@ -9,8 +8,8 @@ export interface SingleChargePickerModel {
     angle: Direction;
     count: number;
     size: StripSize;
-    outline1: Outline;
-    outline2: Outline;
+    outline1: OutlineId;
+    outline2: OutlineId;
   };
   cross: {
     angle: Direction;

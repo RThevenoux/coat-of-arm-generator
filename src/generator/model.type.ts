@@ -1,5 +1,3 @@
-import { Outline } from "./visual/shape/Outline.type";
-
 export type ColorId = string;
 
 export type Direction = "fasce" | "barre" | "pal" | "bande";
@@ -72,14 +70,16 @@ export type ChargeModel = ChargeStrip | ChargeCross | ChargeSymbol;
 export type StripSize = "default" | "reduced" | "minimal" | "gemel" | "triplet";
 export type CrossSize = "default" | "reduced" | "minimal";
 
+export type OutlineId = string;
+
 export interface ChargeStrip {
   type: "strip";
   direction: Direction;
   count: number;
   filler: FillerModel;
   size: StripSize;
-  outline1: Outline;// Fasce: Top side - Other: Left
-  outline2: Outline;// Fasce: Bottom side - Other: Right
+  outline1: OutlineId;// Fasce: Top side - Other: Left
+  outline2: OutlineId;// Fasce: Bottom side - Other: Right
 }
 
 export interface ChargeCross {

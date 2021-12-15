@@ -25,26 +25,18 @@
         @input="update"
         key="strip-number"
       />
-      <select
+      <OutlinePicker
         v-model="value.strip.outline1"
-        @change="update"
+        @input="update"
         key="strip-outline1"
       >
-        <option value="straight">Droit</option>
-        <option value="square">Crénelé</option>
-        <option value="triangle">Denté</option>
-        <option value="remi">Rémi</option>
-      </select>
-      <select
+      </OutlinePicker>
+      <OutlinePicker
         v-model="value.strip.outline2"
-        @change="update"
+        @input="update"
         key="strip-outline2"
       >
-        <option value="straight">Droit</option>
-        <option value="square">Crénelé</option>
-        <option value="triangle">Denté</option>
-        <option value="remi">Rémi</option>
-      </select>
+      </OutlinePicker>
       <FillerPicker
         v-model="value.filler"
         @input="update"
@@ -101,11 +93,13 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 import { getChargeOptions } from "../service/ChargeService";
 import FillerPicker from "./FillerPicker.vue";
+import OutlinePicker from "./OutlinePicker.vue";
 import { MyOption } from "../service/MyOptions.type";
 
 @Component({
   components: {
     FillerPicker,
+    OutlinePicker,
   },
 })
 export default class SingleChargePicker extends Vue {

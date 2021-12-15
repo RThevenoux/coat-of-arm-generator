@@ -1,10 +1,10 @@
+import { OutlineId } from "@/generator/model.type";
 import * as paper from "paper";
-import { Outline } from "./Outline.type";
 
 export function createOutline(
   length: number,
   unitSize: number,
-  outline?: Outline
+  outline?: OutlineId
 ): paper.Path {
   if (outline == "square") {
     const path = new paper.Path();
