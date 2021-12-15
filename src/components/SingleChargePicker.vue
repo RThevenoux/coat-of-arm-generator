@@ -25,6 +25,26 @@
         @input="update"
         key="strip-number"
       />
+      <select
+        v-model="value.strip.outline1"
+        @change="update"
+        key="strip-outline1"
+      >
+        <option value="straight">Droit</option>
+        <option value="square">Crénelé</option>
+        <option value="triangle">Denté</option>
+        <option value="remi">Rémi</option>
+      </select>
+      <select
+        v-model="value.strip.outline2"
+        @change="update"
+        key="strip-outline2"
+      >
+        <option value="straight">Droit</option>
+        <option value="square">Crénelé</option>
+        <option value="triangle">Denté</option>
+        <option value="remi">Rémi</option>
+      </select>
       <FillerPicker
         v-model="value.filler"
         @input="update"

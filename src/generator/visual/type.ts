@@ -20,7 +20,7 @@ export interface FieldShape {
 }
 export interface StripShape {
   type: "strip";
-  path: paper.Path;
+  path: paper.PathItem;
   root: SimpleShape;
   stripDirection: Direction;
   stripAngle: number; // in degre "pal" == 0, "barre" ~= 45, "bande" ~= -45

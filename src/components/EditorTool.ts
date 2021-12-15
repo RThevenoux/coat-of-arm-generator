@@ -26,6 +26,8 @@ export async function initialChargeModel(): Promise<SingleChargePickerModel> {
       angle: "pal",
       count: 1,
       size: "default",
+      outline1: "straight",
+      outline2: "straight",
     },
     cross: {
       angle: "fasce",
@@ -143,6 +145,8 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         count: viewModel.strip.count,
         filler: fillerToModel(viewModel.filler),
         size: viewModel.strip.size,
+        outline1: viewModel.strip.outline1,
+        outline2: viewModel.strip.outline2,
       };
     case "cross":
       return {

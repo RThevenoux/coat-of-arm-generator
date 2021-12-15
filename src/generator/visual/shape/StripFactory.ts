@@ -1,6 +1,9 @@
 import * as paper from "paper";
 import { ChargeStrip } from "../../model.type";
 import { FieldShape, StripShape } from "../type";
+import { HorizontalStripOutline, VerticalStripOutline } from "./Outline.type";
+import { createOutline } from "./OutlineFactory";
+import { StripHelper } from "./StripHelper";
 
 export function createStrips(
   strip: ChargeStrip,
@@ -23,47 +26,72 @@ export function createStrips(
 function createFasces(container: FieldShape, model: ChargeStrip): StripShape[] {
   const bounds = container.path.bounds;
   const helper = new StripHelper(model, bounds.height, bounds.y);
+  const outline = getHorizontalOutlineData(model);
+
   return helper.build((yStrip, stripWidth) =>
-    createStraight(yStrip, stripWidth, container, "fasce")
+    createFasce(yStrip, stripWidth, container, outline)
   );
 }
 
 function createPals(container: FieldShape, model: ChargeStrip): StripShape[] {
   const bounds = container.path.bounds;
   const helper = new StripHelper(model, bounds.width, bounds.x);
+  const outline = getVerticalOutlineData(model);
+
   return helper.build((xStrip, stripWidth) =>
-    createStraight(xStrip, stripWidth, container, "pal")
+    createPal(xStrip, stripWidth, container, outline)
   );
 }
 
-function createStraight(
+function createFasce(
   position: number,
   stripWidth: number,
   container: FieldShape,
-  direction: "fasce" | "pal"
+  outline: HorizontalStripOutline
 ): StripShape {
   const bounds = container.path.bounds;
-
-  const topLeft =
-    direction == "pal"
-      ? new paper.Point(position, bounds.y)
-      : new paper.Point(bounds.x, position);
-  const strip = new paper.Path.Rectangle({
-    point: topLeft,
-    size:
-      direction == "pal"
-        ? [stripWidth, bounds.height]
-        : [bounds.width, stripWidth],
-  });
-
+  const topLeft = new paper.Point(bounds.x, position);
+  const strip = createHorizontalStripPath(
+    topLeft,
+    bounds.width,
+    stripWidth,
+    outline
+  );
   const clippedStrip = _clip(strip, container);
 
   return {
     type: "strip",
     path: clippedStrip,
     root: container.root,
-    stripDirection: direction,
-    stripAngle: direction == "pal" ? 0 : 90,
+    stripDirection: "fasce",
+    stripAngle: 90,
+    stripWidth: stripWidth,
+    patternAnchor: topLeft,
+  };
+}
+
+function createPal(
+  position: number,
+  stripWidth: number,
+  container: FieldShape,
+  outline: VerticalStripOutline
+): StripShape {
+  const bounds = container.path.bounds;
+  const topLeft = new paper.Point(position, bounds.y);
+  const strip = createVerticalStripPath(
+    topLeft,
+    stripWidth,
+    bounds.height,
+    outline
+  );
+  const clippedStrip = _clip(strip, container);
+
+  return {
+    type: "strip",
+    path: clippedStrip,
+    root: container.root,
+    stripDirection: "pal",
+    stripAngle: 0,
     stripWidth: stripWidth,
     patternAnchor: topLeft,
   };
@@ -76,11 +104,18 @@ function createDiagonals(container: FieldShape, model: ChargeStrip) {
   clone.rotate(-rotation.angle, rotation.center);
 
   const bounds = clone.bounds;
+  const outline = getVerticalOutlineData(model);
 
   const helper = new StripHelper(model, bounds.width, bounds.x);
 
   return helper.build((xStrip, stripWidth) => {
-    const stripData = createDiagonalData(xStrip, stripWidth, clone, rotation);
+    const stripData = createDiagonalData(
+      xStrip,
+      stripWidth,
+      clone,
+      rotation,
+      outline
+    );
     return createDiagonalShape(
       stripData,
       container,
@@ -107,7 +142,8 @@ function createDiagonalData(
   x: number,
   stripWidth: number,
   clone: paper.Path,
-  rotation: RotationDef
+  rotation: RotationDef,
+  outline: VerticalStripOutline
 ): {
   stripPath: paper.Path;
   anchor: paper.Point;
@@ -115,10 +151,13 @@ function createDiagonalData(
   const bounds = clone.bounds;
 
   const topLeft = new paper.Point(x, bounds.y);
-  const stripPath = new paper.Path.Rectangle({
-    point: topLeft,
-    size: [stripWidth, bounds.height],
-  });
+  const stripPath = createVerticalStripPath(
+    topLeft,
+    stripWidth,
+    bounds.height,
+    outline
+  );
+
   stripPath.rotate(rotation.angle, rotation.center);
   const anchor = topLeft.rotate(-rotation.angle, rotation.center); // Not clear why rotation must be negate...
 
@@ -143,86 +182,75 @@ function createDiagonalShape(
     patternAnchor: data.anchor,
   };
 }
-
 interface RotationDef {
   angle: number;
   center: paper.Point;
 }
 
-function _clip(path: paper.Path, container: FieldShape) {
-  const clippedStrip = container.path.intersect(path);
-  if (!(clippedStrip instanceof paper.Path)) {
-    throw new Error("Clipped strip is not a simple Path");
-  }
-  return clippedStrip;
+function _clip(path: paper.Path, container: FieldShape): paper.PathItem {
+  return container.path.intersect(path);
 }
 
-class StripHelper {
-  private readonly mainDelta: number;
-  private readonly groupOrigin: number;
-  private readonly groupCount: number;
-  private readonly stripByGroup: number;
-  private readonly stripWidth: number;
+function createHorizontalStripPath(
+  topLeft: paper.Point,
+  stripWidth: number,
+  stripHeight: number,
+  outline: HorizontalStripOutline
+): paper.Path {
+  const outlineUnit = stripHeight / 3;
 
-  constructor(model: ChargeStrip, totalSize: number, origin: number) {
-    this.groupCount = model.count;
+  const topPath = createOutline(stripWidth, outlineUnit, outline.top);
+  topPath.translate(topLeft);
 
-    const minimalStripRatio = _minimalGroupRatio(model);
+  const bottomPath = createOutline(stripWidth, outlineUnit, outline.bottom);
+  bottomPath.scale(1, -1, new paper.Point(0, 0));
+  bottomPath.reverse();
+  bottomPath.translate(new paper.Point(topLeft.x, topLeft.y + stripHeight));
 
-    const groupWidth =
-      totalSize / Math.max(minimalStripRatio, 2 * this.groupCount + 1);
-    this.mainDelta = totalSize / (2 * this.groupCount + 1);
-    this.stripByGroup = _stripByGroup(model);
+  const path = new paper.Path();
+  path.addSegments(topPath.segments);
+  path.addSegments(bottomPath.segments);
+  path.closePath();
 
-    this.stripWidth = groupWidth / (2 * this.stripByGroup - 1);
-    this.groupOrigin = origin + (this.mainDelta - groupWidth) / 2;
-  }
-
-  private stripPosition(groupIndex: number, stripIndex: number): number {
-    const groupPosition =
-      this.groupOrigin + (2 * groupIndex + 1) * this.mainDelta;
-    return groupPosition + this.stripWidth * 2 * stripIndex;
-  }
-
-  public build(
-    stripBuilder: (postion: number, width: number) => StripShape
-  ): StripShape[] {
-    const result = [];
-
-    for (let groupIndex = 0; groupIndex < this.groupCount; groupIndex++) {
-      for (let stripIndex = 0; stripIndex < this.stripByGroup; stripIndex++) {
-        const position = this.stripPosition(groupIndex, stripIndex);
-        const strip = stripBuilder(position, this.stripWidth);
-        result.push(strip);
-      }
-    }
-
-    return result;
-  }
+  return path;
 }
 
-function _stripByGroup(model: ChargeStrip): number {
-  switch (model.size) {
-    case "default":
-    case "reduced":
-    case "minimal":
-      return 1;
-    case "gemel":
-      return 2;
-    case "triplet":
-      return 3;
-  }
+function createVerticalStripPath(
+  topLeft: paper.Point,
+  stripWidth: number,
+  stripHeight: number,
+  outline: VerticalStripOutline
+): paper.Path {
+  const outlineUnit = stripWidth / 3;
+
+  const rightPath = createOutline(stripHeight, outlineUnit, outline.right);
+  rightPath.rotate(90, new paper.Point(0, 0));
+  rightPath.translate(new paper.Point(topLeft.x + stripWidth, topLeft.y));
+
+  const leftPath = createOutline(stripHeight, outlineUnit, outline.left);
+  leftPath.scale(1, -1, new paper.Point(0, 0));
+  leftPath.reverse();
+  leftPath.rotate(90, new paper.Point(0, 0));
+  leftPath.translate(topLeft);
+
+  const path = new paper.Path();
+  path.addSegments(rightPath.segments);
+  path.addSegments(leftPath.segments);
+  path.closePath();
+
+  return path;
 }
 
-function _minimalGroupRatio(model: ChargeStrip): number {
-  switch (model.size) {
-    case "default":
-    case "gemel":
-    case "triplet":
-      return 3;
-    case "reduced":
-      return 6;
-    case "minimal":
-      return 12;
-  }
+function getVerticalOutlineData(model: ChargeStrip): VerticalStripOutline {
+  return {
+    left: model.outline1,
+    right: model.outline2,
+  };
+}
+
+function getHorizontalOutlineData(model: ChargeStrip): HorizontalStripOutline {
+  return {
+    top: model.outline1,
+    bottom: model.outline2,
+  };
 }

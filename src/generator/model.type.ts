@@ -1,3 +1,5 @@
+import { Outline } from "./visual/shape/Outline.type";
+
 export type ColorId = string;
 
 export type Direction = "fasce" | "barre" | "pal" | "bande";
@@ -76,6 +78,8 @@ export interface ChargeStrip {
   count: number;
   filler: FillerModel;
   size: StripSize;
+  outline1: Outline;// Fasce: Top side - Other: Left
+  outline2: Outline;// Fasce: Bottom side - Other: Right
 }
 
 export interface ChargeCross {
