@@ -1,56 +1,48 @@
 import { OutlineId } from "@/generator/model.type";
+import { getOutlineInfo } from "@/service/OutlineService";
 import * as paper from "paper";
 
 export function createOutline(
   length: number,
   unitSize: number,
-  outline?: OutlineId
+  outlineId?: OutlineId
 ): paper.Path {
-  if (outline == "square") {
-    const path = new paper.Path();
+  if (!outlineId) {
+    return line(length);
+  }
 
-    const n = Math.ceil(length / (2 * unitSize));
-    for (let i = 0; i < n; i++) {
-      const x0 = i * 2 * unitSize;
-      path.add(point(x0, 0));
-      path.add(point(x0 + unitSize, 0));
-      path.add(point(x0 + unitSize, unitSize));
-      path.add(point(x0 + 2 * unitSize, unitSize));
-    }
-    return path;
-  } else if (outline == "triangle") {
-    const path = new paper.Path();
-    const n = Math.ceil(length / (2 * unitSize));
-    for (let i = 0; i < n; i++) {
-      const x0 = i * 2 * unitSize;
-      path.add(point(x0, -unitSize / 2));
-      path.add(point(x0 + unitSize, unitSize / 2));
-    }
-    path.add(point(n * 2 * unitSize, -unitSize / 2));
+  const outlineInfo = getOutlineInfo(outlineId);
 
-    return path;
-  } else if (outline == "remi") {
-    const path = new paper.Path();
-    const n = Math.ceil(length / (2 * unitSize));
-    for (let i = 0; i < n; i++) {
-      const x0 = i * 2 * unitSize;
-      path.add(point(x0 + 0.0 * unitSize, 0));
-      path.add(point(x0 + 0.5 * unitSize, 0));
-      path.add(point(x0 + 1.0 * unitSize, -unitSize));
-      path.add(point(x0 + 1.5 * unitSize, 0));
-    }
-    path.add(point(n * 2 * unitSize, 0));
+  if (outlineInfo.type == "pattern") {
+    const pattern = new paper.Path(outlineInfo.patternData);
+    pattern.scale(unitSize, point(0, 0));
+    const patternLength = pattern.bounds.width;
+    const n = Math.ceil(length / patternLength);
 
-    return path;
+    return repeatPattern(pattern, n);
   } else {
     // undefined or straight
-    const path = new paper.Path();
-    path.add(point(0, 0));
-    path.add(point(length, 0));
-    return path;
+    return line(length);
   }
 }
 
 function point(x: number, y: number): paper.Point {
   return new paper.Point(x, y);
+}
+
+function line(length: number): paper.Path {
+  return new paper.Path.Line(point(0, 0), point(length, 0));
+}
+
+function repeatPattern(pattern: paper.Path, n: number): paper.Path {
+  const patternLength = pattern.bounds.width;
+
+  const path = new paper.Path();
+  for (let i = 0; i < n; i++) {
+    const x0 = i * patternLength;
+    const clone = pattern.clone();
+    clone.translate(new paper.Point(x0, 0));
+    path.addSegments(clone.segments);
+  }
+  return path;
 }

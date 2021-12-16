@@ -1,0 +1,33 @@
+[
+  {
+    "id": "straight",
+    "label": "Droit",
+    "visual": {
+      "type": "straight"
+    }
+  },
+  {
+    "id": "square",
+    "label": "Crénelé",
+    "visual": {
+      "type": "pattern",
+      "patternData": "M 0,0 L 1,0 1,1 2,1"
+    }
+  },
+  {
+    "id": "triangle",
+    "label": "Dentelé",
+    "visual": {
+      "type": "pattern",
+      "patternData": "M 0,-.5 L 1,.5 2,-.5"
+    }
+  },
+  {
+    "id": "remi",
+    "label": "test _/\\_",
+    "visual": {
+      "type": "pattern",
+      "patternData": "M 0,0 L .5,0 1,-1 1.5,0 2,0"
+    }
+  }
+]

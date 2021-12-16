@@ -78,8 +78,8 @@ export interface ChargeStrip {
   count: number;
   filler: FillerModel;
   size: StripSize;
-  outline1: OutlineId;// Fasce: Top side - Other: Left
-  outline2: OutlineId;// Fasce: Bottom side - Other: Right
+  outline1: OutlineId; // Fasce: Top side - Other: Left
+  outline2: OutlineId; // Fasce: Bottom side - Other: Right
 }
 
 export interface ChargeCross {

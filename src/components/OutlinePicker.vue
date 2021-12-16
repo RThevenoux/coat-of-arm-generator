@@ -11,7 +11,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { OutlineId } from "../generator/model.type";
 import { getOutlineOptions } from "../service/OutlineService";
 
-
 @Component
 export default class OutlinePicker extends Vue {
   @Prop() value!: OutlineId;

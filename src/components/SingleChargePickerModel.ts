@@ -1,4 +1,9 @@
-import { CrossSize, Direction, OutlineId, StripSize } from "../generator/model.type";
+import {
+  CrossSize,
+  Direction,
+  OutlineId,
+  StripSize,
+} from "../generator/model.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 
 export interface SingleChargePickerModel {
