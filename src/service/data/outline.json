@@ -11,7 +11,8 @@
     "label": "Crénelé",
     "visual": {
       "type": "pattern",
-      "patternData": "M 0,0 L 1,0 1,1 2,1"
+      "patternData": "M 0,0 L 1,0 1,1 2,1",
+      "scale":0.25
     }
   },
   {
@@ -19,7 +20,8 @@
     "label": "Dentelé",
     "visual": {
       "type": "pattern",
-      "patternData": "M 0,-.5 L 1,.5 2,-.5"
+      "patternData": "M 0,-.5 L 1,.5 2,-.5",
+      "scale":0.33
     }
   },
   {
@@ -27,7 +29,8 @@
     "label": "test _/\\_",
     "visual": {
       "type": "pattern",
-      "patternData": "M 0,0 L .5,0 1,-1 1.5,0 2,0"
+      "patternData": "M 0,0 L .5,0 1,-1 1.5,0 2,0",
+      "scale":0.33
     }
   }
 ]

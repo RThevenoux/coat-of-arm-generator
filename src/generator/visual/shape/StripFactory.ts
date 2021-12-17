@@ -197,12 +197,10 @@ function createHorizontalStripPath(
   stripHeight: number,
   outline: HorizontalStripOutline
 ): paper.Path {
-  const outlineUnit = stripHeight / 3;
-
-  const topPath = createOutline(stripWidth, outlineUnit, outline.top);
+  const topPath = createOutline(stripWidth, stripHeight, outline.top);
   topPath.translate(topLeft);
 
-  const bottomPath = createOutline(stripWidth, outlineUnit, outline.bottom);
+  const bottomPath = createOutline(stripWidth, stripHeight, outline.bottom);
   bottomPath.scale(1, -1, new paper.Point(0, 0));
   bottomPath.reverse();
   bottomPath.translate(new paper.Point(topLeft.x, topLeft.y + stripHeight));
@@ -221,13 +219,11 @@ function createVerticalStripPath(
   stripHeight: number,
   outline: VerticalStripOutline
 ): paper.Path {
-  const outlineUnit = stripWidth / 3;
-
-  const rightPath = createOutline(stripHeight, outlineUnit, outline.right);
+  const rightPath = createOutline(stripHeight, stripWidth, outline.right);
   rightPath.rotate(90, new paper.Point(0, 0));
   rightPath.translate(new paper.Point(topLeft.x + stripWidth, topLeft.y));
 
-  const leftPath = createOutline(stripHeight, outlineUnit, outline.left);
+  const leftPath = createOutline(stripHeight, stripWidth, outline.left);
   leftPath.scale(1, -1, new paper.Point(0, 0));
   leftPath.reverse();
   leftPath.rotate(90, new paper.Point(0, 0));

@@ -15,7 +15,7 @@ export function createOutline(
 
   if (outlineInfo.type == "pattern") {
     const pattern = new paper.Path(outlineInfo.patternData);
-    pattern.scale(unitSize, point(0, 0));
+    pattern.scale(unitSize * outlineInfo.scale, point(0, 0));
     const patternLength = pattern.bounds.width;
     const n = Math.ceil(length / patternLength);
 
