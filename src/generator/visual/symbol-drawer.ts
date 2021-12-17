@@ -4,6 +4,7 @@ import { getChargeVisualInfo } from "../../service/ChargeService";
 import { ChargeSymbol, FillerModel } from "../model.type";
 import SvgBuilder from "./svg/SvgBuilder";
 import { getIncircle } from "./tool/path-tool";
+import { point } from "./tool/point";
 import { FieldShape } from "./type";
 
 export default async function drawSymbol(
@@ -37,7 +38,7 @@ export default async function drawSymbol(
     const scaleCoef = itemRadius / chargeRadius;
 
     // Compute Position
-    const p1 = inCircle.center.add(new paper.Point(0, -inCircle.radius / 2));
+    const p1 = inCircle.center.add(point(0, -inCircle.radius / 2));
     _drawOneFromCenter(
       builder,
       chargeDef,
@@ -47,7 +48,7 @@ export default async function drawSymbol(
       charge.filler
     );
 
-    const p2 = inCircle.center.add(new paper.Point(0, +inCircle.radius / 2));
+    const p2 = inCircle.center.add(point(0, +inCircle.radius / 2));
     _drawOneFromCenter(
       builder,
       chargeDef,
@@ -67,7 +68,7 @@ export default async function drawSymbol(
       const angle = Math.PI * ((2 * i + 1) / charge.count + 1 / 2);
       const x = Math.cos(angle) * positionRadius;
       const y = -Math.sin(angle) * positionRadius;
-      const p = inCircle.center.add(new paper.Point(x, y));
+      const p = inCircle.center.add(point(x, y));
       _drawOneFromCenter(
         builder,
         chargeDef,
@@ -90,9 +91,7 @@ function _drawOneFromCenter(
 ): void {
   const scaledSize = originalSize.multiply(scaleCoef);
   const deltaSize = scaledSize.divide(2);
-  const origin = center.add(
-    new paper.Point(-deltaSize.width, -deltaSize.height)
-  );
+  const origin = center.add(point(-deltaSize.width, -deltaSize.height));
   builder.drawSymbol(chargeDef, origin, scaleCoef, filler);
 }
 

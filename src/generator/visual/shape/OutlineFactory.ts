@@ -1,17 +1,15 @@
-import { OutlineId } from "@/generator/model.type";
-import { getOutlineInfo } from "@/service/OutlineService";
+import { OutlineVisualData } from "@/service/OutlineData";
 import * as paper from "paper";
+import { origin, point } from "../tool/point";
 
 export function createOutline(
   length: number,
   unitSize: number,
-  outlineId?: OutlineId
+  outlineInfo?: OutlineVisualData
 ): paper.Path {
-  if (!outlineId) {
+  if (!outlineInfo) {
     return line(length);
   }
-
-  const outlineInfo = getOutlineInfo(outlineId);
 
   if (outlineInfo.type == "pattern") {
     const pattern = new paper.Path(outlineInfo.patternData);
@@ -26,12 +24,8 @@ export function createOutline(
   }
 }
 
-function point(x: number, y: number): paper.Point {
-  return new paper.Point(x, y);
-}
-
 function line(length: number): paper.Path {
-  return new paper.Path.Line(point(0, 0), point(length, 0));
+  return new paper.Path.Line(origin(), point(length, 0));
 }
 
 function repeatPattern(pattern: paper.Path, n: number): paper.Path {
@@ -41,7 +35,7 @@ function repeatPattern(pattern: paper.Path, n: number): paper.Path {
   for (let i = 0; i < n; i++) {
     const x0 = i * patternLength;
     const clone = pattern.clone();
-    clone.translate(new paper.Point(x0, 0));
+    clone.translate(point(x0, 0));
     path.addSegments(clone.segments);
   }
   return path;

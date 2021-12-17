@@ -1,11 +1,11 @@
-import { OutlineId } from "@/generator/model.type";
+import { OutlineVisualData } from "@/service/OutlineData";
 
 export interface HorizontalStripOutline {
-  top: OutlineId;
-  bottom: OutlineId;
+  top: OutlineVisualData;
+  bottom: OutlineVisualData;
 }
 
 export interface VerticalStripOutline {
-  left: OutlineId;
-  right: OutlineId;
+  left: OutlineVisualData;
+  right: OutlineVisualData;
 }

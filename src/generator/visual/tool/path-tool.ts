@@ -1,4 +1,5 @@
 import * as paper from "paper";
+import { point } from "./point";
 
 export { getIncircle };
 
@@ -69,25 +70,16 @@ function _testNSEWIncirclDef(
   center: paper.Point,
   delta: number
 ): null | InCircleDef {
-  const north = _safeGetIncircleDef(
-    path,
-    center.add(new paper.Point(0, -delta))
-  );
+  const north = _safeGetIncircleDef(path, center.add(point(0, -delta)));
   if (north) return north;
 
-  const south = _safeGetIncircleDef(
-    path,
-    center.add(new paper.Point(0, delta))
-  );
+  const south = _safeGetIncircleDef(path, center.add(point(0, delta)));
   if (south) return south;
 
-  const east = _safeGetIncircleDef(path, center.add(new paper.Point(delta, 0)));
+  const east = _safeGetIncircleDef(path, center.add(point(delta, 0)));
   if (east) return east;
 
-  const west = _safeGetIncircleDef(
-    path,
-    center.add(new paper.Point(-delta, 0))
-  );
+  const west = _safeGetIncircleDef(path, center.add(point(-delta, 0)));
   if (west) return west;
 
   return null;
@@ -171,7 +163,7 @@ function _getTangentCircleDef(
 }
 
 function _vector(angle: number, length: number): paper.Point {
-  const unitVector = new paper.Point(Math.cos(angle), Math.sin(angle));
+  const unitVector = point(Math.cos(angle), Math.sin(angle));
   return unitVector.multiply(length);
 }
 

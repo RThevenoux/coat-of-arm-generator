@@ -1,5 +1,7 @@
+import { getOutlineInfo } from "@/service/OutlineService";
 import * as paper from "paper";
 import { ChargeStrip } from "../../model.type";
+import { origin, point } from "../tool/point";
 import { FieldShape, StripShape } from "../type";
 import { HorizontalStripOutline, VerticalStripOutline } from "./Outline.type";
 import { createOutline } from "./OutlineFactory";
@@ -50,7 +52,7 @@ function createFasce(
   outline: HorizontalStripOutline
 ): StripShape {
   const bounds = container.path.bounds;
-  const topLeft = new paper.Point(bounds.x, position);
+  const topLeft = point(bounds.x, position);
   const strip = createHorizontalStripPath(
     topLeft,
     bounds.width,
@@ -77,7 +79,7 @@ function createPal(
   outline: VerticalStripOutline
 ): StripShape {
   const bounds = container.path.bounds;
-  const topLeft = new paper.Point(position, bounds.y);
+  const topLeft = point(position, bounds.y);
   const strip = createVerticalStripPath(
     topLeft,
     stripWidth,
@@ -134,7 +136,7 @@ function computeDiagonalRotation(
   const angleRad = Math.atan2(path.bounds.height, path.bounds.width);
   const angleDeg = (angleRad * 180) / Math.PI;
   const angle = model.direction == "barre" ? 90 - angleDeg : angleDeg - 90;
-  const center = new paper.Point(0, 0);
+  const center = origin();
   return { angle, center };
 }
 
@@ -150,7 +152,7 @@ function createDiagonalData(
 } {
   const bounds = clone.bounds;
 
-  const topLeft = new paper.Point(x, bounds.y);
+  const topLeft = point(x, bounds.y);
   const stripPath = createVerticalStripPath(
     topLeft,
     stripWidth,
@@ -201,9 +203,9 @@ function createHorizontalStripPath(
   topPath.translate(topLeft);
 
   const bottomPath = createOutline(stripWidth, stripHeight, outline.bottom);
-  bottomPath.scale(1, -1, new paper.Point(0, 0));
+  bottomPath.scale(1, -1, origin());
   bottomPath.reverse();
-  bottomPath.translate(new paper.Point(topLeft.x, topLeft.y + stripHeight));
+  bottomPath.translate(point(topLeft.x, topLeft.y + stripHeight));
 
   const path = new paper.Path();
   path.addSegments(topPath.segments);
@@ -220,13 +222,13 @@ function createVerticalStripPath(
   outline: VerticalStripOutline
 ): paper.Path {
   const rightPath = createOutline(stripHeight, stripWidth, outline.right);
-  rightPath.rotate(90, new paper.Point(0, 0));
-  rightPath.translate(new paper.Point(topLeft.x + stripWidth, topLeft.y));
+  rightPath.rotate(90, origin());
+  rightPath.translate(point(topLeft.x + stripWidth, topLeft.y));
 
   const leftPath = createOutline(stripHeight, stripWidth, outline.left);
-  leftPath.scale(1, -1, new paper.Point(0, 0));
+  leftPath.scale(1, -1, origin());
   leftPath.reverse();
-  leftPath.rotate(90, new paper.Point(0, 0));
+  leftPath.rotate(90, origin());
   leftPath.translate(topLeft);
 
   const path = new paper.Path();
@@ -239,14 +241,14 @@ function createVerticalStripPath(
 
 function getVerticalOutlineData(model: ChargeStrip): VerticalStripOutline {
   return {
-    left: model.outline1,
-    right: model.outline2,
+    left: getOutlineInfo(model.outline1),
+    right: getOutlineInfo(model.outline2),
   };
 }
 
 function getHorizontalOutlineData(model: ChargeStrip): HorizontalStripOutline {
   return {
-    top: model.outline1,
-    bottom: model.outline2,
+    top: getOutlineInfo(model.outline1),
+    bottom: getOutlineInfo(model.outline2),
   };
 }

@@ -1,4 +1,5 @@
 import * as paper from "paper";
+import { point } from "./point";
 
 export default getLineIntersection;
 
@@ -26,7 +27,7 @@ function getLineIntersection(
 
   const x = (coef2.b - coef1.b) / (coef1.a - coef2.a);
   const y = coef1.apply(x);
-  return new paper.Point(x, y);
+  return point(x, y);
 }
 
 function verticalIntersection(
@@ -39,7 +40,7 @@ function verticalIntersection(
   }
   const x = verticalCoef.x;
   const y = otherCoef.apply(x);
-  return new paper.Point(x, y);
+  return point(x, y);
 }
 
 type Coefficient = VerticialCoefficient | NonVerticialCoefficient;

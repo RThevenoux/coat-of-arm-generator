@@ -1,6 +1,7 @@
 import * as paper from "paper";
 
 import { PatternTransform, TransformList } from "../svg/svg.type";
+import { origin } from "../tool/point";
 
 /**
  * @param anchor
@@ -16,7 +17,7 @@ export function createPatternTransfrom(
 
   if (rotate && rotate != 0) {
     transformList.push({ type: "rotate", angle: rotate });
-    anchor = anchor.rotate(rotate, new paper.Point(0, 0));
+    anchor = anchor.rotate(rotate, origin());
   }
   const x = anchor.x / scale;
   const y = anchor.y / scale;

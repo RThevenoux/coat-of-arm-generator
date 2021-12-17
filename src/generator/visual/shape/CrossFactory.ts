@@ -1,5 +1,6 @@
 import { ChargeCross, CrossSize } from "@/generator/model.type";
 import * as paper from "paper";
+import { point } from "../tool/point";
 import { CrossShape, FieldShape, OtherShape, SimpleShape } from "../type";
 
 export function createCross(
@@ -46,7 +47,7 @@ function createStraigthCross(
   const cross = pal.unite(fasce);
   const clipped = _clip(cross, container);
 
-  const patternAnchor = new paper.Point(xPal, yFasce);
+  const patternAnchor = point(xPal, yFasce);
 
   return {
     type: "cross",
@@ -90,7 +91,7 @@ function createDiagonalCross(
   const strip1 = new paper.Path(pathData);
   const strip2 = strip1.clone();
   // Mirror to obtain the '/' diagonal
-  const center = new paper.Point(x + w / 2, y + h / 2);
+  const center = point(x + w / 2, y + h / 2);
   strip2.scale(-1, 1, center);
 
   const cross = strip1.unite(strip2);

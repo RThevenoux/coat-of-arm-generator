@@ -5,6 +5,7 @@ import SvgBuilder from "../svg/SvgBuilder";
 import { createPatternTransfrom } from "./util";
 import { PatternWrapper } from "../svg/PatternWrapper";
 import { TransformList } from "../svg/svg.type";
+import { origin } from "../tool/point";
 
 export function createStripFiller(
   builder: SvgBuilder,
@@ -73,7 +74,7 @@ function createDiagonal(
   const rotationDeg = bande ? 90 - angleDeg : angleDeg - 90;
 
   const clone = item.clone();
-  clone.rotate(rotationDeg, new paper.Point(0, 0));
+  clone.rotate(rotationDeg, origin());
 
   const scaleCoef = clone.bounds.width / model.count;
 

@@ -1,5 +1,6 @@
 import * as paper from "paper";
 import { getPartitionVisual } from "../../service/PartitionService";
+import { origin } from "./tool/point";
 import { FieldShape } from "./type";
 
 export default function partitionShape(
@@ -19,7 +20,7 @@ export default function partitionShape(
   // Compute scale info
   const scaleX = bounds.width / partitionDef.width;
   const scaleY = bounds.height / partitionDef.height;
-  const partitionOrigin = new paper.Point(0, 0);
+  const partitionOrigin = origin();
   // Get translate info
   const containerOrigin = bounds.topLeft;
 
