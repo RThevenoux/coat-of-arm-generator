@@ -67,10 +67,35 @@ export interface FillerPattern {
 //
 export type ChargeModel = ChargeStrip | ChargeCross | ChargeSymbol;
 
-export type StripSize = "default" | "reduced" | "minimal" | "gemel" | "triplet";
-export type CrossSize = "default" | "reduced" | "minimal";
+// Charge: Strip
 
+export type StripSize = "default" | "reduced" | "minimal" | "gemel" | "triplet";
 export type OutlineId = string;
+export type StripOutline =
+  | StraightStripOutline
+  | SimpleStripOutline
+  | DoubleStripOutline
+  | GemelStripOutline;
+
+export interface StraightStripOutline {
+  type: "straight";
+}
+
+export interface SimpleStripOutline {
+  type: "simple";
+  outline: OutlineId;
+  shifted: boolean;
+}
+
+export interface DoubleStripOutline {
+  type: "double";
+  outline1: OutlineId; // Fasce: Top side - Other: Left
+  outline2: OutlineId; // Fasce: Bottom side - Other: Right
+}
+
+export interface GemelStripOutline {
+  type: "gemel";
+}
 
 export interface ChargeStrip {
   type: "strip";
@@ -78,10 +103,12 @@ export interface ChargeStrip {
   count: number;
   filler: FillerModel;
   size: StripSize;
-  outline1: OutlineId; // Fasce: Top side - Other: Left
-  outline2: OutlineId; // Fasce: Bottom side - Other: Right
+  outline: StripOutline;
 }
 
+// Charge: Cross
+
+export type CrossSize = "default" | "reduced" | "minimal";
 export interface ChargeCross {
   type: "cross";
   count: 1;
@@ -90,6 +117,7 @@ export interface ChargeCross {
   size: CrossSize;
 }
 
+// Charge: Symbol
 export interface ChargeSymbol {
   type: "symbol";
   count: number;

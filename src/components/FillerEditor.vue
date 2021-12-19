@@ -4,58 +4,64 @@
       <h3>Style</h3>
       <div>
         <input
+          :id="uuid + '-plain'"
           type="radio"
           v-model="value.type"
           value="plein"
           @change="update"
         />
-        <label>Plein</label>
+        <label :for="uuid + '-plain'">Plein</label>
       </div>
 
       <div class="flex-container" style="background-color: #d8d8d8">
         <input
+          :id="uuid + '-pattern'"
           type="radio"
           v-model="value.type"
           value="pattern"
           @change="update"
         />
-        <p>Pavage</p>
+        <label :for="uuid + '-pattern'">Pavage</label>
         <div>
           <div>
             <input
+              :id="uuid + '-echiquete'"
               type="radio"
               v-model="value.patternName"
               value="echiquete"
               @change="update"
             />
-            <label>Échiqueté</label>
+            <label :for="uuid + '-echiquete'">Échiqueté</label>
           </div>
           <div>
             <input
+              :id="uuid + '-losange'"
               type="radio"
               v-model="value.patternName"
               value="losange"
               @change="update"
             />
-            <label>Losangé</label>
+            <label :for="uuid + '-losange'">Losangé</label>
           </div>
           <div>
             <input
+              :id="uuid + '-triangle'"
               type="radio"
               v-model="value.patternName"
               value="triangle"
               @change="update"
             />
-            <label>Trianglé</label>
+            <label :for="uuid + '-triangle'">Trianglé</label>
           </div>
           <div>
             <input
+              :id="uuid + '-fusele'"
               type="radio"
               v-model="value.patternName"
               value="fusele"
               @change="update"
             />
-            <label>Fuselé</label>
+            <label :for="uuid + '-fusele'">Fuselé</label>
             <select v-model="value.patternAngle" @change="update">
               <option value="defaut">défaut</option>
               <option value="bande">en bande</option>
@@ -66,24 +72,26 @@
         <div>
           <div v-for="option of vairOptions" :key="option.id">
             <input
+              :id="uuid + '-vair-' + option.id"
               type="radio"
               v-model="value.patternName"
               :value="option.id"
               @change="update"
             />
-            <label>{{ option.label }}</label>
+            <label :for="uuid + '-vair-' + option.id">{{ option.label }}</label>
           </div>
         </div>
       </div>
 
       <div style="background-color: #fff">
         <input
+          :id="uuid + '-seme'"
           type="radio"
           v-model="value.type"
           value="seme"
           @change="update"
         />
-        <label>Semé de : </label>
+        <label :for="uuid + '-seme'">Semé de : </label>
         <select v-model="value.semeChargeId" @change="update">
           <option
             v-for="option in chargeOptions"
@@ -136,6 +144,7 @@ import { getChargeOptions } from "../service/ChargeService";
 import { MyOption } from "../service/MyOptions.type";
 import ColorPicker from "./ColorPicker.vue";
 import { FillerEditorModel } from "./FillerEditorModel";
+import { v4 as uuidv4 } from "uuid";
 
 @Component({
   components: {
@@ -144,6 +153,7 @@ import { FillerEditorModel } from "./FillerEditorModel";
 })
 export default class FieldEditor extends Vue {
   @Prop() value!: FillerEditorModel;
+  uuid = uuidv4();
 
   chargeOptions: MyOption[] = [];
   vairOptions = [

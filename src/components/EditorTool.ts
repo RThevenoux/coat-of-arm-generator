@@ -4,11 +4,13 @@ import {
   FillerModel,
   FillerPattern,
   PlainFieldModel,
+  StripOutline,
 } from "@/generator/model.type";
 import { getDefaultChargeId } from "@/service/ChargeService";
 import { FieldEditorModel, PlainFieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
+import { StripEditorModel } from "./StripModel";
 
 export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
   return {
@@ -21,21 +23,25 @@ export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
 export async function initialChargeModel(): Promise<SingleChargePickerModel> {
   return {
     type: "strip",
-    filler: await initialFiller(),
     strip: {
       angle: "pal",
       count: 1,
       size: "default",
+      filler: await initialFiller(),
+      outlineType: "straight",
       outline1: "straight",
       outline2: "straight",
+      shifted: false,
     },
     cross: {
       angle: "fasce",
       size: "default",
+      filler: await initialFiller(),
     },
     symbol: {
       chargeId: await getDefaultChargeId(),
       count: 1,
+      filler: await initialFiller(),
     },
   };
 }
@@ -143,17 +149,16 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         type: "strip",
         direction: viewModel.strip.angle,
         count: viewModel.strip.count,
-        filler: fillerToModel(viewModel.filler),
+        filler: fillerToModel(viewModel.strip.filler),
         size: viewModel.strip.size,
-        outline1: viewModel.strip.outline1,
-        outline2: viewModel.strip.outline2,
+        outline: stripOutlineToModel(viewModel.strip),
       };
     case "cross":
       return {
         type: "cross",
         count: 1,
         direction: viewModel.cross.angle,
-        filler: fillerToModel(viewModel.filler),
+        filler: fillerToModel(viewModel.cross.filler),
         size: viewModel.cross.size,
       };
     case "symbol":
@@ -161,7 +166,29 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         type: "symbol",
         count: viewModel.symbol.count,
         chargeId: viewModel.symbol.chargeId,
-        filler: fillerToModel(viewModel.filler),
+        filler: fillerToModel(viewModel.symbol.filler),
       };
+  }
+}
+
+function stripOutlineToModel(model: StripEditorModel): StripOutline {
+  switch (model.outlineType) {
+    case "simple":
+      return {
+        type: "simple",
+        outline: model.outline1,
+        shifted: model.shifted,
+      };
+    case "double":
+      return {
+        type: "double",
+        outline1: model.outline1,
+        outline2: model.outline2,
+      };
+    case "gemel-potency":
+      return { type: "gemel" };
+    case "straight":
+    default:
+      return { type: "straight" };
   }
 }

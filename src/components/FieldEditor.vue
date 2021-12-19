@@ -14,11 +14,12 @@
       </FillerPicker>
     </div>
     <div class="flex-container" v-if="value.partitionType === 'plain'">
-      <label>Border</label>
+      <label :for="uuid + '-border-checkbox'">Border</label>
       <input
         type="checkbox"
         v-model="value.plain.border.present"
         @change="update"
+        :id="uuid + '-border-checkbox'"
       />
       <FillerPicker
         v-model="value.plain.border.filler"
@@ -54,6 +55,7 @@ import {
 import { initialFieldEditorValue } from "./EditorTool";
 import FillerPicker from "./FillerPicker.vue";
 import MultiChargePicker from "./MultiChargePicker.vue";
+import { v4 as uuidv4 } from "uuid";
 
 @Component({
   components: {
@@ -63,6 +65,7 @@ import MultiChargePicker from "./MultiChargePicker.vue";
 })
 export default class FieldEditor extends Vue {
   @Prop() value!: FieldEditorModel;
+  uuid = uuidv4();
 
   private options = getPartitionOptions();
   private selectedOption = this.value.partitionType;

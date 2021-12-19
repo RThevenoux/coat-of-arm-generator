@@ -1,6 +1,6 @@
 import { getOutlineInfo } from "@/service/OutlineService";
 import * as paper from "paper";
-import { ChargeStrip } from "../../model.type";
+import { ChargeStrip, StripOutline } from "../../model.type";
 import { origin, point } from "../tool/point";
 import { FieldShape, StripShape } from "../type";
 import { HorizontalStripOutline, VerticalStripOutline } from "./Outline.type";
@@ -28,7 +28,7 @@ export function createStrips(
 function createFasces(container: FieldShape, model: ChargeStrip): StripShape[] {
   const bounds = container.path.bounds;
   const helper = new StripHelper(model, bounds.height, bounds.y);
-  const outline = getHorizontalOutlineData(model);
+  const outline = getHorizontalOutlineData(model.outline);
 
   return helper.build((yStrip, stripWidth) =>
     createFasce(yStrip, stripWidth, container, outline)
@@ -38,7 +38,7 @@ function createFasces(container: FieldShape, model: ChargeStrip): StripShape[] {
 function createPals(container: FieldShape, model: ChargeStrip): StripShape[] {
   const bounds = container.path.bounds;
   const helper = new StripHelper(model, bounds.width, bounds.x);
-  const outline = getVerticalOutlineData(model);
+  const outline = getVerticalOutlineData(model.outline);
 
   return helper.build((xStrip, stripWidth) =>
     createPal(xStrip, stripWidth, container, outline)
@@ -106,7 +106,7 @@ function createDiagonals(container: FieldShape, model: ChargeStrip) {
   clone.rotate(-rotation.angle, rotation.center);
 
   const bounds = clone.bounds;
-  const outline = getVerticalOutlineData(model);
+  const outline = getVerticalOutlineData(model.outline);
 
   const helper = new StripHelper(model, bounds.width, bounds.x);
 
@@ -239,16 +239,48 @@ function createVerticalStripPath(
   return path;
 }
 
-function getVerticalOutlineData(model: ChargeStrip): VerticalStripOutline {
-  return {
-    left: getOutlineInfo(model.outline1),
-    right: getOutlineInfo(model.outline2),
-  };
+function getVerticalOutlineData(model: StripOutline): VerticalStripOutline {
+  switch (model.type) {
+    case "simple": {
+      const info = getOutlineInfo(model.outline);
+      return {
+        left: info,
+        right: info,
+      };
+    }
+    case "double":
+      return {
+        left: getOutlineInfo(model.outline1),
+        right: getOutlineInfo(model.outline2),
+      };
+    case "straight":
+    default:
+      return {
+        left: { type: "straight" },
+        right: { type: "straight" },
+      };
+  }
 }
 
-function getHorizontalOutlineData(model: ChargeStrip): HorizontalStripOutline {
-  return {
-    top: getOutlineInfo(model.outline1),
-    bottom: getOutlineInfo(model.outline2),
-  };
+function getHorizontalOutlineData(model: StripOutline): HorizontalStripOutline {
+  switch (model.type) {
+    case "simple": {
+      const info = getOutlineInfo(model.outline);
+      return {
+        top: info,
+        bottom: info,
+      };
+    }
+    case "double":
+      return {
+        top: getOutlineInfo(model.outline1),
+        bottom: getOutlineInfo(model.outline2),
+      };
+    case "straight":
+    default:
+      return {
+        top: { type: "straight" },
+        bottom: { type: "straight" },
+      };
+  }
 }
