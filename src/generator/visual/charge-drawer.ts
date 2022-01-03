@@ -4,6 +4,8 @@ import drawSymbol from "./symbol-drawer";
 import SvgBuilder from "./svg/SvgBuilder";
 import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";
 import { FieldShape } from "./type";
+import { XMLElement } from "xmlbuilder";
+import { addClipPathAttribute } from "./svg/SvgHelper";
 
 export default async function drawCharge(
   builder: SvgBuilder,
@@ -30,15 +32,25 @@ async function drawStrip(
 ): Promise<void> {
   const strips = createStrips(strip, container);
   for (const stripShape of strips) {
-    await builder.fill(strip.filler, stripShape);
+    const path = await builder.fill(strip.filler, stripShape);
+    clip(builder, path, container);
   }
 }
 
-function drawCross(
+async function drawCross(
   builder: SvgBuilder,
   cross: ChargeCross,
   container: FieldShape
 ): Promise<void> {
   const shape = createCross(cross, container);
-  return builder.fill(cross.filler, shape);
+  await builder.fill(cross.filler, shape);
+}
+
+function clip(
+  builder: SvgBuilder,
+  element: XMLElement,
+  container: FieldShape
+): void {
+  const clipPathId = builder.getClipPathId(container);
+  addClipPathAttribute(element, clipPathId);
 }

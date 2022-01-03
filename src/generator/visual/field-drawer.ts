@@ -25,11 +25,11 @@ export default async function drawField(
   }
 }
 
-function drawError(
+async function drawError(
   builder: SvgBuilder,
   containerPath: SimpleShape
 ): Promise<void> {
-  return builder.fill("none", containerPath);
+  await builder.fill("none", containerPath);
 }
 
 async function drawPartitionField(

@@ -17,6 +17,7 @@ export interface FieldShape {
   type: "field";
   path: paper.Path;
   root: SimpleShape;
+  clipPathId?: string;
 }
 export interface StripShape {
   type: "strip";

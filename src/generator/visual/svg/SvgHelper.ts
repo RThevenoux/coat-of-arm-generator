@@ -125,6 +125,23 @@ export function addSymbol(
     .raw(symbolDef.xml);
 }
 
+export function addClipPath(
+  parentNode: XMLElement,
+  clipPathId: string,
+  pathData: string
+): XMLElement {
+  const node = parentNode.ele("clipPath").att("id", clipPathId);
+  addPath(node, pathData);
+  return node;
+}
+
+export function addClipPathAttribute(
+  node: XMLElement,
+  clipPathId: string
+): void {
+  node.att("clip-path", `url(#${clipPathId})`);
+}
+
 export function svgTranslate(tx: number, ty: number): string {
   return `translate(${tx},${ty})`;
 }

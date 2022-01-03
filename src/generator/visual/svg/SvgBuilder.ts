@@ -1,9 +1,10 @@
 import * as paper from "paper";
-import xmlBuilder from "xmlbuilder";
+import xmlBuilder, { XMLElement } from "xmlbuilder";
 import { FillerModel } from "../../model.type";
-import { EscutcheonShape, SimpleShape, SymbolShape } from "../type";
+import { EscutcheonShape, FieldShape, SimpleShape, SymbolShape } from "../type";
 import { ChargeVisualInfo } from "@/service/visual.type";
 import {
+  addClipPath,
   addPath,
   addPattern,
   addStyle,
@@ -26,6 +27,7 @@ export default class SvgBuilder {
   readonly defs: xmlBuilder.XMLElement;
 
   private patternCount = 0;
+  private clipPathCount = 0;
   private definedSymbol: Record<string, string> = {};
   private defaultFillerId: string | null = null;
   private escutcheonPathId: string | null = null;
@@ -74,6 +76,20 @@ export default class SvgBuilder {
       .end();
   }
 
+  public getClipPathId(container: FieldShape): string {
+    if (container.clipPathId) {
+      return container.clipPathId;
+    }
+    const clipPathId = this.nextClipPathId();
+    addClipPath(this.defs, clipPathId, container.path.pathData);
+    container.clipPathId = clipPathId;
+    return clipPathId;
+  }
+
+  private nextClipPathId(): string {
+    return `clipPath${this.clipPathCount++}`;
+  }
+
   public getEscutcheonPathId(): string {
     if (this.escutcheonPathId == null) {
       this.escutcheonPathId = "escutcheon";
@@ -91,9 +107,9 @@ export default class SvgBuilder {
   public async fill(
     fillerModel: FillerModel | "none",
     shape: SimpleShape
-  ): Promise<void> {
+  ): Promise<XMLElement> {
     const style = await this.getStyle(fillerModel, shape);
-    addPath(this.container, shape.path.pathData, style);
+    return addPath(this.container, shape.path.pathData, style);
   }
 
   public async drawSymbol(
