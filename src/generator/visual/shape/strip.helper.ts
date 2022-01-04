@@ -1,36 +1,54 @@
 import { point } from "../tool/point";
-import { StripShape } from "../type";
-import { RotationDef, StripGroupData } from "./StripFactoryData.type";
+import { StripItem, StripShape } from "../type";
+import { StripGroupData } from "./strip.type";
 
-interface SingleStripe {
-  path: paper.Path;
-  patternAnchor: paper.Point;
+class StripItemBuilder {
+  private readonly items: StripItem[] = [];
+
+  add(item: StripItem): void {
+    this.items.push(item);
+  }
+
+  build(): StripItem {
+    if (this.items.length == 1) {
+      return this.items[0];
+    }
+
+    return {
+      type: "stripGroup",
+      stripItems: this.items,
+    };
+  }
 }
 
 export function buildStripShapes(
   data: StripGroupData,
   pattern: paper.Path
-): StripShape[] {
-  const result: StripShape[] = [];
+): StripItem {
+  const builder = new StripItemBuilder();
 
   for (let groupIndex = 0; groupIndex < data.groupCount; groupIndex++) {
-    for (let stripIndex = 0; stripIndex < data.stripByGroup; stripIndex++) {
-      const position = stripPosition(data, groupIndex, stripIndex);
-      const topLeft = point(position, data.fixedOrigin);
-      const singleStrip = createSingleStrip(topLeft, pattern, data.rotation);
-
-      result.push({
-        type: "strip",
-        path: singleStrip.path,
-        root: data.root,
-        stripDirection: data.rotation.direction,
-        stripAngle: data.rotation.angle,
-        stripWidth: data.stripWidth,
-        patternAnchor: singleStrip.patternAnchor,
-      });
-    }
+    const innerItems = buildInnerGroup(data, pattern, groupIndex);
+    builder.add(innerItems);
   }
-  return result;
+
+  return builder.build();
+}
+
+function buildInnerGroup(
+  data: StripGroupData,
+  pattern: paper.Path,
+  groupIndex: number
+): StripItem {
+  const builder = new StripItemBuilder();
+
+  for (let stripIndex = 0; stripIndex < data.stripByGroup; stripIndex++) {
+    const position = stripPosition(data, groupIndex, stripIndex);
+    const singleStrip = createSingleStrip(position, pattern, data);
+    builder.add(singleStrip);
+  }
+
+  return builder.build();
 }
 
 function stripPosition(
@@ -44,17 +62,26 @@ function stripPosition(
 }
 
 function createSingleStrip(
-  topLeft: paper.Point,
+  position: number,
   stripPattern: paper.Path,
-  rotation: RotationDef
-): SingleStripe {
+  data: StripGroupData
+): StripShape {
+  const topLeft = point(position, data.fixedOrigin);
+
   const stripPath = stripPattern.clone();
   stripPath.translate(topLeft);
 
+  const rotation = data.rotation;
   stripPath.rotate(rotation.angle, rotation.center);
   const anchor = topLeft.rotate(-rotation.angle, rotation.center); // Not clear why rotation must be negate...
+
   return {
+    type: "strip",
     path: stripPath,
+    root: data.root,
+    stripDirection: data.rotation.direction,
+    stripAngle: data.rotation.angle,
+    stripWidth: data.stripWidth,
     patternAnchor: anchor,
   };
 }

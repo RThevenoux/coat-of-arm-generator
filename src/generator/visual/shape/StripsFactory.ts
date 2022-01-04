@@ -2,19 +2,15 @@ import { getOutlineInfo } from "@/service/OutlineService";
 import * as paper from "paper";
 import { ChargeStrip, StripOutline } from "../../model.type";
 import { origin, point } from "../tool/point";
-import { FieldShape, StripShape } from "../type";
-import {
-  RotationDef,
-  StripeOutlineData,
-  StripGroupData,
-} from "./StripFactoryData.type";
+import { FieldShape, StripItem } from "../type";
+import { RotationDef, StripeOutlineData, StripGroupData } from "./strip.type";
 import { createOutline } from "./OutlineFactory";
 import { buildStripShapes } from "./strip.helper";
 
 export function createStrips(
   model: ChargeStrip,
   container: FieldShape
-): StripShape[] {
+): StripItem {
   const rotation = computeRotationDef(container, model);
   const data = computeData(model, container, rotation);
 

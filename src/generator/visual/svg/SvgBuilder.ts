@@ -11,6 +11,7 @@ import {
   addSymbol,
   addTransform,
   addUse,
+  createGroup,
   createSVG,
 } from "./SvgHelper";
 import { Palette } from "../Palette";
@@ -106,10 +107,15 @@ export default class SvgBuilder {
 
   public async fill(
     fillerModel: FillerModel | "none",
-    shape: SimpleShape
+    shape: SimpleShape,
+    parent?: XMLElement
   ): Promise<XMLElement> {
     const style = await this.getStyle(fillerModel, shape);
-    return addPath(this.container, shape.path.pathData, style);
+    return addPath(parent || this.container, shape.path.pathData, style);
+  }
+
+  public createGroup(parent?: XMLElement): XMLElement {
+    return createGroup(parent || this.container);
   }
 
   public async drawSymbol(

@@ -13,6 +13,10 @@ export function createSVG(): XMLElement {
     .att("xmlns", "http://www.w3.org/2000/svg");
 }
 
+export function createGroup(parent: XMLElement): XMLElement {
+  return parent.ele("g");
+}
+
 export function addRadialGradient(
   parentNode: XMLElement,
   id: string,

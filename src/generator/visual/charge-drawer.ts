@@ -1,9 +1,14 @@
-import { createStrips } from "./shape/StripFactory";
+import { createStrips } from "./shape/StripsFactory";
 import { createCross } from "./shape/CrossFactory";
 import drawSymbol from "./symbol-drawer";
 import SvgBuilder from "./svg/SvgBuilder";
-import { ChargeCross, ChargeModel, ChargeStrip } from "../model.type";
-import { FieldShape } from "./type";
+import {
+  ChargeCross,
+  ChargeModel,
+  ChargeStrip,
+  FillerModel,
+} from "../model.type";
+import { FieldShape, StripItem } from "./type";
 import { XMLElement } from "xmlbuilder";
 import { addClipPathAttribute } from "./svg/SvgHelper";
 
@@ -30,10 +35,25 @@ async function drawStrip(
   strip: ChargeStrip,
   container: FieldShape
 ): Promise<void> {
-  const strips = createStrips(strip, container);
-  for (const stripShape of strips) {
-    const path = await builder.fill(strip.filler, stripShape);
-    clip(builder, path, container);
+  const item = createStrips(strip, container);
+  const element = await drawStripItem(builder, strip.filler, item);
+  clip(builder, element, container);
+}
+
+async function drawStripItem(
+  builder: SvgBuilder,
+  filler: FillerModel,
+  item: StripItem,
+  parent?: XMLElement
+): Promise<XMLElement> {
+  if (item.type == "strip") {
+    return builder.fill(filler, item, parent);
+  } else {
+    const group = builder.createGroup(parent);
+    for (const subItem of item.stripItems) {
+      await drawStripItem(builder, filler, subItem, group);
+    }
+    return group;
   }
 }
 

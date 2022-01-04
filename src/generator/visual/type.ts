@@ -19,6 +19,13 @@ export interface FieldShape {
   root: SimpleShape;
   clipPathId?: string;
 }
+
+export type StripItem = StripShape | StripGroup;
+
+export interface StripGroup {
+  type: "stripGroup";
+  stripItems: StripItem[];
+}
 export interface StripShape {
   type: "strip";
   path: paper.PathItem;
