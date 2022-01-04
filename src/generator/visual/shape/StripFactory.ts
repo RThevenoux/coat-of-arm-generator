@@ -3,80 +3,58 @@ import * as paper from "paper";
 import { ChargeStrip, StripOutline } from "../../model.type";
 import { origin, point } from "../tool/point";
 import { FieldShape, StripShape } from "../type";
-import { RotationDef, StripeOutlineData } from "./StripFactoryData.type";
+import {
+  RotationDef,
+  StripeOutlineData,
+  StripGroupData,
+} from "./StripFactoryData.type";
 import { createOutline } from "./OutlineFactory";
-import { StripHelper } from "./StripHelper";
+import { buildStripShapes } from "./strip.helper";
 
 export function createStrips(
-  strip: ChargeStrip,
+  model: ChargeStrip,
   container: FieldShape
 ): StripShape[] {
-  switch (strip.direction) {
-    case "fasce":
-      return createFasces(container, strip);
-    case "pal":
-      return createPals(container, strip);
-    case "bande":
-    case "barre":
-      return createDiagonals(container, strip);
-    default:
-      console.log("invalid angle " + strip.direction);
-      return [];
-  }
-}
-
-function createFasces(container: FieldShape, model: ChargeStrip): StripShape[] {
-  const helper = new StripHelper(model, container, "fasce");
-
-  const outline = getStripOutlineData(model.outline);
-  const stripPattern = createHorizontalStripPath(
-    helper.stripLength,
-    helper.stripWidth,
-    outline
-  );
-
-  return helper.build(stripPattern);
-}
-
-function createPals(container: FieldShape, model: ChargeStrip): StripShape[] {
-  const helper = new StripHelper(model, container, "pal");
+  const rotation = computeRotationDef(container, model);
+  const data = computeData(model, container, rotation);
 
   const outline = getStripOutlineData(model.outline);
   const stripPattern = createVerticalStripPath(
-    helper.stripWidth,
-    helper.stripLength,
+    data.stripWidth,
+    data.stripLength,
     outline
   );
 
-  return helper.build(stripPattern);
+  return buildStripShapes(data, stripPattern);
 }
 
-function createDiagonals(container: FieldShape, model: ChargeStrip) {
-  const rotation = computeDiagonalRotation(container, model);
-
-  const helper = new StripHelper(model, container, rotation);
-
-  const outline = getStripOutlineData(model.outline);
-  const stripPattern = createVerticalStripPath(
-    helper.stripWidth,
-    helper.stripLength,
-    outline
-  );
-
-  return helper.build(stripPattern);
-}
-
-function computeDiagonalRotation(
+function computeRotationDef(
   container: FieldShape,
   model: ChargeStrip
 ): RotationDef {
+  const center = origin();
+
+  if (model.direction == "pal") {
+    return {
+      angle: 0,
+      center,
+      direction: model.direction,
+    };
+  } else if (model.direction == "fasce") {
+    return {
+      angle: 90,
+      center,
+      direction: model.direction,
+    };
+  }
+
   const path = container.path;
 
   const angleRad = Math.atan2(path.bounds.height, path.bounds.width);
   const angleDeg = (angleRad * 180) / Math.PI;
   const angle = model.direction == "barre" ? 90 - angleDeg : angleDeg - 90;
-  const center = origin();
-  return { angle, center };
+
+  return { angle, center, direction: model.direction };
 }
 
 function createHorizontalStripPath(
@@ -119,7 +97,7 @@ function createVerticalStripPath(
   const path = createHorizontalStripPath(stripHeight, stripWidth, outline);
   path.rotate(90, origin());
   path.translate(point(stripWidth, 0));
-  return path.reduce({});
+  return path;
 }
 
 function getStripOutlineData(model: StripOutline): StripeOutlineData {
@@ -152,5 +130,65 @@ function getStripOutlineData(model: StripOutline): StripeOutlineData {
         outline2: { type: "straight" },
         outline2Shifted: false,
       };
+  }
+}
+
+function computeData(
+  model: ChargeStrip,
+  container: FieldShape,
+  rotation: RotationDef
+): StripGroupData {
+  const containerClone = container.path.clone();
+  containerClone.rotate(-rotation.angle, rotation.center);
+
+  const bounds = containerClone.bounds;
+  const totalSize = bounds.width;
+  const origin = bounds.x;
+
+  const minimalStripRatio = minimalGroupRatio(model);
+
+  const groupWidth =
+    totalSize / Math.max(minimalStripRatio, 2 * model.count + 1);
+  const mainDelta = totalSize / (2 * model.count + 1);
+  const stripByGroup = getStripByGroup(model);
+  const stripWidth = groupWidth / (2 * stripByGroup - 1);
+  const groupOrigin = origin + (mainDelta - groupWidth) / 2;
+
+  return {
+    fixedOrigin: bounds.y,
+    groupCount: model.count,
+    groupOrigin,
+    mainDelta,
+    rotation,
+    root: container.root,
+    stripByGroup,
+    stripLength: bounds.height,
+    stripWidth,
+  };
+}
+
+function getStripByGroup(model: ChargeStrip): number {
+  switch (model.size) {
+    case "default":
+    case "reduced":
+    case "minimal":
+      return 1;
+    case "gemel":
+      return 2;
+    case "triplet":
+      return 3;
+  }
+}
+
+function minimalGroupRatio(model: ChargeStrip): number {
+  switch (model.size) {
+    case "default":
+    case "gemel":
+    case "triplet":
+      return 3;
+    case "reduced":
+      return 6;
+    case "minimal":
+      return 12;
   }
 }
