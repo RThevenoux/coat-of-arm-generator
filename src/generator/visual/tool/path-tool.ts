@@ -1,15 +1,13 @@
 import * as paper from "paper";
 import { point } from "./point";
 
-export { getIncircle };
-
 type InCircleDef = {
   center: paper.Point;
   radius: number;
   nearest: paper.Point;
 };
 
-function getIncircle(path: paper.PathItem): InCircleDef {
+export function getIncircle(path: paper.PathItem): InCircleDef {
   let incirleDef = _getInitalIncircle(path);
 
   // Try to find a better incircle iteratively

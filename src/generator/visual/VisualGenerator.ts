@@ -1,11 +1,10 @@
 import { FieldModel } from "../model.type";
 import { VisualConfModel } from "./VisualConfModel";
 import { getEscutcheonPath } from "../../service/EscutcheonService";
-
-import SvgBuilder from "./svg/SvgBuilder";
-import getPaletteData from "../../service/PaletteService";
+import { SvgBuilder } from "./svg/SvgBuilder";
+import { getPaletteData } from "../../service/PaletteService";
 import * as paper from "paper";
-import drawField from "./field-drawer";
+import { drawField } from "./field-drawer";
 import { EscutcheonShape } from "./type";
 import { Palette } from "./Palette";
 
@@ -13,8 +12,6 @@ export async function generateVisual(
   model: FieldModel,
   configuration: VisualConfModel
 ): Promise<string> {
-  console.log("generateVisual...");
-
   // ?? TODO Improve paper.Project management ??
   const xSize = new paper.Size(500, 500);
   new paper.Project(xSize);

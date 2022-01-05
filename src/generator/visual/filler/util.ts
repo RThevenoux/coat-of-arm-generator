@@ -2,6 +2,7 @@ import * as paper from "paper";
 
 import { PatternTransform, TransformList } from "../svg/svg.type";
 import { origin } from "../tool/point";
+import { SimpleShape, MobileChargeShape } from "../type";
 
 /**
  * @param anchor
@@ -27,4 +28,14 @@ export function createPatternTransfrom(
   }
 
   return { x, y, transformList };
+}
+
+export function getItem(
+  container: SimpleShape | MobileChargeShape
+): paper.Item {
+  if (container.type === "mobileCharge") {
+    return container.item;
+  } else {
+    return container.path;
+  }
 }

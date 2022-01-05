@@ -1,6 +1,6 @@
 import { XMLElement } from "xmlbuilder";
 import { MyStyle } from "./MyStyle";
-import SvgBuilder from "./SvgBuilder";
+import { SvgBuilder } from "./SvgBuilder";
 import { addPath, addRectangle, addUse } from "./SvgHelper";
 import { SvgStyle, TransformList } from "./svg.type";
 
@@ -8,7 +8,7 @@ export class PatternWrapper {
   private pathCount = 0;
 
   constructor(
-    readonly root: SvgBuilder,
+    readonly builder: SvgBuilder,
     readonly node: XMLElement,
     readonly id: string,
     readonly size: paper.Size
@@ -52,10 +52,10 @@ export class PatternWrapper {
 
     const svg: SvgStyle = {};
     if (myStyle.border) {
-      svg.strokeWidth = this.root.defaultStrokeWidth;
+      svg.strokeWidth = this.builder.defaultStrokeWidth;
     }
     if (myStyle.colorId) {
-      svg.color = this.root.palette.getColor(myStyle.colorId);
+      svg.color = this.builder.palette.getColor(myStyle.colorId);
     } else if (myStyle.rawColor) {
       svg.color = myStyle.rawColor;
     }

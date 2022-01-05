@@ -5,7 +5,6 @@ import { ColorOption } from "./ColorOption";
 import data from "./data/color.json";
 
 const blazon: Record<string, string> = {};
-
 const colorOptions: ColorOption[] = [];
 
 for (const item of data) {

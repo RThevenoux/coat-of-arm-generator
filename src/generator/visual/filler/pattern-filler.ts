@@ -1,14 +1,14 @@
 import { getPatternVisualInfo } from "@/service/PatternService";
 import { PatternVisualInfo } from "@/service/visual.type";
 import { FillerPattern } from "../../model.type";
-import SvgBuilder from "../svg/SvgBuilder";
-import { SimpleShape, SymbolShape } from "../type";
-import { createPatternTransfrom } from "./util";
+import { SvgBuilder } from "../svg/SvgBuilder";
+import { SimpleShape, MobileChargeShape } from "../type";
+import { createPatternTransfrom, getItem } from "./util";
 
 export function createPatternFiller(
   builder: SvgBuilder,
   fillerModel: FillerPattern,
-  container: SimpleShape | SymbolShape
+  container: SimpleShape | MobileChargeShape
 ): string {
   const rotation = _getPatternRotation(fillerModel);
   const patternInfo = getPatternVisualInfo(fillerModel.patternName);
@@ -53,7 +53,7 @@ function _getPatternRotation(description: FillerPattern): number | undefined {
 }
 
 function getPatternTransform(
-  container: SimpleShape | SymbolShape,
+  container: SimpleShape | MobileChargeShape,
   pattern: PatternVisualInfo,
   rotation?: number
 ) {
@@ -76,9 +76,7 @@ function getPatternTransform(
     const scale = container.stripWidth / (w * n);
     return createPatternTransfrom(container.patternAnchor, scale, rotation);
   } else {
-    const bounds = (
-      container.type == "symbol" ? container.item : container.path
-    ).bounds;
+    const bounds = getItem(container).bounds;
     const scale = bounds.width / (w * pattern.patternRepetition);
     return createPatternTransfrom(bounds.topLeft, scale, rotation);
   }

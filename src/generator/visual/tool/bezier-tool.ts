@@ -1,12 +1,7 @@
 import { Bezier, Point } from "bezier-js";
 import * as paper from "paper";
 
-export default {
-  beziersToPath: beziersToPath,
-  curveToBezier: curveToBezier,
-};
-
-function curveToBezier(curve: paper.Curve): Bezier {
+export function curveToBezier(curve: paper.Curve): Bezier {
   const p1 = curve.point1;
   let handle1 = curve.points[1]; // Do not use curve.handle1 to have absolute position;
   const handle2 = curve.points[2]; // Idem
@@ -30,7 +25,7 @@ function curveToBezier(curve: paper.Curve): Bezier {
   );
 }
 
-function beziersToPath(beziers: Bezier[]): paper.Path {
+export function beziersToPath(beziers: Bezier[]): paper.Path {
   const path = new paper.Path();
 
   const firstLine = beziers[0];

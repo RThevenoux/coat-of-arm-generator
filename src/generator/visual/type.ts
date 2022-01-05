@@ -1,7 +1,7 @@
 import { Direction } from "../model.type";
 
-export interface SymbolShape {
-  type: "symbol";
+export interface MobileChargeShape {
+  type: "mobileCharge";
   item: paper.Item;
   root: SimpleShape;
 }
@@ -20,12 +20,19 @@ export interface FieldShape {
   clipPathId?: string;
 }
 
-export type StripItem = StripShape | StripGroup;
+export type StripItem = StripShape | StripGroup | StripClones;
 
 export interface StripGroup {
   type: "stripGroup";
   stripItems: StripItem[];
 }
+
+export interface StripClones {
+  type: "stripClones";
+  clonePattern: StripShape;
+  clonePositions: paper.Point[];
+}
+
 export interface StripShape {
   type: "strip";
   path: paper.PathItem;

@@ -1,9 +1,7 @@
 import * as paper from "paper";
 import { point } from "./point";
 
-export default getLineIntersection;
-
-function getLineIntersection(
+export function getLineIntersection(
   point1: paper.Point,
   vector1: paper.Point,
   point2: paper.Point,

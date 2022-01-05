@@ -1,4 +1,3 @@
-import { ChargeVisualInfo } from "@/service/visual.type";
 import xmlbuilder, { XMLElement } from "xmlbuilder";
 import {
   PatternTransform,
@@ -117,16 +116,9 @@ export function addRectangle(
 
 export function addSymbol(
   parentNode: XMLElement,
-  symbolId: string,
-  symbolDef: ChargeVisualInfo
+  symbolId: string
 ): XMLElement {
-  return parentNode
-    .ele("symbol")
-    .att("id", symbolId)
-    .att("width", symbolDef.width)
-    .att("height", symbolDef.height)
-    .att("viewBox", `0 0 ${symbolDef.width} ${symbolDef.height}`)
-    .raw(symbolDef.xml);
+  return parentNode.ele("symbol").att("id", symbolId);
 }
 
 export function addClipPath(

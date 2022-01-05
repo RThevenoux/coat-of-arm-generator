@@ -1,7 +1,12 @@
 import * as paper from "paper";
 import xmlBuilder, { XMLElement } from "xmlbuilder";
 import { FillerModel } from "../../model.type";
-import { EscutcheonShape, FieldShape, SimpleShape, SymbolShape } from "../type";
+import {
+  EscutcheonShape,
+  FieldShape,
+  SimpleShape,
+  MobileChargeShape,
+} from "../type";
 import { ChargeVisualInfo } from "@/service/visual.type";
 import {
   addClipPath,
@@ -23,13 +28,14 @@ import { createReflect } from "../filler/reflect";
 import { PatternWrapper } from "./PatternWrapper";
 import { PatternTransform, SvgStyle, TransformList } from "./svg.type";
 
-export default class SvgBuilder {
+export class SvgBuilder {
   private readonly container: xmlBuilder.XMLElement;
   readonly defs: xmlBuilder.XMLElement;
 
-  private patternCount = 0;
   private clipPathCount = 0;
-  private definedSymbol: Record<string, string> = {};
+  private patternCount = 0;
+  private symbolCount = 0;
+  private chargeSymbolIds: Record<string, string> = {};
   private defaultFillerId: string | null = null;
   private escutcheonPathId: string | null = null;
 
@@ -118,20 +124,20 @@ export default class SvgBuilder {
     return createGroup(parent || this.container);
   }
 
-  public async drawSymbol(
-    symbolDef: ChargeVisualInfo,
+  public async drawCharge(
+    chargeInfo: ChargeVisualInfo,
     position: paper.Point,
     scaleCoef: number,
     filler: FillerModel
   ): Promise<void> {
-    const item = paper.project.importSVG(symbolDef.xml);
-    const symbolShape: SymbolShape = {
-      type: "symbol",
+    const item = paper.project.importSVG(chargeInfo.xml);
+    const chargeShape: MobileChargeShape = {
+      type: "mobileCharge",
       item: item,
       root: this.escutcheon,
     };
 
-    const style = await this.getStyle(filler, symbolShape);
+    const style = await this.getStyle(filler, chargeShape);
     style.strokeWidth = this.defaultStrokeWidth / scaleCoef;
 
     const transforms: TransformList = [
@@ -143,15 +149,15 @@ export default class SvgBuilder {
       },
     ];
 
-    const group = this.container.ele("g");
-    group.raw(symbolDef.xml);
+    const group = createGroup(this.container);
+    group.raw(chargeInfo.xml);
     addTransform(group, transforms);
     addStyle(group, style);
   }
 
   private async getStyle(
     model: FillerModel | "none",
-    container: SimpleShape | SymbolShape
+    container: SimpleShape | MobileChargeShape
   ): Promise<SvgStyle> {
     if (!model || model == "none" || !model.type) {
       return this._getDefaultFiller();
@@ -191,12 +197,23 @@ export default class SvgBuilder {
     return `pattern${this.patternCount++}`;
   }
 
-  public getSymbolId(symbolDef: ChargeVisualInfo): string {
-    let symbolId = this.definedSymbol[symbolDef.id];
+  public addSymbol(): { symbolId: string; node: XMLElement } {
+    const symbolId = `symbol_${this.symbolCount++}`;
+    const node = addSymbol(this.defs, symbolId);
+    return { symbolId, node };
+  }
+
+  public getChargeSymbolId(chargeDef: ChargeVisualInfo): string {
+    let symbolId = this.chargeSymbolIds[chargeDef.id];
     if (!symbolId) {
-      symbolId = `symbol_${symbolDef.id}`;
-      this.definedSymbol[symbolDef.id] = symbolId;
-      addSymbol(this.defs, symbolId, symbolDef);
+      symbolId = `mobile_${chargeDef.id}`;
+      const symbol = addSymbol(this.defs, symbolId);
+      symbol
+        .att("width", chargeDef.width)
+        .att("height", chargeDef.height)
+        .att("viewBox", `0 0 ${chargeDef.width} ${chargeDef.height}`)
+        .raw(chargeDef.xml);
+      this.chargeSymbolIds[chargeDef.id] = symbolId;
     }
     return symbolId;
   }

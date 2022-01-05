@@ -33,6 +33,6 @@ export function getDefaultPaletteId(): string {
   return defaultId;
 }
 
-export default function getPaletteData(paletteId: string): PaletteData {
+export function getPaletteData(paletteId: string): PaletteData {
   return visual[paletteId];
 }

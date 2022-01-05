@@ -1,7 +1,7 @@
-import partitionShape from "./partitionner";
-import drawCharge from "./charge-drawer";
-import createBorder from "./shape/BorderFactory";
-import SvgBuilder from "./svg/SvgBuilder";
+import { partitionShape } from "./partitionner";
+import { drawCharge } from "./charge/charge-drawer";
+import { createBorder } from "./shape/BorderFactory";
+import { SvgBuilder } from "./svg/SvgBuilder";
 import {
   BorderModel,
   FieldModel,
@@ -10,7 +10,7 @@ import {
 } from "../model.type";
 import { FieldShape, SimpleShape } from "./type";
 
-export default async function drawField(
+export async function drawField(
   builder: SvgBuilder,
   model: FieldModel,
   containerPath: FieldShape

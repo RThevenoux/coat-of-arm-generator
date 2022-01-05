@@ -1,8 +1,8 @@
 import { FillerSeme } from "@/generator/model.type";
 import { getSemeVisualInfo } from "@/service/ChargeService";
-import SvgBuilder from "../svg/SvgBuilder";
-import { SimpleShape, SymbolShape } from "../type";
-import { createPatternTransfrom } from "./util";
+import { SvgBuilder } from "../svg/SvgBuilder";
+import { SimpleShape, MobileChargeShape } from "../type";
+import { createPatternTransfrom, getItem } from "./util";
 import { ChargeVisualInfo, SemeVisualInfo } from "@/service/visual.type";
 import { MyStyle } from "../svg/MyStyle";
 import { PatternTransform, Transform, Translate } from "../svg/svg.type";
@@ -10,7 +10,7 @@ import { PatternTransform, Transform, Translate } from "../svg/svg.type";
 export async function createSemeFiller(
   builder: SvgBuilder,
   model: FillerSeme,
-  container: SimpleShape | SymbolShape
+  container: SimpleShape | MobileChargeShape
 ): Promise<string> {
   const seme = await getSemeVisualInfo(model.chargeId);
 
@@ -30,7 +30,7 @@ export async function createSemeFiller(
   pattern.addBackground({ colorId: model.fieldColor });
 
   // Get Symbol definition id (create definition if necessary)
-  const symbolId = builder.getSymbolId(seme.charge);
+  const symbolId = builder.getChargeSymbolId(seme.charge);
 
   // Add each copy to the pattern
   const style: MyStyle = { colorId: model.chargeColor, border: true };
@@ -64,7 +64,7 @@ function translate(tx: number, ty: number): Translate {
 }
 
 function computeTransform(
-  container: SimpleShape | SymbolShape,
+  container: SimpleShape | MobileChargeShape,
   seme: SemeVisualInfo
 ): PatternTransform {
   const semeWidth = seme.tx * 2;
@@ -105,12 +105,8 @@ function computeTransform(
     );
     return createPatternTransfrom(container.patternAnchor, scale);
   } else {
-    const bounds = (
-      container.type == "symbol" ? container.item : container.path
-    ).bounds;
-
+    const bounds = getItem(container).bounds;
     const scale = computeSemeScale(bounds.width, semeWidth, chargeFullWidth);
-
     return createPatternTransfrom(bounds.topLeft, scale);
   }
 }

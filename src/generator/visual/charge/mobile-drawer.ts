@@ -1,13 +1,13 @@
-import { ChargeVisualInfo } from "@/service/visual.type";
 import paper from "paper";
-import { getChargeVisualInfo } from "../../service/ChargeService";
-import { ChargeSymbol, FillerModel } from "../model.type";
-import SvgBuilder from "./svg/SvgBuilder";
-import { getIncircle } from "./tool/path-tool";
-import { point } from "./tool/point";
-import { FieldShape } from "./type";
+import { SvgBuilder } from "../svg/SvgBuilder";
+import { ChargeVisualInfo } from "@/service/visual.type";
+import { getChargeVisualInfo } from "../../../service/ChargeService";
+import { ChargeSymbol, FillerModel } from "../../model.type";
+import { getIncircle } from "../tool/path-tool";
+import { point } from "../tool/point";
+import { FieldShape } from "../type";
 
-export default async function drawSymbol(
+export async function drawMobileCharge(
   builder: SvgBuilder,
   charge: ChargeSymbol,
   container: FieldShape
@@ -92,7 +92,7 @@ function _drawOneFromCenter(
   const scaledSize = originalSize.multiply(scaleCoef);
   const deltaSize = scaledSize.divide(2);
   const origin = center.add(point(-deltaSize.width, -deltaSize.height));
-  builder.drawSymbol(chargeDef, origin, scaleCoef, filler);
+  builder.drawCharge(chargeDef, origin, scaleCoef, filler);
 }
 
 function _radius(size: paper.Size): number {

@@ -1,8 +1,8 @@
 import * as paper from "paper";
 import { FillerStrip } from "@/generator/model.type";
-import { SimpleShape, SymbolShape } from "../type";
-import SvgBuilder from "../svg/SvgBuilder";
-import { createPatternTransfrom } from "./util";
+import { SimpleShape, MobileChargeShape } from "../type";
+import { SvgBuilder } from "../svg/SvgBuilder";
+import { createPatternTransfrom, getItem } from "./util";
 import { PatternWrapper } from "../svg/PatternWrapper";
 import { TransformList } from "../svg/svg.type";
 import { origin } from "../tool/point";
@@ -10,7 +10,7 @@ import { origin } from "../tool/point";
 export function createStripFiller(
   builder: SvgBuilder,
   model: FillerStrip,
-  container: SimpleShape | SymbolShape
+  container: SimpleShape | MobileChargeShape
 ): string {
   const item = getItem(container);
   switch (model.direction) {
@@ -94,12 +94,4 @@ function createDiagonal(
     pattern.addRectangle(0.5, 0, 0.5, 1, { colorId: model.color2 });
   }
   return pattern;
-}
-
-function getItem(container: SimpleShape | SymbolShape): paper.Item {
-  if (container.type === "symbol") {
-    return container.item;
-  } else {
-    return container.path;
-  }
 }

@@ -1,6 +1,6 @@
 import paper from "paper";
-import BezierTool from "../tool/bezier-tool";
-import getLineIntersection from "../tool/affine-tool";
+import { beziersToPath, curveToBezier } from "../tool/bezier-tool";
+import { getLineIntersection } from "../tool/affine-tool";
 import { Bezier } from "bezier-js";
 import { Segment } from "paper/dist/paper-core";
 import { BorderShape, SimpleShape } from "../type";
@@ -12,7 +12,7 @@ import { BorderShape, SimpleShape } from "../type";
  * @throws Error if the border can not be created
  * @returns
  */
-export default function createBorder(
+export function createBorder(
   path: paper.Path,
   offset: number,
   rootShape: SimpleShape
@@ -226,9 +226,9 @@ function createBezierBorder(
   curve: paper.Curve,
   offset: number
 ): { offsetPath: paper.Path; solid: paper.PathItem } {
-  const bezier = BezierTool.curveToBezier(curve);
+  const bezier = curveToBezier(curve);
   const offsetBeziers = bezier.offset(offset) as Bezier[];
-  const offsetPath = BezierTool.beziersToPath(offsetBeziers);
+  const offsetPath = beziersToPath(offsetBeziers);
 
   const reversed = curve.reversed();
 

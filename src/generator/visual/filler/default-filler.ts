@@ -1,4 +1,4 @@
-import SvgBuilder from "../svg/SvgBuilder";
+import { SvgBuilder } from "../svg/SvgBuilder";
 
 export function createDefaultFiller(builder: SvgBuilder): string {
   const size = 50;

@@ -3,7 +3,7 @@ import { getPartitionVisual } from "../../service/PartitionService";
 import { origin } from "./tool/point";
 import { FieldShape } from "./type";
 
-export default function partitionShape(
+export function partitionShape(
   container: FieldShape,
   partitionningType: string
 ): FieldShape[] {
