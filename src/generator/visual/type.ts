@@ -1,4 +1,4 @@
-import { Direction } from "../model.type";
+import { Direction, FillerModel } from "../model.type";
 
 export interface MobileChargeShape {
   type: "mobileCharge";
@@ -20,17 +20,25 @@ export interface FieldShape {
   clipPathId?: string;
 }
 
-export type StripItem = StripShape | StripGroup | StripClones;
+export type StripItem = StripSingle | StripComposition | StripClones;
 
-export interface StripGroup {
-  type: "stripGroup";
+export interface StripComposition {
+  type: "stripComposition";
   stripItems: StripItem[];
+  __bounds: paper.Rectangle; //unrotated total bounds
 }
 
 export interface StripClones {
   type: "stripClones";
-  clonePattern: StripShape;
-  clonePositions: paper.Point[];
+  clonePattern: StripItem;
+  clonePositions: paper.Rectangle[];
+}
+
+export interface StripSingle {
+  type: "stripSingle";
+  shape: StripShape;
+  filler: FillerModel;
+  __bounds: paper.Rectangle; //unrotated bounds
 }
 
 export interface StripShape {

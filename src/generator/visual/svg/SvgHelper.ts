@@ -12,6 +12,25 @@ export function createSVG(): XMLElement {
     .att("xmlns", "http://www.w3.org/2000/svg");
 }
 
+export function addViewBoxAndDimensions(
+  node: XMLElement,
+  viewBox: { x?: number; y?: number; width: number; height: number }
+): XMLElement {
+  return addViewBox(node, viewBox)
+    .att("width", viewBox.width)
+    .att("height", viewBox.height);
+}
+
+export function addViewBox(
+  node: XMLElement,
+  viewBox: { x?: number; y?: number; width: number; height: number }
+): XMLElement {
+  const x = viewBox.x ? viewBox.x : 0;
+  const y = viewBox.y ? viewBox.y : 0;
+
+  return node.att("viewBox", `${x} ${y} ${viewBox.width} ${viewBox.height}`);
+}
+
 export function createGroup(parent: XMLElement): XMLElement {
   return parent.ele("g");
 }

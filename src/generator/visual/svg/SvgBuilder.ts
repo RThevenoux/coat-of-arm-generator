@@ -16,6 +16,8 @@ import {
   addSymbol,
   addTransform,
   addUse,
+  addViewBox,
+  addViewBoxAndDimensions,
   createGroup,
   createSVG,
 } from "./SvgHelper";
@@ -73,13 +75,10 @@ export class SvgBuilder {
 
   public build(outputSize: { width: number; height: number }): string {
     const viewBox = this.escutcheon.path.strokeBounds;
-    return this.container
+
+    return addViewBox(this.container, viewBox)
       .att("width", outputSize.width)
       .att("height", outputSize.height)
-      .att(
-        "viewBox",
-        `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
-      )
       .end();
   }
 
@@ -208,11 +207,9 @@ export class SvgBuilder {
     if (!symbolId) {
       symbolId = `mobile_${chargeDef.id}`;
       const symbol = addSymbol(this.defs, symbolId);
-      symbol
-        .att("width", chargeDef.width)
-        .att("height", chargeDef.height)
-        .att("viewBox", `0 0 ${chargeDef.width} ${chargeDef.height}`)
-        .raw(chargeDef.xml);
+
+      addViewBoxAndDimensions(symbol, chargeDef).raw(chargeDef.xml);
+
       this.chargeSymbolIds[chargeDef.id] = symbolId;
     }
     return symbolId;

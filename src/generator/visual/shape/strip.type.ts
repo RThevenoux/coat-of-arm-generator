@@ -1,4 +1,4 @@
-import { Direction } from "@/generator/model.type";
+import { Direction, FillerModel } from "@/generator/model.type";
 import { OutlineVisualData } from "@/service/OutlineData";
 import * as paper from "paper";
 import { SimpleShape } from "../type";
@@ -9,20 +9,16 @@ export interface RotationDef {
   direction: Direction;
 }
 
-export interface StripeOutlineData {
+export interface StripOutlineData {
   outline1: OutlineVisualData;
   outline2: OutlineVisualData;
   outline2Shifted: boolean;
 }
 
-export interface StripGroupData {
-  fixedOrigin: number;
-  groupOrigin: number;
-  groupCount: number;
-  mainDelta: number;
-  rotation: RotationDef;
+export interface StripData {
   root: SimpleShape;
-  stripByGroup: number;
-  stripLength: number;
   stripWidth: number;
+  stripLength: number;
+  filler: FillerModel;
+  outline: StripOutlineData;
 }
