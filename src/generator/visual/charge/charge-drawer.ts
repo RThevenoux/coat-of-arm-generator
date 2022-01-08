@@ -3,7 +3,7 @@ import { ChargeModel } from "../../model.type";
 import { FieldShape } from "../type";
 import { drawCrossCharge } from "./cross-drawer";
 import { drawMobileCharge } from "./mobile-drawer";
-import { drawStripCharge } from "./strip-drawer";
+import { drawStripCharge } from "./strip/strip-drawer";
 
 export async function drawCharge(
   builder: SvgBuilder,

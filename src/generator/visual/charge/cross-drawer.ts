@@ -1,5 +1,5 @@
 import { ChargeCross } from "@/generator/model.type";
-import { createCross } from "../shape/CrossFactory";
+import { createCross } from "../shape/cross.factory";
 import { SvgBuilder } from "../svg/SvgBuilder";
 import { FieldShape } from "../type";
 

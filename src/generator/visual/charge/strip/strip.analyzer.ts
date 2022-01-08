@@ -1,56 +1,45 @@
-import * as paper from "paper";
-import { ChargeStrip, StripOutline } from "../../model.type";
-import { origin, point } from "../tool/point";
-import {
-  FieldShape,
-  SimpleShape,
-  StripClones,
-  StripComposition,
-  StripItem,
-  StripSingle,
-} from "../type";
-import { RotationDef, StripOutlineData } from "./strip.type";
-import { createSingleStrip, createStripClones } from "./strip.helper";
+import { ChargeStrip, FillerModel, StripOutline } from "../../../model.type";
+import { origin, point } from "../../tool/point";
+import { FieldShape, SimpleShape } from "../../type";
+import { StripData, StripOutlineData } from "../../shape/strip.type";
 import { getOutlineInfo } from "@/service/OutlineService";
+import { StripRotationHelper } from "./StripRotationHelper";
+import { StripCompositionBuilder } from "./StripCompositionBuilder";
+import { StripClones, StripComposition, StripItem, StripSingle } from "./type";
+import { createSingleStrip } from "./stripSingle.factory";
+import { StripClonesBuilder } from "./StripClonesBuilder";
 
-export function createStrips(
+export function convertToStripItem(
   model: ChargeStrip,
   container: FieldShape
 ): StripItem {
   const rotation = computeRotationDef(container, model);
 
-  const containerClone = container.path.clone();
-  containerClone.rotate(-rotation.angle, rotation.center);
-  const bounds = containerClone.bounds;
-
   const stripByGroup = getStripByGroup(model);
 
   if (stripByGroup == 1 && model.count == 1) {
-    return getSingleStripData(model, bounds, rotation, container);
+    return getSingleStripData(model, rotation, container);
   }
   if (stripByGroup == 1) {
-    return getSimpleCloneData(model, bounds, rotation, container);
+    return getSimpleCloneData(model, rotation, container);
   }
 
   //
   // Gemelles & tierces
   //
-  return getGroupCloneData(model, stripByGroup, bounds, rotation, container);
+  return getGroupCloneData(model, stripByGroup, rotation, container);
 }
 
 function computeRotationDef(
   container: FieldShape,
   model: ChargeStrip
-): RotationDef {
-  const center = origin();
+): StripRotationHelper {
   const direction = model.direction;
 
   if (direction == "pal") {
-    const angle = 0;
-    return { angle, center, direction };
+    return new StripRotationHelper(0, direction, container);
   } else if (direction == "fasce") {
-    const angle = 90;
-    return { angle, center, direction };
+    return new StripRotationHelper(90, direction, container);
   }
 
   const bounds = container.path.bounds;
@@ -59,7 +48,7 @@ function computeRotationDef(
   const angleDeg = (angleRad * 180) / Math.PI;
   const angle = direction == "barre" ? 90 - angleDeg : angleDeg - 90;
 
-  return { angle, center, direction };
+  return new StripRotationHelper(angle, direction, container);
 }
 
 function getStripByGroup(model: ChargeStrip): number {
@@ -77,33 +66,32 @@ function getStripByGroup(model: ChargeStrip): number {
 
 function getSingleStripData(
   model: ChargeStrip,
-  bounds: paper.Rectangle,
-  rotation: RotationDef,
+  rotation: StripRotationHelper,
   container: SimpleShape
 ): StripSingle {
+  const bounds = rotation.rotatedBounds;
+
   const minimalStripRatio = minimalGroupRatio(model);
   const stripWidth = bounds.width / minimalStripRatio;
   const xPosition = bounds.x + (bounds.width - stripWidth) / 2;
   const position = point(xPosition, bounds.y);
 
-  const outline = getStripOutlineData(model.outline);
-
-  const strip = {
+  const strip: StripData = {
     filler: model.filler,
-    stripWidth: stripWidth,
-    stripLength: bounds.height,
+    width: stripWidth,
+    length: bounds.height,
     root: container.root,
-    outline,
+    outline: getStripOutlineData(model.outline),
   };
   return createSingleStrip(position, strip, rotation);
 }
 
 function getSimpleCloneData(
   model: ChargeStrip,
-  bounds: paper.Rectangle,
-  rotation: RotationDef,
+  rotation: StripRotationHelper,
   container: SimpleShape
 ): StripClones {
+  const bounds = rotation.rotatedBounds;
   const minimalStripRatio = minimalGroupRatio(model);
   // n part by strip + (n+1) empty part
   const partCount = 2 * model.count + 1;
@@ -111,37 +99,37 @@ function getSimpleCloneData(
 
   const stripWidth = bounds.width / Math.max(minimalStripRatio, partCount);
 
-  // First strip position
-  // bounds.x + emptyfirstPart + 1/2(delta)
-  const x0 = bounds.x + partWidth + (partWidth - stripWidth) / 2;
+  // Create Strip pattern
+  const strip = {
+    length: bounds.height,
+    width: stripWidth,
+    filler: model.filler,
+    outline: getStripOutlineData(model.outline),
+    root: container.root,
+  };
+  const stripPattern = createSingleStrip(origin(), strip, rotation);
 
-  const positions: paper.Point[] = [];
+  const builder = new StripClonesBuilder(stripPattern, rotation);
+
+  // Create clones
+  // - first strip position = bounds.x + emptyfirstPart + 1/2(delta)
+  const x0 = bounds.x + partWidth + (partWidth - stripWidth) / 2;
   for (let i = 0; i < model.count; i++) {
     const xPosition = x0 + 2 * i * partWidth;
-    positions.push(point(xPosition, bounds.y));
+    builder.addClone(point(xPosition, bounds.y));
   }
 
-  const outline = getStripOutlineData(model.outline);
-
-  const clone = {
-    root: container.root,
-    stripLength: bounds.height,
-    stripWidth,
-    filler: model.filler,
-    outline,
-  };
-
-  const clonePattern = createSingleStrip(origin(), clone, rotation);
-  return createStripClones(positions, clonePattern, rotation);
+  return builder.build();
 }
 
 function getGroupCloneData(
   model: ChargeStrip,
   stripByGroup: number,
-  bounds: paper.Rectangle,
-  rotation: RotationDef,
+  rotation: StripRotationHelper,
   container: SimpleShape
-): StripClones {
+): StripItem {
+  const bounds = rotation.rotatedBounds;
+  const outline = getStripOutlineData(model.outline);
   const groupCount = model.count;
 
   const minimalStripRatio = minimalGroupRatio(model);
@@ -150,49 +138,70 @@ function getGroupCloneData(
   const partWidth = bounds.width / partCount;
 
   const groupWidth = bounds.width / Math.max(minimalStripRatio, partCount);
+  const x0 = bounds.x + partWidth + (partWidth - groupWidth) / 2;
+
+  // Return a single group
+  if (groupCount == 1) {
+    return createGroup(
+      x0,
+      groupWidth,
+      stripByGroup,
+      outline,
+      model.filler,
+      rotation,
+      container
+    );
+  }
+
+  // Create stripPattern and clone it
+  const stripPattern = createGroup(
+    0,
+    groupWidth,
+    stripByGroup,
+    outline,
+    model.filler,
+    rotation,
+    container
+  );
+  const builder = new StripClonesBuilder(stripPattern, rotation);
+
+  // Add clone
+  for (let groupIndex = 0; groupIndex < groupCount; groupIndex++) {
+    const xPosition = x0 + 2 * groupIndex * partWidth;
+    builder.addClone(point(xPosition, bounds.y));
+  }
+  return builder.build();
+}
+
+function createGroup(
+  x0: number,
+  groupWidth: number,
+  stripByGroup: number,
+  outline: StripOutlineData,
+  filler: FillerModel,
+  rotation: StripRotationHelper,
+  container: SimpleShape
+): StripComposition {
+  const bounds = rotation.rotatedBounds;
 
   const stripWidth = groupWidth / (2 * stripByGroup - 1);
-  const x0 = bounds.x + (partWidth - groupWidth) / 2;
+  const strip = {
+    width: stripWidth,
+    length: bounds.height,
+    root: container.root,
+    filler,
+    outline,
+  };
 
-  const stripPositions: paper.Point[] = [];
+  const builder = new StripCompositionBuilder();
   for (let stripIndex = 0; stripIndex < stripByGroup; stripIndex++) {
-    const xPosition = stripWidth * 2 * stripIndex;
-    stripPositions.push(point(xPosition, 0));
+    const xPosition = x0 + stripWidth * 2 * stripIndex;
+    const position = point(xPosition, bounds.y);
+    const singleStrip = createSingleStrip(position, strip, rotation);
+    builder.add(singleStrip);
   }
 
-  const groupPositions: paper.Point[] = [];
-  for (let groupIndex = 0; groupIndex < groupCount; groupIndex++) {
-    const xPosition = x0 + (2 * groupIndex + 1) * partWidth;
-    groupPositions.push(point(xPosition, bounds.y));
-  }
-
-  const groupBounds = new paper.Rectangle(0, 0, groupWidth, bounds.height);
-
-  const outline = getStripOutlineData(model.outline);
-
-  const group = {
-    positions: stripPositions,
-    strip: {
-      stripWidth,
-      stripLength: bounds.height,
-      root: container.root,
-      filler: model.filler,
-      outline,
-    },
-  };
-
-  const items: StripItem[] = [];
-  for (const position of group.positions) {
-    const singleStrip = createSingleStrip(position, group.strip, rotation);
-    items.push(singleStrip);
-  }
-  const clonePattern: StripComposition = {
-    type: "stripComposition",
-    stripItems: items,
-    __bounds: groupBounds,
-  };
-
-  return createStripClones(groupPositions, clonePattern, rotation);
+  return builder.build();
 }
 
 function minimalGroupRatio(model: ChargeStrip): number {

@@ -1,6 +1,6 @@
 import { partitionShape } from "./partitionner";
 import { drawCharge } from "./charge/charge-drawer";
-import { createBorder } from "./shape/BorderFactory";
+import { createBorder } from "./shape/border.factory";
 import { SvgBuilder } from "./svg/SvgBuilder";
 import {
   BorderModel,

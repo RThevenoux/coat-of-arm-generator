@@ -1,13 +1,6 @@
-import { Direction, FillerModel } from "@/generator/model.type";
+import { FillerModel } from "@/generator/model.type";
 import { OutlineVisualData } from "@/service/OutlineData";
-import * as paper from "paper";
 import { SimpleShape } from "../type";
-
-export interface RotationDef {
-  angle: number;
-  center: paper.Point;
-  direction: Direction;
-}
 
 export interface StripOutlineData {
   outline1: OutlineVisualData;
@@ -17,8 +10,8 @@ export interface StripOutlineData {
 
 export interface StripData {
   root: SimpleShape;
-  stripWidth: number;
-  stripLength: number;
+  width: number;
+  length: number;
   filler: FillerModel;
   outline: StripOutlineData;
 }

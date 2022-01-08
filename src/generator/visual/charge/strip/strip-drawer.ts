@@ -1,27 +1,22 @@
-import { SvgBuilder } from "../svg/SvgBuilder";
+import { SvgBuilder } from "../../svg/SvgBuilder";
 import { ChargeStrip } from "@/generator/model.type";
 import { XMLElement } from "xmlbuilder";
-import { createStrips } from "../shape/StripsFactory";
+import { convertToStripItem } from "./strip.analyzer";
 import {
   addClipPathAttribute,
   addUse,
   addViewBoxAndDimensions,
-} from "../svg/SvgHelper";
-import {
-  FieldShape,
-  StripClones,
-  StripComposition,
-  StripItem,
-  StripSingle,
-} from "../type";
-import { BoundsBuilder } from "./BoundsBuilder";
+} from "../../svg/SvgHelper";
+import { FieldShape } from "../../type";
+import { BoundsBuilder } from "../BoundsBuilder";
+import { StripClones, StripComposition, StripItem, StripSingle } from "./type";
 
 export async function drawStripCharge(
   builder: SvgBuilder,
   model: ChargeStrip,
   container: FieldShape
 ): Promise<void> {
-  const item = createStrips(model, container);
+  const item = convertToStripItem(model, container);
   const strips = await drawStripItem(builder, item);
   clip(builder, strips.node, container);
 }
@@ -71,17 +66,17 @@ async function drawClones(
 ): Promise<{ node: XMLElement; bounds: paper.Rectangle }> {
   const symbol = builder.addSymbol();
 
-  const strips = await drawStripItem(builder, item.clonePattern, symbol.node);
+  const strips = await drawStripItem(builder, item.pattern, symbol.node);
   addViewBoxAndDimensions(symbol.node, strips.bounds);
 
   const group = builder.createGroup(parent);
   const boundsBuilder = new BoundsBuilder();
 
-  for (const position of item.clonePositions) {
+  for (const bounds of item.cloneBounds) {
     const useNode = addUse(group, symbol.symbolId);
-    useNode.att("x", position.x);
-    useNode.att("y", position.y);
-    boundsBuilder.add(position);
+    useNode.att("x", bounds.x);
+    useNode.att("y", bounds.y);
+    boundsBuilder.add(bounds);
   }
   return { node: group, bounds: boundsBuilder.build() };
 }
