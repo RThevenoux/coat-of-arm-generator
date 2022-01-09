@@ -21,7 +21,7 @@ export class StripRotationHelper {
     return point.rotate(-this.angle, this.center); // Not clear why rotation must be negate...
   }
 
-  public rotatePath(path: paper.Path): void {
+  public rotatePath(path: paper.PathItem): void {
     path.rotate(this.angle, this.center);
   }
 }

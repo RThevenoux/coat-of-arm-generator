@@ -3,7 +3,7 @@ import { origin, point } from "../tool/point";
 import { StripData } from "./strip.type";
 import { createOutline } from "./outline.factory";
 
-export function createHorizontalStripPath(strip: StripData): paper.Path {
+export function createHorizontalStripPath(strip: StripData): paper.PathItem {
   const topPath = createOutline(
     strip.length,
     strip.width,
@@ -37,12 +37,11 @@ export function createHorizontalStripPath(strip: StripData): paper.Path {
     path.bounds.height + 2 * margin
   );
   const clipper = new paper.Path.Rectangle(rectangle);
-  const clipped = path.intersect(clipper) as paper.Path;
 
-  return clipped.reduce({});
+  return path.intersect(clipper);
 }
 
-export function createVerticalStripPath(data: StripData): paper.Path {
+export function createVerticalStripPath(data: StripData): paper.PathItem {
   const path = createHorizontalStripPath(data);
   path.rotate(90, origin());
   path.translate(point(data.width, 0));
