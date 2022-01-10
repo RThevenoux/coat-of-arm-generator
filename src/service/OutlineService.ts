@@ -20,6 +20,15 @@ export function getOutlineInfo(outlineId: OutlineId): OutlineVisualData {
   return visuals[outlineId];
 }
 
+export function getGemelPotentedInfo(): OutlineVisualData {
+  return {
+    type: "pattern",
+    patternData: "M 0,0 h3.5 v-3 h-2 v-1 h5 v1 h-2 v 3 h3.5",
+    scale: 1,
+    reverseShifted: false,
+  };
+}
+
 export function getOutlineOptions(): MyOption[] {
   return options;
 }

@@ -2,7 +2,7 @@ export type OutlineVisualData = OutlinePattern | OutlineStraight;
 
 export interface OutlinePattern {
   type: "pattern";
-  patternData: "string";
+  patternData: string;
   scale: number;
   reverseShifted: boolean;
 }

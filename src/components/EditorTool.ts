@@ -186,7 +186,7 @@ function stripOutlineToModel(model: StripEditorModel): StripOutline {
         outline2: model.outline2,
       };
     case "gemel-potency":
-      return { type: "gemel" };
+      return { type: "gemelPotented" };
     case "straight":
     default:
       return { type: "straight" };

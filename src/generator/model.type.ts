@@ -75,7 +75,7 @@ export type StripOutline =
   | StraightStripOutline
   | SimpleStripOutline
   | DoubleStripOutline
-  | GemelStripOutline;
+  | GemelPotentedStripOutline;
 
 export interface StraightStripOutline {
   type: "straight";
@@ -93,8 +93,8 @@ export interface DoubleStripOutline {
   outline2: OutlineId; // Fasce: Bottom side - Other: Right
 }
 
-export interface GemelStripOutline {
-  type: "gemel";
+export interface GemelPotentedStripOutline {
+  type: "gemelPotented";
 }
 
 export interface ChargeStrip {

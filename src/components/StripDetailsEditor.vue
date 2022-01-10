@@ -49,14 +49,14 @@
     </div>
     <div v-if="value.size === 'gemel'">
       <input
-        :id="uuid + '-gemel-potency'"
+        :id="uuid + '-gemel-potented'"
         type="radio"
         v-model="value.outlineType"
         @change="update"
         value="gemel-potency"
       />
-      <label :for="uuid + '-gemel-potency'"
-        >Gemel potency and counter-potency</label
+      <label :for="uuid + '-gemel-potented'"
+        >Gemel potented and counter-potented</label
       >
     </div>
   </div>
