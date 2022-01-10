@@ -1,4 +1,4 @@
-import { FieldModel } from "../model.type";
+import { FieldModel } from "../../model/field";
 import { VisualConfModel } from "./VisualConfModel";
 import { getEscutcheonPath } from "../../service/EscutcheonService";
 import { SvgBuilder } from "./svg/SvgBuilder";

@@ -1,5 +1,5 @@
 import { SvgBuilder } from "../svg/SvgBuilder";
-import { ChargeModel } from "../../model.type";
+import { ChargeModel } from "../../../model/charge";
 import { FieldShape } from "../type";
 import { drawCrossCharge } from "./cross-drawer";
 import { drawMobileCharge } from "./mobile-drawer";

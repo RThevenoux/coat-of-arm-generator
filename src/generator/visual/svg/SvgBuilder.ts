@@ -1,6 +1,6 @@
 import * as paper from "paper";
 import xmlBuilder, { XMLElement } from "xmlbuilder";
-import { FillerModel } from "../../model.type";
+import { FillerModel } from "../../../model/filler";
 import {
   EscutcheonShape,
   FieldShape,

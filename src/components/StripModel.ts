@@ -1,4 +1,5 @@
-import { Direction, OutlineId, StripSize } from "@/generator/model.type";
+import { OutlineId, StripSize } from "@/model/charge";
+import { Direction } from "@/model/misc";
 import { FillerEditorModel } from "./FillerEditorModel";
 
 export interface StripEditorModel {

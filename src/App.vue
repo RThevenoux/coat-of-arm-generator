@@ -41,7 +41,7 @@ import { initialFieldEditorValue, fieldToModel } from "./components/EditorTool";
 import { generateVisual } from "./generator/visual/VisualGenerator";
 import { generateTextual } from "./generator/textual/TextualGenerator";
 import RootEditor from "./components/RootEditor.vue";
-import { FieldModel } from "./generator/model.type";
+import { FieldModel } from "./model/field";
 import { toVersionOneOne } from "./service/SvgUtil";
 
 @Component({

@@ -1,4 +1,4 @@
-import { ColorId } from "../generator/model.type";
+import { ColorId } from "../model/misc";
 import { ColorOption } from "./ColorOption";
 
 // Data

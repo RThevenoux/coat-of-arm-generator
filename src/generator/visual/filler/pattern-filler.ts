@@ -1,6 +1,6 @@
 import { getPatternVisualInfo } from "@/service/PatternService";
 import { PatternVisualInfo } from "@/service/visual.type";
-import { FillerPattern } from "../../model.type";
+import { FillerPattern } from "../../../model/filler";
 import { SvgBuilder } from "../svg/SvgBuilder";
 import { SimpleShape, MobileChargeShape } from "../type";
 import { createPatternTransfrom, getItem } from "./util";

@@ -1,4 +1,4 @@
-import { Direction } from "@/generator/model.type";
+import { Direction } from "@/model/misc";
 import { origin } from "../../tool/point";
 import { SimpleShape } from "../../type";
 

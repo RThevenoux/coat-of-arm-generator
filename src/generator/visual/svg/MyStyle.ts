@@ -1,4 +1,4 @@
-import { ColorId } from "@/generator/model.type";
+import { ColorId } from "@/model/misc";
 
 export interface MyStyle {
   colorId?: ColorId;

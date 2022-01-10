@@ -1,4 +1,4 @@
-import { FillerSeme } from "@/generator/model.type";
+import { FillerSeme } from "@/model/filler";
 import { getSemeVisualInfo } from "@/service/ChargeService";
 import { SvgBuilder } from "../svg/SvgBuilder";
 import { SimpleShape, MobileChargeShape } from "../type";

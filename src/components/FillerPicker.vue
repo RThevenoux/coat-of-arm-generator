@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { ColorId } from "../generator/model.type";
+import { ColorId } from "../model/misc";
 import { PaletteData } from "../service/visual.type";
 import { FillerEditorModel } from "./FillerEditorModel";
 import {

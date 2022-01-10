@@ -1,5 +1,5 @@
 import { SvgBuilder } from "../../svg/SvgBuilder";
-import { ChargeStrip } from "@/generator/model.type";
+import { ChargeStrip } from "@/model/charge";
 import { XMLElement } from "xmlbuilder";
 import { convertToStripItem } from "./strip.analyzer";
 import {

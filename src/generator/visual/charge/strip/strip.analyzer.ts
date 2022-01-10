@@ -1,4 +1,4 @@
-import { ChargeStrip, FillerModel, StripOutline } from "../../../model.type";
+import { FillerModel } from "@/model/filler";
 import { origin, point } from "../../tool/point";
 import { FieldShape, SimpleShape } from "../../type";
 import { StripData, StripOutlineData } from "../../shape/strip.type";
@@ -8,6 +8,7 @@ import { StripCompositionBuilder } from "./StripCompositionBuilder";
 import { StripClones, StripComposition, StripItem, StripSingle } from "./type";
 import { createSingleStrip } from "./stripSingle.factory";
 import { StripClonesBuilder } from "./StripClonesBuilder";
+import { ChargeStrip, StripOutline } from "@/model/charge";
 
 export function convertToStripItem(
   model: ChargeStrip,

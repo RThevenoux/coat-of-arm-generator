@@ -1,5 +1,5 @@
 import { TransformList } from "@/generator/visual/svg/svg.type";
-import { ColorId } from "../generator/model.type";
+import { ColorId } from "../model/misc";
 
 export type PaletteData = Record<ColorId, string>;
 

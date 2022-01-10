@@ -1,4 +1,5 @@
-import { CrossSize, Direction } from "../generator/model.type";
+import { CrossSize } from "@/model/charge";
+import { Direction } from "@/model/misc";
 import { FillerEditorModel } from "./FillerEditorModel";
 import { StripEditorModel } from "./StripModel";
 

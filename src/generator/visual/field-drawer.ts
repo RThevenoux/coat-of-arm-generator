@@ -2,13 +2,13 @@ import { partitionShape } from "./partitionner";
 import { drawCharge } from "./charge/charge-drawer";
 import { createBorder } from "./shape/border.factory";
 import { SvgBuilder } from "./svg/SvgBuilder";
+import { FieldShape, SimpleShape } from "./type";
 import {
   BorderModel,
   FieldModel,
   MultiFieldModel,
   PlainFieldModel,
-} from "../model.type";
-import { FieldShape, SimpleShape } from "./type";
+} from "@/model/field";
 
 export async function drawField(
   builder: SvgBuilder,

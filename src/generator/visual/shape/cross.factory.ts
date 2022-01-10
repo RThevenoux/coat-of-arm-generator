@@ -1,4 +1,4 @@
-import { ChargeCross, CrossSize } from "@/generator/model.type";
+import { ChargeCross, CrossSize } from "@/model/charge";
 import * as paper from "paper";
 import { point } from "../tool/point";
 import { CrossShape, FieldShape, OtherShape, SimpleShape } from "../type";

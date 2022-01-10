@@ -1,4 +1,4 @@
-import { FillerModel } from "@/generator/model.type";
+import { FillerModel } from "@/model/filler";
 import { OutlineVisualData } from "@/service/OutlineData";
 import { SimpleShape } from "../type";
 

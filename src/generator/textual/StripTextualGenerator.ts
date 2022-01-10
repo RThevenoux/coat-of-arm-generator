@@ -1,4 +1,4 @@
-import { ChargeStrip } from "../model.type";
+import { ChargeStrip } from "../../model/charge";
 
 export function stripToLabel(strip: ChargeStrip): string {
   switch (strip.direction) {

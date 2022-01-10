@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { OutlineId } from "../generator/model.type";
+import { OutlineId } from "../model/charge";
 import { getOutlineOptions } from "../service/OutlineService";
 
 @Component

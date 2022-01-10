@@ -1,4 +1,4 @@
-import { FillerModel } from "@/generator/model.type";
+import { FillerModel } from "@/model/filler";
 import { StripShape } from "../../type";
 
 export type StripItem = StripSingle | StripComposition | StripClones;

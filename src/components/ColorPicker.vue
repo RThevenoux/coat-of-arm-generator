@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { getColorOptions } from "../service/ColorService";
-import { ColorId } from "../generator/model.type";
+import { ColorId } from "../model/misc";
 
 @Component
 export default class ColorPicker extends Vue {

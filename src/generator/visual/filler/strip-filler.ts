@@ -1,5 +1,5 @@
 import * as paper from "paper";
-import { FillerStrip } from "@/generator/model.type";
+import { FillerStrip } from "@/model/filler";
 import { SimpleShape, MobileChargeShape } from "../type";
 import { SvgBuilder } from "../svg/SvgBuilder";
 import { createPatternTransfrom, getItem } from "./util";

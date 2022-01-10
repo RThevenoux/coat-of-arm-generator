@@ -1,4 +1,4 @@
-import { Direction, ColorId } from "../generator/model.type";
+import { Direction, ColorId } from "../model/misc";
 
 export interface FillerEditorModel {
   type: "none" | "plein" | "seme" | "pattern" | "strip";

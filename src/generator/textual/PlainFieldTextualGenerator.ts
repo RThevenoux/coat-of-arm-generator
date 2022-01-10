@@ -1,4 +1,5 @@
-import { BorderModel, ChargeModel, PlainFieldModel } from "../model.type";
+import { ChargeModel } from "@/model/charge";
+import { BorderModel, PlainFieldModel } from "@/model/field";
 import { getCountableChargeLabel } from "./ChargeTextualGenerator";
 import { crossToLabel } from "./CrossTextualGenerator";
 import { fillerToLabel } from "./FillerTextualGenerator";

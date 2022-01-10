@@ -4,11 +4,11 @@ import {
   FillerPlein,
   FillerSeme,
   FillerStrip,
-  Direction,
-} from "../model.type";
+} from "../../model/filler";
 import { getSemeLabelInfo } from "./ChargeTextualGenerator";
 import { getColorText } from "../../service/ColorService";
 import { getPatternTextualInfo } from "../../service/PatternService";
+import { Direction } from "@/model/misc";
 
 export async function fillerToLabel(model: FillerModel): Promise<string> {
   if (!model) {

@@ -1,5 +1,5 @@
 import { PaletteData } from "@/service/visual.type";
-import { ColorId } from "../model.type";
+import { ColorId } from "../../model/misc";
 
 export class Palette {
   constructor(readonly data: PaletteData) {}

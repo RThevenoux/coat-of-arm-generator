@@ -1,8 +1,9 @@
 import paper from "paper";
 import { SvgBuilder } from "../svg/SvgBuilder";
 import { ChargeVisualInfo } from "@/service/visual.type";
-import { getChargeVisualInfo } from "../../../service/ChargeService";
-import { ChargeSymbol, FillerModel } from "../../model.type";
+import { getChargeVisualInfo } from "@/service/ChargeService";
+import { FillerModel } from "@/model/filler";
+import { ChargeSymbol } from "@/model/charge";
 import { getIncircle } from "../tool/path-tool";
 import { point } from "../tool/point";
 import { FieldShape } from "../type";

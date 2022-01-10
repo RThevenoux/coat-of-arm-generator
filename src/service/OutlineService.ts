@@ -1,4 +1,4 @@
-import { OutlineId } from "@/generator/model.type";
+import { OutlineId } from "@/model/charge";
 import { MyOption } from "./MyOptions.type";
 import { OutlineVisualData } from "./OutlineData";
 

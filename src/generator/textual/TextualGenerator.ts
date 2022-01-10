@@ -1,6 +1,6 @@
 import { getPartitionTextual } from "@/service/PartitionService";
-import { FieldModel, MultiFieldModel } from "../model.type";
-import { plainFieldToLabel } from "./PleinFieldTextualGenerator";
+import { FieldModel, MultiFieldModel } from "../../model/field";
+import { plainFieldToLabel } from "./PlainFieldTextualGenerator";
 
 export async function generateTextual(model: FieldModel): Promise<string> {
   const label = await fieldToLabel(model);

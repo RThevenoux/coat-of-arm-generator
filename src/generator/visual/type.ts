@@ -1,4 +1,4 @@
-import { Direction } from "../model.type";
+import { Direction } from "../../model/misc";
 
 export interface MobileChargeShape {
   type: "mobileCharge";

@@ -1,11 +1,6 @@
-import {
-  ChargeModel,
-  FieldModel,
-  FillerModel,
-  FillerPattern,
-  PlainFieldModel,
-  StripOutline,
-} from "@/generator/model.type";
+import { ChargeModel, StripOutline } from "@/model/charge";
+import { FieldModel, PlainFieldModel } from "@/model/field";
+import { FillerModel, FillerPattern } from "@/model/filler";
 import { getDefaultChargeId } from "@/service/ChargeService";
 import { FieldEditorModel, PlainFieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
