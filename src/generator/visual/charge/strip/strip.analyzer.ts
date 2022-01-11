@@ -1,8 +1,15 @@
 import { FillerModel } from "@/model/filler";
 import { origin, point } from "../../tool/point";
 import { FieldShape, SimpleShape } from "../../type";
-import { StripData, StripOutlineData } from "../../shape/strip.type";
-import { getGemelPotentedInfo, getOutlineInfo } from "@/service/OutlineService";
+import {
+  StripData,
+  StripOutlineData,
+  StripSideOutlineData,
+} from "../../shape/strip.type";
+import {
+  getGemelPotentedVisualInfo,
+  getOutlineVisualInfo,
+} from "@/service/OutlineService";
 import { StripRotationHelper } from "./StripRotationHelper";
 import { StripCompositionBuilder } from "./StripCompositionBuilder";
 import { StripClones, StripComposition, StripItem, StripSingle } from "./type";
@@ -265,8 +272,8 @@ function createGemelPotentedGroup(
   const stripWidth = groupWidth / 7;
 
   const outlineA: StripOutlineData = {
-    outline1: getGemelPotentedInfo(),
-    outline2: getOutlineInfo("straight"),
+    outline1: getGemelPotentedVisualInfo(),
+    outline2: straightOutline(),
     outline2Shifted: false,
   };
   const stripAData: StripData = {
@@ -281,8 +288,8 @@ function createGemelPotentedGroup(
   builder.add(stripA);
 
   const outlineB: StripOutlineData = {
-    outline1: getOutlineInfo("straight"),
-    outline2: getGemelPotentedInfo(),
+    outline1: straightOutline(),
+    outline2: getGemelPotentedVisualInfo(),
     outline2Shifted: true,
   };
   const stripBData: StripData = {
@@ -315,13 +322,11 @@ function minimalGroupRatio(model: ChargeStrip): number {
 function getStripOutlineData(model: StripOutline): StripOutlineData {
   switch (model.type) {
     case "simple": {
-      const info = getOutlineInfo(model.outline);
-      const defaultReversed =
-        info.type == "pattern" ? info.reverseShifted : false;
-      const outline2Shifted = model.shifted != defaultReversed; // XOR
+      const info = getOutlineVisualInfo(model.outline);
+      const outline2Shifted = model.shifted != info.reverseShifted; // XOR
       // shifted => true if :
-      // - model.shifted=true  && defaultReversed=false
-      // - model.shifted=false && defaultReversed=true
+      // - model.shifted=true  && info.reverseShifted=false
+      // - model.shifted=false && info.reverseShifted=true
 
       return {
         outline1: info,
@@ -331,16 +336,24 @@ function getStripOutlineData(model: StripOutline): StripOutlineData {
     }
     case "double":
       return {
-        outline1: getOutlineInfo(model.outline1),
-        outline2: getOutlineInfo(model.outline2),
+        outline1: model.outline1
+          ? getOutlineVisualInfo(model.outline1)
+          : straightOutline(),
+        outline2: model.outline2
+          ? getOutlineVisualInfo(model.outline2)
+          : straightOutline(),
         outline2Shifted: false,
       };
     case "straight":
     default:
       return {
-        outline1: { type: "straight" },
-        outline2: { type: "straight" },
+        outline1: straightOutline(),
+        outline2: straightOutline(),
         outline2Shifted: false,
       };
   }
+}
+
+function straightOutline(): StripSideOutlineData {
+  return "straight";
 }

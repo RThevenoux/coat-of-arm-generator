@@ -1,6 +1,46 @@
-import { ChargeStrip } from "../../model/charge";
+import { getStripTextualInfo } from "@/service/ChargeService";
+import { getOutlineTextualInfo } from "@/service/OutlineService";
+import { ChargeStrip, SimpleStripOutline } from "../../model/charge";
+import { countableChargeToLabel } from "./util";
 
-export function stripToLabel(strip: ChargeStrip): string {
+export async function stripToLabel(strip: ChargeStrip): Promise<string> {
+  const textId = getTextId(strip);
+
+  const textInfo = await getStripTextualInfo(textId);
+
+  const forcePlural = strip.size == "gemel" || strip.size == "triplet";
+  const options = {
+    contractedPrepositionIfPlural: true,
+    forcePlural,
+  };
+  const main = countableChargeToLabel(textInfo, strip.count, options);
+
+  if (strip.outline) {
+    switch (strip.outline.type) {
+      case "simple": {
+        const masculine = textInfo.genre == "m";
+        const plural = strip.count > 1 || forcePlural;
+        return `${main} ${getSimpleOutlineLabel(
+          strip.outline,
+          strip,
+          masculine,
+          plural
+        )}`;
+      }
+      case "double":
+        return `${main} [double-outline]`;
+      case "gemelPotented":
+        return `${main} potencées et contre-potencées`;
+      case "straight":
+      default:
+        return main;
+    }
+  } else {
+    return main;
+  }
+}
+
+function getTextId(strip: ChargeStrip): string {
   switch (strip.direction) {
     case "fasce":
       return _fasce(strip);
@@ -17,165 +57,87 @@ export function stripToLabel(strip: ChargeStrip): string {
 
 function _fasce(strip: ChargeStrip): string {
   switch (strip.size) {
-    case "gemel": {
-      if (strip.count == 1) {
-        return "aux jumelles";
-      } else {
-        return `aux ${strip.count} jumelles`;
-      }
-    }
-    case "triplet": {
-      if (strip.count == 1) {
-        return "aux tierces";
-      } else {
-        return `aux ${strip.count} tierces`;
-      }
-    }
+    case "gemel":
+      return "jumelle";
+    case "triplet":
+      return "tierce";
     case "default": {
-      if (strip.count == 1) {
-        return "à la fasce";
-      } else if (strip.count < 5) {
-        return `aux ${strip.count} fasces`;
-      } else if (strip.count % 2 == 0) {
-        return `aux ${strip.count} burelles`;
+      if (strip.count < 5) {
+        return "fasce";
       } else {
-        return `aux ${strip.count} trangles`;
+        return strip.count % 2 == 0 ? "burelle" : "trangle";
       }
     }
     case "reduced":
       if (strip.count == 1) {
-        return "à la divise";
-      } else if (strip.count % 2 == 0) {
-        return `aux ${strip.count} burelles`;
+        return "divise";
       } else {
-        return `aux ${strip.count} trangles`;
+        return strip.count % 2 == 0 ? "burelle" : "trangle";
       }
-    case "minimal": {
-      if (strip.count == 1) {
-        return "au filet";
-      } else {
-        return `aux ${strip.count} filets`;
-      }
-    }
+    case "minimal":
+      return "filet";
   }
 }
 
 function _barre(strip: ChargeStrip): string {
   switch (strip.size) {
-    case "gemel": {
-      if (strip.count == 1) {
-        return "aux jumelles en barre";
-      } else {
-        return `aux ${strip.count} jumelles en barre`;
-      }
-    }
-    case "triplet": {
-      if (strip.count == 1) {
-        return "aux tierces en barre";
-      } else {
-        return `aux ${strip.count} tierces en barre`;
-      }
-    }
+    case "gemel":
+      return "jumelle_barre";
+    case "triplet":
+      return "tierce_barre";
     case "default":
-      if (strip.count == 1) {
-        return "à la barre";
-      } else if (strip.count < 5) {
-        return `aux ${strip.count} barres`;
-      } else {
-        return `aux ${strip.count} traverses`;
-      }
+      return strip.count < 5 ? "barre" : "traverse";
     case "reduced":
-      if (strip.count == 1) {
-        return "à la traverse";
-      } else {
-        return `aux ${strip.count} traverses`;
-      }
-    case "minimal": {
-      if (strip.count == 1) {
-        return "au filet en barre";
-      } else {
-        return `aux ${strip.count} filets en barre`;
-      }
-    }
+      return "traverse";
+    case "minimal":
+      return "filet_barre";
   }
 }
 
 function _pal(strip: ChargeStrip): string {
   switch (strip.size) {
-    case "gemel": {
-      if (strip.count == 1) {
-        return "aux jumelles en pal";
-      } else {
-        return `aux ${strip.count} jumelles en pal`;
-      }
-    }
-    case "triplet": {
-      if (strip.count == 1) {
-        return "aux tierces en pal";
-      } else {
-        return `aux ${strip.count} tierces en pal`;
-      }
-    }
+    case "gemel":
+      return "jumelle_pal";
+    case "triplet":
+      return "tierce_pal";
     case "default":
-      if (strip.count == 1) {
-        return "au pal";
-      } else if (strip.count < 5) {
-        return `aux ${strip.count} pals`;
-      } else {
-        return `aux ${strip.count} vergettes`;
-      }
+      return strip.count < 5 ? "pal" : "vergette";
     case "reduced":
-      if (strip.count == 1) {
-        return "à la vergette";
-      } else {
-        return `aux ${strip.count} vergettes`;
-      }
-    case "minimal": {
-      if (strip.count == 1) {
-        return "au filet en pal";
-      } else {
-        return `aux ${strip.count} filets en pal`;
-      }
-    }
+      return "vergette";
+    case "minimal":
+      return "filet_pal";
   }
 }
 
 function _bande(strip: ChargeStrip): string {
   switch (strip.size) {
-    case "gemel": {
-      if (strip.count == 1) {
-        return "aux jumelles en bande";
-      } else {
-        return `aux ${strip.count} jumelles en bande`;
-      }
-    }
-    case "triplet": {
-      if (strip.count == 1) {
-        return "aux tierces en bande";
-      } else {
-        return `aux ${strip.count} tierces en bande`;
-      }
-    }
+    case "gemel":
+      return "jumelle_bande";
+    case "triplet":
+      return "tierce_bande";
     case "default":
-      if (strip.count == 1) {
-        return "à la bande";
-      } else if (strip.count < 5) {
-        return `aux ${strip.count} bandes`;
-      } else {
-        return `aux ${strip.count} cotices`;
-      }
+      return strip.count < 5 ? "bande" : "cotice";
     case "reduced":
-      if (strip.count == 1) {
-        return "à la cotice";
-      } else {
-        return `aux ${strip.count} cotices`;
-      }
-    case "minimal": {
-      if (strip.count == 1) {
-        return "au bâton";
-      } else {
-        return `aux ${strip.count} bâtons`;
-      }
-    }
+      return "cotice";
+    case "minimal":
+      return "baton";
   }
+}
+
+function getSimpleOutlineLabel(
+  outline: SimpleStripOutline,
+  model: ChargeStrip,
+  masculine: boolean,
+  plural: boolean
+): string {
+  const labels = getOutlineTextualInfo(outline.outline);
+
+  if (!labels) {
+    console.warn("Invalid outlineId: " + outline.outline);
+    return "[?]";
+  }
+
+  return labels[masculine ? "masculine" : "feminine"][
+    plural ? "plural" : "one"
+  ];
 }

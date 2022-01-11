@@ -1,0 +1,191 @@
+[
+  {
+    "id": "jumelle",
+    "blazon": {
+      "one": "jumelle",
+      "plural": "jumelles",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "tierce",
+    "blazon": {
+      "one": "tierce",
+      "plural": "tierces",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "fasce",
+    "blazon": {
+      "one": "fasce",
+      "plural": "fasces",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "trangle",
+    "blazon": {
+      "one": "trangle",
+      "plural": "trangles",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "burelle",
+    "blazon": {
+      "one": "burelle",
+      "plural": "burelles",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "filet",
+    "blazon": {
+      "one": "filet",
+      "plural": "filets",
+      "genre": "m",
+      "elision": false
+    }
+  },
+  {
+    "id": "jumelle_barre",
+    "blazon": {
+      "one": "jumelle en barre",
+      "plural": "jumelles en barre",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "tierce_barre",
+    "blazon": {
+      "one": "tierce en barre",
+      "plural": "tierces en barre",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "barre",
+    "blazon": {
+      "one": "barre",
+      "plural": "barres",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "traverse",
+    "blazon": {
+      "one": "traverse",
+      "plural": "traverses",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "filet_barre",
+    "blazon": {
+      "one": "filet en barre",
+      "plural": "filets en barre",
+      "genre": "m",
+      "elision": false
+    }
+  },
+  {
+    "id": "jumelle_pal",
+    "blazon": {
+      "one": "jumelle en pal",
+      "plural": "jumelles en pal",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "tierce_pal",
+    "blazon": {
+      "one": "tierce en pal",
+      "plural": "tierces en pal",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "pal",
+    "blazon": {
+      "one": "pal",
+      "plural": "pals",
+      "genre": "m",
+      "elision": false
+    }
+  },
+  {
+    "id": "vergette",
+    "blazon": {
+      "one": "vergette",
+      "plural": "vergettes",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "filet_pal",
+    "blazon": {
+      "one": "filet en pal",
+      "plural": "filets en pal",
+      "genre": "m",
+      "elision": false
+    }
+  },
+  {
+    "id": "bande",
+    "blazon": {
+      "one": "bande",
+      "plural": "bandes",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "jumelle_bande",
+    "blazon": {
+      "one": "jumelle en bande",
+      "plural": "jumelles en bande",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "tierce_bande",
+    "blazon": {
+      "one": "tierce en bande",
+      "plural": "tierces en bande",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "cotice",
+    "blazon": {
+      "one": "cotice",
+      "plural": "cotices",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
+    "id": "baton",
+    "blazon": {
+      "one": "bâton",
+      "plural": "bâtons",
+      "genre": "m",
+      "elision": false
+    }
+  }
+]

@@ -1,6 +1,6 @@
 import { OutlineVisualData } from "@/service/OutlineData";
 import * as paper from "paper";
-import { origin, point } from "../tool/point";
+import { point } from "../tool/point";
 
 export function createOutline(
   length: number,
@@ -8,23 +8,10 @@ export function createOutline(
   outlineInfo: OutlineVisualData,
   shifted: boolean
 ): paper.Path {
-  if (!outlineInfo) {
-    return line(length);
-  }
+  const pattern = new paper.Path(outlineInfo.patternData);
+  pattern.scale(unitSize * outlineInfo.scale, point(0, 0));
 
-  if (outlineInfo.type == "pattern") {
-    const pattern = new paper.Path(outlineInfo.patternData);
-    pattern.scale(unitSize * outlineInfo.scale, point(0, 0));
-
-    return repeatPattern(pattern, length, shifted);
-  } else {
-    // undefined or straight
-    return line(length);
-  }
-}
-
-function line(length: number): paper.Path {
-  return new paper.Path.Line(origin(), point(length, 0));
+  return repeatPattern(pattern, length, shifted);
 }
 
 function repeatPattern(

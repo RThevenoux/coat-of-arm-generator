@@ -1,12 +1,16 @@
-export type OutlineVisualData = OutlinePattern | OutlineStraight;
-
-export interface OutlinePattern {
-  type: "pattern";
+export interface OutlineVisualData {
   patternData: string;
   scale: number;
   reverseShifted: boolean;
 }
 
-export interface OutlineStraight {
-  type: "straight";
+export interface OutlineTextualData {
+  masculine: {
+    one: string;
+    plural: string;
+  };
+  feminine: {
+    one: string;
+    plural: string;
+  };
 }

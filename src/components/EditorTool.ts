@@ -2,8 +2,10 @@ import { ChargeModel, StripOutline } from "@/model/charge";
 import { FieldModel, PlainFieldModel } from "@/model/field";
 import { FillerModel, FillerPattern } from "@/model/filler";
 import { getDefaultChargeId } from "@/service/ChargeService";
+import { getDefaultOutlineId } from "@/service/OutlineService";
 import { FieldEditorModel, PlainFieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
+import { STRAIGHT_OPTION_ID } from "./OutlineTool";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 import { StripEditorModel } from "./StripModel";
 
@@ -24,8 +26,9 @@ export async function initialChargeModel(): Promise<SingleChargePickerModel> {
       size: "default",
       filler: await initialFiller(),
       outlineType: "straight",
-      outline1: "straight",
-      outline2: "straight",
+      simpleOutline: getDefaultOutlineId(),
+      doubleOutline1: STRAIGHT_OPTION_ID,
+      doubleOutline2: STRAIGHT_OPTION_ID,
       shifted: false,
     },
     cross: {
@@ -171,16 +174,22 @@ function stripOutlineToModel(model: StripEditorModel): StripOutline {
     case "simple":
       return {
         type: "simple",
-        outline: model.outline1,
+        outline: model.simpleOutline,
         shifted: model.shifted,
       };
     case "double":
       return {
         type: "double",
-        outline1: model.outline1,
-        outline2: model.outline2,
+        outline1:
+          model.doubleOutline1 != STRAIGHT_OPTION_ID
+            ? model.doubleOutline1
+            : undefined,
+        outline2:
+          model.doubleOutline2 != STRAIGHT_OPTION_ID
+            ? model.doubleOutline2
+            : undefined,
       };
-    case "gemel-potency":
+    case "gemel-potented":
       return { type: "gemelPotented" };
     case "straight":
     default:

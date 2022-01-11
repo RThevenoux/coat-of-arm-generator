@@ -20,7 +20,11 @@
       />
       <label :for="uuid + '-simple'">Single outline</label>
       <template v-if="value.outlineType === 'simple'">
-        <OutlinePicker v-model="value.outline1" @input="update" key="outline1">
+        <OutlinePicker
+          v-model="value.simpleOutline"
+          @input="update"
+          key="simpleOutline"
+        >
         </OutlinePicker>
         <input
           :id="uuid + '-shift-checkbox'"
@@ -41,9 +45,19 @@
       />
       <label :for="uuid + '-double'">Double outline</label>
       <template v-if="value.outlineType === 'double'">
-        <OutlinePicker v-model="value.outline1" @input="update" key="outline1">
+        <OutlinePicker
+          v-model="value.doubleOutline1"
+          @input="update"
+          key="outline1"
+          :addStraightOption="true"
+        >
         </OutlinePicker>
-        <OutlinePicker v-model="value.outline2" @input="update" key="outline2">
+        <OutlinePicker
+          v-model="value.doubleOutline2"
+          @input="update"
+          key="outline2"
+          :addStraightOption="true"
+        >
         </OutlinePicker>
       </template>
     </div>
@@ -53,7 +67,7 @@
         type="radio"
         v-model="value.outlineType"
         @change="update"
-        value="gemel-potency"
+        value="gemel-potented"
       />
       <label :for="uuid + '-gemel-potented'"
         >Gemel potented and counter-potented</label

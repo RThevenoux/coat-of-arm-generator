@@ -44,7 +44,7 @@ export default class StripDetailsEditor extends Vue {
 
   update(): void {
     if (
-      this.value.outlineType == "gemel-potency" &&
+      this.value.outlineType == "gemel-potented" &&
       this.value.size !== "gemel"
     ) {
       this.value.outlineType = "straight";

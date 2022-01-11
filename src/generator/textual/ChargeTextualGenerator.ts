@@ -1,5 +1,6 @@
 import { ChargeTextualInfo, LabelInfo } from "../../service/textual.type";
 import { getChargeTextualInfo } from "../../service/ChargeService";
+import { countableChargeToLabel } from "./util";
 
 export { getCountableChargeLabel, getSemeLabelInfo };
 
@@ -8,20 +9,7 @@ async function getCountableChargeLabel(
   count: number
 ): Promise<string> {
   const chargeDef = await getChargeTextualInfo(chargeId);
-
-  if (count > 1) {
-    return `à ${count} ${chargeDef.plural}`;
-  }
-
-  if (chargeDef.elision) {
-    return `à l'${chargeDef.one}`;
-  }
-
-  if (chargeDef.genre == "m") {
-    return `au ${chargeDef.one}`;
-  }
-
-  return `à la ${chargeDef.one}`;
+  return countableChargeToLabel(chargeDef, count);
 }
 
 async function getSemeLabelInfo(chargeId: string): Promise<LabelInfo> {

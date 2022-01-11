@@ -7,8 +7,9 @@ export interface StripEditorModel {
   count: number;
   size: StripSize;
   filler: FillerEditorModel;
-  outlineType: "straight" | "simple" | "double" | "gemel-potency";
-  outline1: OutlineId;
-  outline2: OutlineId;
+  outlineType: "straight" | "simple" | "double" | "gemel-potented";
+  simpleOutline: OutlineId;
+  doubleOutline1: OutlineId;
+  doubleOutline2: OutlineId;
   shifted: boolean;
 }

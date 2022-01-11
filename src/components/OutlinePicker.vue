@@ -9,13 +9,24 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { OutlineId } from "../model/charge";
+import { MyOption } from "../service/MyOptions.type";
 import { getOutlineOptions } from "../service/OutlineService";
+import { getStraightOption } from "./OutlineTool";
 
 @Component
 export default class OutlinePicker extends Vue {
   @Prop() value!: OutlineId;
+  @Prop() addStraightOption?: boolean;
 
-  private options = getOutlineOptions();
+  private options: MyOption[] = [];
+
+  mounted(): void {
+    if (this.addStraightOption) {
+      this.options = [getStraightOption(), ...getOutlineOptions()];
+    } else {
+      this.options = getOutlineOptions();
+    }
+  }
 }
 </script>
 

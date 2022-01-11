@@ -25,8 +25,8 @@ export interface SimpleStripOutline {
 
 export interface DoubleStripOutline {
   type: "double";
-  outline1: OutlineId; // Fasce: Top side - Other: Left
-  outline2: OutlineId; // Fasce: Bottom side - Other: Right
+  outline1?: OutlineId; // Fasce: Top side - Other: Left
+  outline2?: OutlineId; // Fasce: Bottom side - Other: Right
 }
 
 export interface GemelPotentedStripOutline {

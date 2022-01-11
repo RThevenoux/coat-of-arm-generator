@@ -21,10 +21,13 @@ export interface PartitionTextualInfo {
   slotCount: number;
 }
 
-export interface ChargeTextualInfo {
+export interface ChargeTextualInfo extends TextualInfo {
+  seme?: LabelInfo;
+}
+
+export interface TextualInfo {
   one: string;
   plural: string;
-  genre: string;
+  genre: "m" | "f";
   elision: boolean;
-  seme?: LabelInfo;
 }

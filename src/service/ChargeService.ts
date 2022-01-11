@@ -1,22 +1,25 @@
 import { MyOption } from "./MyOptions.type";
 import { ChargeData, SemeData, ChargeVisualData } from "./ChargeData";
-import { ChargeTextualInfo } from "@/service/textual.type";
+import { ChargeTextualInfo, TextualInfo } from "@/service/textual.type";
 import { ChargeVisualInfo, SemeVisualInfo } from "./visual.type";
 
 // Load Data
-import data from "./data/charges.json";
 import defaultValues from "./data/charge-default.json";
+import mobileChargeData from "./data/charges.json";
+import stripBlazonData from "./data/strip-blazon.json";
 
 interface ChargeRepo {
-  visual: Record<string, ChargeVisualInfo>;
-  semeVisual: Record<string, SemeVisualInfo>;
-  blazon: Record<string, ChargeTextualInfo>;
-  options: MyOption[];
   defaultChargeId: string;
+  mobileVisuals: Record<string, ChargeVisualInfo>;
+  mobileBlazons: Record<string, ChargeTextualInfo>;
+  options: MyOption[];
+  semeVisuals: Record<string, SemeVisualInfo>;
+  stripBlazons: Record<string, TextualInfo>;
 }
 
 let repo: ChargeRepo | null = null;
-const defaultTextual: ChargeTextualInfo = defaultValues.textual;
+const defaultTextual: ChargeTextualInfo =
+  defaultValues.textual as ChargeTextualInfo;
 const defaultVisual: ChargeVisualInfo = defaultValues.visual;
 const defaultSeme = computeSemeInfo(defaultVisual, defaultValues.seme);
 
@@ -28,19 +31,20 @@ async function getRepo(): Promise<ChargeRepo> {
 }
 
 async function loadData(): Promise<ChargeRepo> {
-  const visual: Record<string, ChargeVisualInfo> = {};
-  const semeVisual: Record<string, SemeVisualInfo> = {};
-  const blazon: Record<string, ChargeTextualInfo> = {};
+  const mobileBlazons: Record<string, ChargeTextualInfo> = {};
+  const mobileVisuals: Record<string, ChargeVisualInfo> = {};
   const options: MyOption[] = [];
+  const semeVisuals: Record<string, SemeVisualInfo> = {};
+  const stripBlazons: Record<string, TextualInfo> = {};
   let defaultChargeId: string | null = null;
 
-  for (const item of data) {
+  for (const item of mobileChargeData) {
     const chargeData = item as ChargeData;
     const visualData = chargeData.visual;
 
     const visualInfo = await buildVisualInfo(chargeData.id, visualData);
-    visual[chargeData.id] = visualInfo;
-    semeVisual[chargeData.id] = computeSemeInfo(visualInfo, visualData.seme);
+    mobileVisuals[chargeData.id] = visualInfo;
+    semeVisuals[chargeData.id] = computeSemeInfo(visualInfo, visualData.seme);
 
     options.push(buildOption(chargeData));
 
@@ -48,19 +52,24 @@ async function loadData(): Promise<ChargeRepo> {
       defaultChargeId = chargeData.id;
     }
 
-    blazon[chargeData.id] = chargeData.blazon;
+    mobileBlazons[chargeData.id] = chargeData.blazon;
   }
 
   if (defaultChargeId == null) {
     throw new Error("No default charge found");
   }
 
+  for (const blazon of stripBlazonData) {
+    stripBlazons[blazon.id] = blazon.blazon as TextualInfo;
+  }
+
   return {
-    visual,
-    semeVisual,
-    blazon,
-    options,
     defaultChargeId,
+    mobileVisuals,
+    mobileBlazons,
+    options,
+    semeVisuals,
+    stripBlazons,
   };
 }
 
@@ -116,10 +125,22 @@ export async function getChargeTextualInfo(
   chargeId: string
 ): Promise<ChargeTextualInfo> {
   const repo = await getRepo();
-  const info = repo.blazon[chargeId];
+  const info = repo.mobileBlazons[chargeId];
 
   if (!info) {
     console.log("Invalid chargeId:" + chargeId);
+    return defaultTextual;
+  }
+
+  return info;
+}
+
+export async function getStripTextualInfo(id: string): Promise<TextualInfo> {
+  const repo = await getRepo();
+  const info = repo.stripBlazons[id];
+
+  if (!info) {
+    console.log("Invalid id:" + id);
     return defaultTextual;
   }
 
@@ -130,7 +151,7 @@ export async function getChargeVisualInfo(
   chargeId: string
 ): Promise<ChargeVisualInfo> {
   const repo = await getRepo();
-  const info = repo.visual[chargeId];
+  const info = repo.mobileVisuals[chargeId];
   if (!info) {
     return defaultVisual;
   }
@@ -141,7 +162,7 @@ export async function getSemeVisualInfo(
   chargeId: string
 ): Promise<SemeVisualInfo> {
   const repo = await getRepo();
-  const info = repo.semeVisual[chargeId];
+  const info = repo.semeVisuals[chargeId];
   if (!info) {
     return defaultSeme;
   }
