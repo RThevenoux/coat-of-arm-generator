@@ -178,6 +178,17 @@ function stripOutlineToModel(model: StripEditorModel): StripOutline {
         shifted: model.shifted,
       };
     case "double":
+      if (model.doubleOutline1 == model.doubleOutline2) {
+        if (model.doubleOutline1 == STRAIGHT_OPTION_ID) {
+          return { type: "straight" };
+        } else {
+          return {
+            type: "simple",
+            outline: model.doubleOutline1,
+            shifted: false,
+          };
+        }
+      }
       return {
         type: "double",
         outline1:
