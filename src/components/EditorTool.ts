@@ -174,7 +174,7 @@ function stripOutlineToModel(model: StripEditorModel): StripOutline {
     case "simple":
       return {
         type: "simple",
-        outline: model.simpleOutline,
+        outlineId: model.simpleOutline,
         shifted: model.shifted,
       };
     case "double":
@@ -184,18 +184,18 @@ function stripOutlineToModel(model: StripEditorModel): StripOutline {
         } else {
           return {
             type: "simple",
-            outline: model.doubleOutline1,
+            outlineId: model.doubleOutline1,
             shifted: false,
           };
         }
       }
       return {
         type: "double",
-        outline1:
+        outlineId1:
           model.doubleOutline1 != STRAIGHT_OPTION_ID
             ? model.doubleOutline1
             : undefined,
-        outline2:
+        outlineId2:
           model.doubleOutline2 != STRAIGHT_OPTION_ID
             ? model.doubleOutline2
             : undefined,

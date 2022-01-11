@@ -322,7 +322,7 @@ function minimalGroupRatio(model: ChargeStrip): number {
 function getStripOutlineData(model: StripOutline): StripOutlineData {
   switch (model.type) {
     case "simple": {
-      const info = getOutlineVisualInfo(model.outline);
+      const info = getOutlineVisualInfo(model.outlineId);
       const outline2Shifted = model.shifted != info.reverseShifted; // XOR
       // shifted => true if :
       // - model.shifted=true  && info.reverseShifted=false
@@ -336,11 +336,11 @@ function getStripOutlineData(model: StripOutline): StripOutlineData {
     }
     case "double":
       return {
-        outline1: model.outline1
-          ? getOutlineVisualInfo(model.outline1)
+        outline1: model.outlineId1
+          ? getOutlineVisualInfo(model.outlineId1)
           : straightOutline(),
-        outline2: model.outline2
-          ? getOutlineVisualInfo(model.outline2)
+        outline2: model.outlineId2
+          ? getOutlineVisualInfo(model.outlineId2)
           : straightOutline(),
         outline2Shifted: false,
       };

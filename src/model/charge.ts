@@ -19,14 +19,14 @@ export interface StraightStripOutline {
 
 export interface SimpleStripOutline {
   type: "simple";
-  outline: OutlineId;
+  outlineId: OutlineId;
   shifted: boolean;
 }
 
 export interface DoubleStripOutline {
   type: "double";
-  outline1?: OutlineId; // Fasce: Top side - Other: Left
-  outline2?: OutlineId; // Fasce: Bottom side - Other: Right
+  outlineId1?: OutlineId; // Fasce: Top side - Other: Left
+  outlineId2?: OutlineId; // Fasce: Bottom side - Other: Right
 }
 
 export interface GemelPotentedStripOutline {

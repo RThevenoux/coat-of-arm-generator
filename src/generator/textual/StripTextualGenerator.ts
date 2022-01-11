@@ -1,6 +1,6 @@
 import { getStripTextualInfo } from "@/service/ChargeService";
 import { getOutlineTextualInfo } from "@/service/OutlineService";
-import { ChargeStrip, SimpleStripOutline } from "../../model/charge";
+import { ChargeStrip, OutlineId } from "../../model/charge";
 import { countableChargeToLabel } from "./util";
 
 export async function stripToLabel(strip: ChargeStrip): Promise<string> {
@@ -20,12 +20,16 @@ export async function stripToLabel(strip: ChargeStrip): Promise<string> {
       case "simple": {
         const masculine = textInfo.genre == "m";
         const plural = strip.count > 1 || forcePlural;
-        return `${main} ${getSimpleOutlineLabel(
-          strip.outline,
-          strip,
+        const outlineAdjective = getSimpleOutlineAdjevtive(
+          strip.outline.outlineId,
           masculine,
           plural
-        )}`;
+        );
+        if (strip.outline.shifted) {
+          return `${main} ${outlineAdjective} et contre-${outlineAdjective}`;
+        } else {
+          return `${main} ${outlineAdjective}`;
+        }
       }
       case "double":
         return `${main} [double-outline]`;
@@ -124,16 +128,15 @@ function _bande(strip: ChargeStrip): string {
   }
 }
 
-function getSimpleOutlineLabel(
-  outline: SimpleStripOutline,
-  model: ChargeStrip,
+function getSimpleOutlineAdjevtive(
+  outlineId: OutlineId,
   masculine: boolean,
   plural: boolean
 ): string {
-  const labels = getOutlineTextualInfo(outline.outline);
+  const labels = getOutlineTextualInfo(outlineId);
 
   if (!labels) {
-    console.warn("Invalid outlineId: " + outline.outline);
+    console.warn("Invalid outlineId: " + outlineId);
     return "[?]";
   }
 
