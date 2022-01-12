@@ -41,9 +41,9 @@ function _getPatternRotation(description: FillerPattern): number | undefined {
   }
   switch (description.angle) {
     case "bande":
-      return 45;
-    case "barre":
       return -45;
+    case "barre":
+      return 45;
     case "defaut":
       return undefined;
     default:

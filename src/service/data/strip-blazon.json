@@ -9,6 +9,15 @@
     }
   },
   {
+    "id": "divise",
+    "blazon": {
+      "one": "divise",
+      "plural": "divises",
+      "genre": "f",
+      "elision": false
+    }
+  },
+  {
     "id": "tierce",
     "blazon": {
       "one": "tierce",
@@ -54,24 +63,6 @@
     }
   },
   {
-    "id": "jumelle_barre",
-    "blazon": {
-      "one": "jumelle en barre",
-      "plural": "jumelles en barre",
-      "genre": "f",
-      "elision": false
-    }
-  },
-  {
-    "id": "tierce_barre",
-    "blazon": {
-      "one": "tierce en barre",
-      "plural": "tierces en barre",
-      "genre": "f",
-      "elision": false
-    }
-  },
-  {
     "id": "barre",
     "blazon": {
       "one": "barre",
@@ -85,33 +76,6 @@
     "blazon": {
       "one": "traverse",
       "plural": "traverses",
-      "genre": "f",
-      "elision": false
-    }
-  },
-  {
-    "id": "filet_barre",
-    "blazon": {
-      "one": "filet en barre",
-      "plural": "filets en barre",
-      "genre": "m",
-      "elision": false
-    }
-  },
-  {
-    "id": "jumelle_pal",
-    "blazon": {
-      "one": "jumelle en pal",
-      "plural": "jumelles en pal",
-      "genre": "f",
-      "elision": false
-    }
-  },
-  {
-    "id": "tierce_pal",
-    "blazon": {
-      "one": "tierce en pal",
-      "plural": "tierces en pal",
       "genre": "f",
       "elision": false
     }
@@ -135,37 +99,10 @@
     }
   },
   {
-    "id": "filet_pal",
-    "blazon": {
-      "one": "filet en pal",
-      "plural": "filets en pal",
-      "genre": "m",
-      "elision": false
-    }
-  },
-  {
     "id": "bande",
     "blazon": {
       "one": "bande",
       "plural": "bandes",
-      "genre": "f",
-      "elision": false
-    }
-  },
-  {
-    "id": "jumelle_bande",
-    "blazon": {
-      "one": "jumelle en bande",
-      "plural": "jumelles en bande",
-      "genre": "f",
-      "elision": false
-    }
-  },
-  {
-    "id": "tierce_bande",
-    "blazon": {
-      "one": "tierce en bande",
-      "plural": "tierces en bande",
       "genre": "f",
       "elision": false
     }

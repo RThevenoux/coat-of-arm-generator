@@ -1,9 +1,7 @@
 import { ChargeModel } from "@/model/charge";
 import { BorderModel, PlainFieldModel } from "@/model/field";
-import { getCountableChargeLabel } from "./ChargeTextualGenerator";
-import { crossToLabel } from "./CrossTextualGenerator";
-import { fillerToLabel } from "./FillerTextualGenerator";
-import { stripToLabel } from "./StripTextualGenerator";
+import { chargeToLabel } from "./charge/ChargeTextGen";
+import { fillerToLabel } from "./FillerTextGen";
 
 export async function plainFieldToLabel(
   model: PlainFieldModel
@@ -15,13 +13,11 @@ export async function plainFieldToLabel(
   let label = await fillerToLabel(model.filler);
 
   if (model.charges.length > 0) {
-    const chargesLabel = await _chargeList(model.charges);
-    label += " " + chargesLabel;
+    label += ` ${await _chargeList(model.charges)}`;
   }
 
   if (model.border) {
-    const border = await _border(model.border);
-    label += " " + border;
+    label += ` ${await _border(model.border)}`;
   }
 
   return label;
@@ -29,7 +25,7 @@ export async function plainFieldToLabel(
 
 async function _border(model: BorderModel): Promise<string> {
   const filler = await fillerToLabel(model.filler);
-  return "à la bordure " + filler;
+  return `à la bordure ${filler}`;
 }
 
 async function _chargeList(charges: ChargeModel[]): Promise<string> {
@@ -40,19 +36,7 @@ async function _chargeList(charges: ChargeModel[]): Promise<string> {
 }
 
 async function _singleCharge(charge: ChargeModel): Promise<string> {
-  const chargeLabel = await _chargeLabel(charge);
+  const chargeLabel = await chargeToLabel(charge);
   const filler = await fillerToLabel(charge.filler);
   return `${chargeLabel} ${filler}`;
-}
-
-async function _chargeLabel(charge: ChargeModel): Promise<string> {
-  switch (charge.type) {
-    case "strip":
-      return stripToLabel(charge);
-    case "cross":
-      return crossToLabel(charge);
-    case "symbol": {
-      return getCountableChargeLabel(charge.chargeId, charge.count);
-    }
-  }
 }

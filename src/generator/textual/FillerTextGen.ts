@@ -4,11 +4,13 @@ import {
   FillerPlein,
   FillerSeme,
   FillerStrip,
-} from "../../model/filler";
-import { getSemeLabelInfo } from "./ChargeTextualGenerator";
-import { getColorText } from "../../service/ColorService";
-import { getPatternTextualInfo } from "../../service/PatternService";
-import { Direction } from "@/model/misc";
+} from "@/model/filler";
+import { ColorId, Direction } from "@/model/misc";
+import { getColorText } from "@/service/ColorService";
+import { getPatternTextualInfo } from "@/service/PatternService";
+import { LabelInfo, SwitchLabelInfo } from "@/service/textual.type";
+import { getChargeTextualInfo } from "@/service/ChargeService";
+import { directionToLabel, uncountableChargeToLabel } from "./util";
 
 export async function fillerToLabel(model: FillerModel): Promise<string> {
   if (!model) {
@@ -39,36 +41,43 @@ function _pattern(model: FillerPattern): string {
   const labelInfo = getPatternTextualInfo(model.patternName);
 
   if (labelInfo.type == "switch") {
-    const color1 = model.color1;
-    const color2 = model.color2;
-    for (const aCase of labelInfo.cases) {
-      if (aCase.colors[0] == color1 && aCase.colors[1] == color2) {
-        return aCase.label;
-      }
-    }
-    // else (if colors match no case)
-    return _simplePattern(model, labelInfo.else);
+    const matching = _searchMatchingLabel(
+      labelInfo,
+      model.color1,
+      model.color2
+    );
+    return matching ? matching : _simplePattern(model, labelInfo.else);
   } else {
     return _simplePattern(model, labelInfo.label);
   }
 }
 
 async function _seme(model: FillerSeme): Promise<string> {
-  const labelInfo = await getSemeLabelInfo(model.chargeId);
+  const labelInfo = await _getSemeLabelInfo(model.chargeId);
 
   if (labelInfo.type == "switch") {
-    const color1 = model.fieldColor;
-    const color2 = model.chargeColor;
-    for (const aCase of labelInfo.cases) {
-      if (aCase.colors[0] == color1 && aCase.colors[1] == color2) {
-        return aCase.label;
-      }
-    }
-    // else (if colors match no case)
-    return _simpleSeme(labelInfo.else, model);
+    const matching = _searchMatchingLabel(
+      labelInfo,
+      model.fieldColor,
+      model.chargeColor
+    );
+    return matching ? matching : _simpleSeme(labelInfo.else, model);
   } else {
     return _simpleSeme(labelInfo.label, model);
   }
+}
+
+function _searchMatchingLabel(
+  labelInfo: SwitchLabelInfo,
+  color1: ColorId,
+  color2: ColorId
+): string | undefined {
+  for (const aCase of labelInfo.cases) {
+    if (aCase.colors[0] == color1 && aCase.colors[1] == color2) {
+      return aCase.label;
+    }
+  }
+  return undefined;
 }
 
 function _simpleSeme(semeLabel: string, model: FillerSeme): string {
@@ -89,19 +98,12 @@ function _patternTextWithAngle(
   direction: "bande" | "barre" | "defaut" | undefined,
   label: string
 ): string {
-  if (direction) {
-    switch (direction) {
-      case "bande":
-        return `${label} en bande`;
-      case "barre":
-        return `${label} en barre`;
-      case "defaut":
-        return label;
-      default:
-        return label + " [invalid angle]";
-    }
+  if (direction == "bande" || direction == "barre") {
+    const directionLabel = directionToLabel(direction);
+    return `${label} ${directionLabel}`;
+  } else {
+    return label;
   }
-  return label;
 }
 
 function _strip(model: FillerStrip): string {
@@ -127,7 +129,18 @@ function _stripFillerText(direction: Direction): string {
       return "palé";
     case "bande":
       return "bandé";
-    default:
-      return "[?]";
   }
+}
+
+async function _getSemeLabelInfo(chargeId: string): Promise<LabelInfo> {
+  const chargeDef = await getChargeTextualInfo(chargeId);
+
+  if (chargeDef.seme) {
+    return chargeDef.seme;
+  }
+
+  return {
+    type: "simple",
+    label: `semé ${uncountableChargeToLabel(chargeDef)}`,
+  };
 }

@@ -68,10 +68,10 @@ function createDiagonal(
   item: paper.Item
 ): PatternWrapper {
   const angleRad = Math.atan2(item.bounds.height, item.bounds.width);
-  const angleDeg = (angleRad * 180) / Math.PI;
+  const angleDeg = 90 - (angleRad * 180) / Math.PI;
 
   // svg & paperjs rotation is clockwise
-  const rotationDeg = bande ? 90 - angleDeg : angleDeg - 90;
+  const rotationDeg = bande ? -angleDeg : angleDeg;
 
   const clone = item.clone();
   clone.rotate(rotationDeg, origin());

@@ -1,4 +1,26 @@
+import { Direction } from "@/model/misc";
 import { TextualInfo } from "@/service/textual.type";
+
+export function directionToLabel(direction: Direction): string {
+  switch (direction) {
+    case "bande":
+      return "en bande";
+    case "barre":
+      return "en barre";
+    case "fasce":
+      return "en fasce";
+    case "pal":
+      return "en pal";
+  }
+}
+
+export function uncountableChargeToLabel(chargeDef: TextualInfo): string {
+  if (chargeDef.elision) {
+    return `d'${chargeDef.plural}`;
+  } else {
+    return `de ${chargeDef.plural}`;
+  }
+}
 
 export function countableChargeToLabel(
   textInfo: TextualInfo,

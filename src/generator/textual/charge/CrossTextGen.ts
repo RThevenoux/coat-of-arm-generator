@@ -1,4 +1,4 @@
-import { ChargeCross } from "../../model/charge";
+import { ChargeCross } from "@/model/charge";
 
 export function crossToLabel(cross: ChargeCross): string {
   switch (cross.direction) {
