@@ -1,8 +1,8 @@
 import { FillerModel } from "@/model/filler";
-import { OutlineVisualData } from "@/service/OutlineData";
+import { OutlineVisualInfo } from "@/service/visual.type";
 import { SimpleShape } from "../type";
 
-export type StripSideOutlineData = OutlineVisualData | "straight";
+export type StripSideOutlineData = OutlineVisualInfo | "straight";
 
 export interface StripOutlineData {
   outline1: StripSideOutlineData;

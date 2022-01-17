@@ -8,16 +8,7 @@
       "scale": 0.25,
       "reverseShifted": false
     },
-    "textual": {
-      "masculine": {
-        "one": "crénelé",
-        "plural": "crénelés"
-      },
-      "feminine": {
-        "one": "crénelée",
-        "plural": "crénelées"
-      }
-    }
+    "adjective": "crenele"
   },
   {
     "id": "vivre",
@@ -27,16 +18,7 @@
       "scale": 0.5,
       "reverseShifted": true
     },
-    "textual": {
-      "masculine": {
-        "one": "vivré",
-        "plural": "vivrés"
-      },
-      "feminine": {
-        "one": "vivrée",
-        "plural": "vivrées"
-      }
-    }
+    "adjective": "vivre"
   },
   {
     "id": "dentelé",
@@ -46,16 +28,7 @@
       "scale": 0.125,
       "reverseShifted": true
     },
-    "textual": {
-      "masculine": {
-        "one": "dentelé",
-        "plural": "dentelés"
-      },
-      "feminine": {
-        "one": "dentelée",
-        "plural": "dentelées"
-      }
-    }
+    "adjective": "dentele"
   },
   {
     "id": "onde",
@@ -65,16 +38,7 @@
       "scale": 0.001,
       "reverseShifted": true
     },
-    "textual": {
-      "masculine": {
-        "one": "ondé",
-        "plural": "ondés"
-      },
-      "feminine": {
-        "one": "ondée",
-        "plural": "ondées"
-      }
-    }
+    "adjective": "onde"
   },
   {
     "id": "cannelé",
@@ -84,16 +48,7 @@
       "scale": 0.25,
       "reverseShifted": false
     },
-    "textual": {
-      "masculine": {
-        "one": "cannelé",
-        "plural": "cannelés"
-      },
-      "feminine": {
-        "one": "cannelée",
-        "plural": "cannelées"
-      }
-    }
+    "adjective": "cannele"
   },
   {
     "id": "engrele",
@@ -103,15 +58,6 @@
       "scale": 0.25,
       "reverseShifted": false
     },
-    "textual": {
-      "masculine": {
-        "one": "engrêlé",
-        "plural": "engrêlés"
-      },
-      "feminine": {
-        "one": "engrêlée",
-        "plural": "engrêlées"
-      }
-    }
+    "adjective": "engrele"
   }
 ]

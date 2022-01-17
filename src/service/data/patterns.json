@@ -3,7 +3,7 @@
     "id": "echiquete",
     "blazon": {
       "type": "simple",
-      "label": "échiqueté"
+      "value": "echiquete"
     },
     "visual": {
       "patternWidth": 10,
@@ -16,7 +16,7 @@
     "id": "losange",
     "blazon": {
       "type": "simple",
-      "label": "losangé"
+      "value": "losange"
     },
     "visual": {
       "patternWidth": 10,
@@ -29,7 +29,7 @@
     "id": "fusele",
     "blazon": {
       "type": "simple",
-      "label": "fuselé"
+      "value": "fusele"
     },
     "visual": {
       "patternWidth": 20,
@@ -42,7 +42,7 @@
     "id": "triangle",
     "blazon": {
       "type": "simple",
-      "label": "trianglé"
+      "value": "triangle"
     },
     "visual": {
       "patternWidth": 60,
@@ -77,10 +77,10 @@
             "argent",
             "azur"
           ],
-          "label": "de vair"
+          "value": "de_vair"
         }
       ],
-      "else": "vairé"
+      "else": "vaire"
     },
     "visual": {
       "patternWidth": 4,
@@ -115,10 +115,10 @@
             "argent",
             "azur"
           ],
-          "label": "de vair en pal"
+          "value": "de_vair_pal"
         }
       ],
-      "else": "vairé en pal"
+      "else": "vaire_pal"
     },
     "visual": {
       "patternWidth": 4,
@@ -146,10 +146,10 @@
             "argent",
             "azur"
           ],
-          "label": "de vair en pointe"
+          "value": "de_vair_pointe"
         }
       ],
-      "else": "vairé en pointe"
+      "else": "vaire_pointe"
     },
     "visual": {
       "patternWidth": 4,
@@ -194,10 +194,10 @@
             "argent",
             "azur"
           ],
-          "label": "de contre-vair"
+          "value": "de_contre_vair"
         }
       ],
-      "else": "contre-vairé"
+      "else": "contre_vaire"
     },
     "visual": {
       "patternWidth": 4,

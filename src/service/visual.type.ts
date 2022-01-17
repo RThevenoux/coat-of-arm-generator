@@ -24,6 +24,12 @@ export type ChargeVisualInfo = {
   xml: string;
 };
 
+export interface OutlineVisualInfo {
+  patternData: string;
+  scale: number;
+  reverseShifted: boolean;
+}
+
 export type SemeVisualInfo = {
   charge: ChargeVisualInfo;
   tx: number;

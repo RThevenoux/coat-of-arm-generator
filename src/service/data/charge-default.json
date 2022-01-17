@@ -9,11 +9,5 @@
     "tx": 20,
     "ty": 20,
     "repetition": 5
-  },
-  "textual": {
-    "one": "[?]",
-    "plural": "[?]",
-    "genre": "m",
-    "elision": false
   }
 }

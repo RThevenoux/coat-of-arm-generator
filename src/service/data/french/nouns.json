@@ -1,0 +1,110 @@
+{
+  "bande": {
+    "one": "bande",
+    "plural": "bandes",
+    "genre": "f",
+    "elision": false
+  },
+  "barre": {
+    "one": "barre",
+    "plural": "barres",
+    "genre": "f",
+    "elision": false
+  },
+  "baton": {
+    "one": "bâton",
+    "plural": "bâtons",
+    "genre": "m",
+    "elision": false
+  },
+  "billette": {
+    "one": "billette",
+    "plural": "billettes",
+    "genre": "f",
+    "elision": false
+  },
+  "burelle": {
+    "one": "burelle",
+    "plural": "burelles",
+    "genre": "f",
+    "elision": false
+  },
+  "cotice": {
+    "one": "cotice",
+    "plural": "cotices",
+    "genre": "f",
+    "elision": false
+  },
+  "divise": {
+    "one": "divise",
+    "plural": "divises",
+    "genre": "f",
+    "elision": false
+  },
+  "fasce": {
+    "one": "fasce",
+    "plural": "fasces",
+    "genre": "f",
+    "elision": false
+  },
+  "filet": {
+    "one": "filet",
+    "plural": "filets",
+    "genre": "m",
+    "elision": false
+  },
+  "jumelle": {
+    "one": "jumelle",
+    "plural": "jumelles",
+    "genre": "f",
+    "elision": false
+  },
+  "lion": {
+    "one": "lion",
+    "plural": "lions",
+    "genre": "m",
+    "elision": false
+  },
+  "lys": {
+    "one": "lys",
+    "plural": "lys",
+    "genre": "m",
+    "elision": false
+  },
+  "moucheture": {
+    "one": "moucheture",
+    "plural": "mouchetures",
+    "genre": "f",
+    "elision": false
+  },
+  "pal": {
+    "one": "pal",
+    "plural": "pals",
+    "genre": "m",
+    "elision": false
+  },
+  "tierce": {
+    "one": "tierce",
+    "plural": "tierces",
+    "genre": "f",
+    "elision": false
+  },
+  "trangle": {
+    "one": "trangle",
+    "plural": "trangles",
+    "genre": "f",
+    "elision": false
+  },
+  "traverse": {
+    "one": "traverse",
+    "plural": "traverses",
+    "genre": "f",
+    "elision": false
+  },
+  "vergette": {
+    "one": "vergette",
+    "plural": "vergettes",
+    "genre": "f",
+    "elision": false
+  }
+}

@@ -1,5 +1,5 @@
 import { Direction } from "@/model/misc";
-import { TextualInfo } from "@/service/textual.type";
+import { FrenchAdjective, FrenchNoun } from "@/service/textual.type";
 
 export function directionToLabel(direction: Direction): string {
   switch (direction) {
@@ -14,16 +14,16 @@ export function directionToLabel(direction: Direction): string {
   }
 }
 
-export function uncountableChargeToLabel(chargeDef: TextualInfo): string {
-  if (chargeDef.elision) {
-    return `d'${chargeDef.plural}`;
+export function uncountableNounToLabel(noun: FrenchNoun): string {
+  if (noun.elision) {
+    return `d'${noun.plural}`;
   } else {
-    return `de ${chargeDef.plural}`;
+    return `de ${noun.plural}`;
   }
 }
 
-export function countableChargeToLabel(
-  textInfo: TextualInfo,
+export function countableNounToLabel(
+  noun: FrenchNoun,
   count: number,
   options?: {
     contractedPrepositionIfPlural?: boolean;
@@ -32,23 +32,42 @@ export function countableChargeToLabel(
 ): string {
   if (count > 1) {
     if (options?.contractedPrepositionIfPlural) {
-      return `aux ${count} ${textInfo.plural}`;
+      return `aux ${count} ${noun.plural}`;
     } else {
-      return `à ${count} ${textInfo.plural}`;
+      return `à ${count} ${noun.plural}`;
     }
   }
 
   if (options?.forcePlural) {
-    return `aux ${textInfo.plural}`;
+    return `aux ${noun.plural}`;
   }
 
-  if (textInfo.elision) {
-    return `à l'${textInfo.one}`;
+  if (noun.elision) {
+    return `à l'${noun.one}`;
   }
 
-  if (textInfo.genre == "m") {
-    return `au ${textInfo.one}`;
+  if (noun.genre == "m") {
+    return `au ${noun.one}`;
   }
 
-  return `à la ${textInfo.one}`;
+  return `à la ${noun.one}`;
+}
+
+export function agreeAdjective(
+  adjective: FrenchAdjective,
+  masculine: boolean,
+  plural: boolean
+): string {
+  if (adjective.type == "invariant") {
+    return adjective.invariant;
+  }
+
+  if (adjective.type == "regular") {
+    const base = adjective.base;
+    return base + (masculine ? "" : "e") + (plural ? "s" : "");
+  }
+
+  // type == "irregular"
+  const genred = masculine ? adjective.masculine : adjective.feminine;
+  return plural ? genred.plural : genred.one;
 }

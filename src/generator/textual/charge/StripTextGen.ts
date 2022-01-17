@@ -1,67 +1,73 @@
-import { getStripTextualInfo } from "@/service/ChargeService";
-import { getOutlineTextualInfo } from "@/service/OutlineService";
-import { ChargeStrip, OutlineId } from "@/model/charge";
-import { countableChargeToLabel, directionToLabel } from "../util";
+import { getOutlineAdjective } from "@/service/OutlineService";
+import { ChargeStrip } from "@/model/charge";
+import {
+  agreeAdjective,
+  countableNounToLabel,
+  directionToLabel,
+} from "../util";
 import { Direction } from "@/model/misc";
+import { getNoun } from "@/service/FrenchService";
+import { NominalGroup } from "./ChargeTextGen";
 
-export async function stripToLabel(strip: ChargeStrip): Promise<string> {
-  const textIdWrapper = getTextId(strip);
-  const textInfo = await getStripTextualInfo(textIdWrapper.textId);
+export function stripToLabel(model: ChargeStrip): NominalGroup {
+  const nounInfo = getNounInfo(model);
+  const noun = getNoun(nounInfo.nounId);
 
-  const forcePlural = strip.size == "gemel" || strip.size == "triplet";
+  const forcePlural = model.size == "gemel" || model.size == "triplet";
   const options = {
     contractedPrepositionIfPlural: true,
     forcePlural,
   };
+  const masculine = noun.genre == "m";
+  const plural = model.count > 1 || forcePlural;
 
-  let main = countableChargeToLabel(textInfo, strip.count, options);
-  if (textIdWrapper.direction) {
-    main = `${main} ${directionToLabel(textIdWrapper.direction)}`;
+  let label = countableNounToLabel(noun, model.count, options);
+  if (nounInfo.direction) {
+    label = `${label} ${directionToLabel(nounInfo.direction)}`;
   }
 
-  if (strip.outline) {
-    switch (strip.outline.type) {
+  if (model.outline) {
+    switch (model.outline.type) {
       case "simple": {
-        const masculine = textInfo.genre == "m";
-        const plural = strip.count > 1 || forcePlural;
-        const outlineAdjective = getSimpleOutlineAdjective(
-          strip.outline.outlineId,
-          masculine,
-          plural
-        );
-        if (strip.outline.shifted) {
-          return `${main} ${outlineAdjective} et contre-${outlineAdjective}`;
+        const adjective = getOutlineAdjective(model.outline.outlineId);
+        const agreedAdjective = agreeAdjective(adjective, masculine, plural);
+
+        if (model.outline.shifted) {
+          label = `${label} ${agreedAdjective} et contre-${agreedAdjective}`;
         } else {
-          return `${main} ${outlineAdjective}`;
+          label = `${label} ${agreedAdjective}`;
         }
+        return { label, masculine, plural };
       }
-      case "double":
-        return `${main} [double-outline]`;
-      case "gemelPotented":
-        return `${main} potencées et contre-potencées`;
+      case "double": {
+        label = `${label} [double-outline]`;
+        return { label, masculine, plural };
+      }
+      case "gemelPotented": {
+        label = `${label} potencées et contre-potencées`;
+        return { label, masculine, plural };
+      }
       case "straight":
       default:
-        return main;
+        return { label, masculine, plural };
     }
   } else {
-    return main;
+    return { label: label, masculine, plural };
   }
 }
 
-function getTextId(strip: ChargeStrip): {
-  textId: string;
+function getNounInfo(strip: ChargeStrip): {
+  nounId: string;
   direction?: Direction;
 } {
   if (strip.size == "gemel") {
-    const textId = "jumelle";
     const direction = strip.direction == "fasce" ? undefined : strip.direction;
-    return { textId, direction };
+    return { nounId: "jumelle", direction };
   }
 
   if (strip.size == "triplet") {
-    const textId = "tierce";
     const direction = strip.direction == "fasce" ? undefined : strip.direction;
-    return { textId, direction };
+    return { nounId: "tierce", direction };
   }
 
   switch (strip.direction) {
@@ -69,65 +75,48 @@ function getTextId(strip: ChargeStrip): {
       switch (strip.size) {
         case "default":
           if (strip.count < 5) {
-            return { textId: "fasce" };
+            return { nounId: "fasce" };
           } else {
-            return { textId: strip.count % 2 == 0 ? "burelle" : "trangle" };
+            return { nounId: strip.count % 2 == 0 ? "burelle" : "trangle" };
           }
         case "reduced":
           if (strip.count == 1) {
-            return { textId: "divise" };
+            return { nounId: "divise" };
           } else {
-            return { textId: strip.count % 2 == 0 ? "burelle" : "trangle" };
+            return { nounId: strip.count % 2 == 0 ? "burelle" : "trangle" };
           }
         case "minimal":
-          return { textId: "filet" };
+          return { nounId: "filet" };
       }
     // falls through unreachable
     case "barre":
       switch (strip.size) {
         case "default":
-          return { textId: strip.count < 5 ? "barre" : "traverse" };
+          return { nounId: strip.count < 5 ? "barre" : "traverse" };
         case "reduced":
-          return { textId: "traverse" };
+          return { nounId: "traverse" };
         case "minimal":
-          return { textId: "filet", direction: "barre" };
+          return { nounId: "filet", direction: "barre" };
       }
     // falls through unreachable
     case "pal":
       switch (strip.size) {
         case "default":
-          return { textId: strip.count < 5 ? "pal" : "vergette" };
+          return { nounId: strip.count < 5 ? "pal" : "vergette" };
         case "reduced":
-          return { textId: "vergette" };
+          return { nounId: "vergette" };
         case "minimal":
-          return { textId: "filet", direction: "pal" };
+          return { nounId: "filet", direction: "pal" };
       }
     // falls through unreachable
     case "bande":
       switch (strip.size) {
         case "default":
-          return { textId: strip.count < 5 ? "bande" : "cotice" };
+          return { nounId: strip.count < 5 ? "bande" : "cotice" };
         case "reduced":
-          return { textId: "cotice" };
+          return { nounId: "cotice" };
         case "minimal":
-          return { textId: "baton" };
+          return { nounId: "baton" };
       }
   }
-}
-
-function getSimpleOutlineAdjective(
-  outlineId: OutlineId,
-  masculine: boolean,
-  plural: boolean
-): string {
-  const labels = getOutlineTextualInfo(outlineId);
-
-  if (!labels) {
-    console.warn("Invalid outlineId: " + outlineId);
-    return "[?]";
-  }
-
-  return labels[masculine ? "masculine" : "feminine"][
-    plural ? "plural" : "one"
-  ];
 }

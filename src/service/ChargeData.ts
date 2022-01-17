@@ -1,10 +1,11 @@
-import { ChargeTextualInfo } from "@/service/textual.type";
+import { AdjectiveId, LabelInfo, NounId } from "./textual.type";
 
 export interface ChargeData {
   id: string;
   default?: boolean;
   visual: ChargeVisualData;
-  blazon: ChargeTextualInfo;
+  noun: NounId;
+  seme?: LabelInfo<AdjectiveId>;
 }
 
 export interface ChargeVisualData {

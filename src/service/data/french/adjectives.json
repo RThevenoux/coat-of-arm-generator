@@ -1,0 +1,128 @@
+{
+  "bande": {
+    "type": "regular",
+    "base": "bandé"
+  },
+  "barre": {
+    "type": "regular",
+    "base": "barré"
+  },
+  "cannele": {
+    "type": "regular",
+    "base": "cannelé"
+  },
+  "crenele": {
+    "type": "regular",
+    "base": "crénelé"
+  },
+  "contre_vaire":{
+    "type":"regular",
+    "base": "contre-vairé"
+  },
+  "dentele": {
+    "type": "regular",
+    "base": "dentelé"
+  },
+  "de_contre_hermine": {
+    "type": "invariant",
+    "invariant": "de contre-hermine"
+  },
+  "de_contre_vair": {
+    "type": "invariant",
+    "invariant": "de contre-vair"
+  },
+  "de_pean": {
+    "type": "invariant",
+    "invariant": "de péan"
+  },
+  "de_vair": {
+    "type": "invariant",
+    "invariant": "de vair"
+  },
+  "de_vair_pal": {
+    "type": "invariant",
+    "invariant": "de vair en pal"
+  },
+  "de_vair_pointe": {
+    "type": "invariant",
+    "invariant": "de vair en pointe"
+  },
+  "d_erminois": {
+    "type": "invariant",
+    "invariant": "d'erminois"
+  },
+  "d_hermine": {
+    "type": "invariant",
+    "invariant": "d'hermine"
+  },
+  "echiquete": {
+    "type": "regular",
+    "base": "échiqueté"
+  },
+  "engrele": {
+    "type": "regular",
+    "base": "engrêlé"
+  },
+  "fasce": {
+    "type": "regular",
+    "base": "fascé"
+  },
+  "fusele": {
+    "type": "regular",
+    "base": "fuselé"
+  },
+  "hermine": {
+    "type": "regular",
+    "base": "herminé"
+  },
+  "losange": {
+    "type": "regular",
+    "base": "losangé"
+  },
+  "onde": {
+    "type": "regular",
+    "base": "ondé"
+  },
+  "pale": {
+    "type": "regular",
+    "base": "palé"
+  },
+  "seme": {
+    "type": "regular",
+    "base": "semé"
+  },
+  "triangle": {
+    "type": "regular",
+    "base": "trianglé"
+  },
+  "vaire": {
+    "type": "regular",
+    "base": "vairé"
+  },
+  "vaire_pal": {
+    "type": "irregular",
+    "masculine": {
+      "one": "vairé en pal",
+      "plural": "vairés en pal"
+    },
+    "feminine": {
+      "one": "vairée en pal",
+      "plural": "vairées en pal"
+    }
+  },
+  "vaire_pointe": {
+    "type": "irregular",
+    "masculine": {
+      "one": "vairé en pointe",
+      "plural": "vairés en pointe"
+    },
+    "feminine": {
+      "one": "vairée en pointe",
+      "plural": "vairées en pointe"
+    }
+  },
+  "vivre": {
+    "type": "regular",
+    "base": "vivré"
+  }
+}

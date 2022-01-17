@@ -1,25 +1,34 @@
 import { ChargeModel } from "@/model/charge";
-import { getChargeTextualInfo } from "@/service/ChargeService";
+import { getChargeNoun } from "@/service/ChargeService";
 import { crossToLabel } from "./CrossTextGen";
 import { stripToLabel } from "./StripTextGen";
-import { countableChargeToLabel } from "../util";
+import { countableNounToLabel } from "../util";
 
-export async function chargeToLabel(charge: ChargeModel): Promise<string> {
+export interface NominalGroup {
+  label: string;
+  masculine: boolean;
+  plural: boolean;
+}
+
+export async function chargeToLabel(
+  charge: ChargeModel
+): Promise<NominalGroup> {
   switch (charge.type) {
     case "strip":
       return stripToLabel(charge);
     case "cross":
       return crossToLabel(charge);
     case "symbol": {
-      return getCountableChargeLabel(charge.chargeId, charge.count);
+      return await getCountableChargeLabel(charge.chargeId, charge.count);
     }
   }
 }
 
-export async function getCountableChargeLabel(
+async function getCountableChargeLabel(
   chargeId: string,
   count: number
-): Promise<string> {
-  const chargeDef = await getChargeTextualInfo(chargeId);
-  return countableChargeToLabel(chargeDef, count);
+): Promise<NominalGroup> {
+  const noun = await getChargeNoun(chargeId);
+  const label = countableNounToLabel(noun, count);
+  return { label, masculine: noun.genre == "m", plural: count > 1 };
 }

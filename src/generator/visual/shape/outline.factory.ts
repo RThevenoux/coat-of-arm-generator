@@ -1,11 +1,11 @@
-import { OutlineVisualData } from "@/service/OutlineData";
+import { OutlineVisualInfo } from "@/service/visual.type";
 import * as paper from "paper";
 import { point } from "../tool/point";
 
 export function createOutline(
   length: number,
   unitSize: number,
-  outlineInfo: OutlineVisualData,
+  outlineInfo: OutlineVisualInfo,
   shifted: boolean
 ): paper.Path {
   const pattern = new paper.Path(outlineInfo.patternData);

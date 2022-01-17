@@ -1,25 +1,28 @@
 import { MyOption } from "./MyOptions.type";
-import { ChargeData, SemeData, ChargeVisualData } from "./ChargeData";
-import { ChargeTextualInfo, TextualInfo } from "@/service/textual.type";
+import { SemeData, ChargeVisualData } from "./ChargeData";
+import {
+  AdjectiveId,
+  FrenchNoun,
+  LabelInfo,
+  NounId,
+} from "@/service/textual.type";
 import { ChargeVisualInfo, SemeVisualInfo } from "./visual.type";
 
 // Load Data
 import defaultValues from "./data/charge-default.json";
 import mobileChargeData from "./data/charges.json";
-import stripBlazonData from "./data/strip-blazon.json";
+import { defaultNoun, getNoun } from "./FrenchService";
 
 interface ChargeRepo {
   defaultChargeId: string;
   mobileVisuals: Record<string, ChargeVisualInfo>;
-  mobileBlazons: Record<string, ChargeTextualInfo>;
+  mobileNounIds: Record<string, NounId>;
+  mobileCustomSemes: Record<string, LabelInfo<AdjectiveId>>;
   options: MyOption[];
   semeVisuals: Record<string, SemeVisualInfo>;
-  stripBlazons: Record<string, TextualInfo>;
 }
 
 let repo: ChargeRepo | null = null;
-const defaultTextual: ChargeTextualInfo =
-  defaultValues.textual as ChargeTextualInfo;
 const defaultVisual: ChargeVisualInfo = defaultValues.visual;
 const defaultSeme = computeSemeInfo(defaultVisual, defaultValues.seme);
 
@@ -31,45 +34,43 @@ async function getRepo(): Promise<ChargeRepo> {
 }
 
 async function loadData(): Promise<ChargeRepo> {
-  const mobileBlazons: Record<string, ChargeTextualInfo> = {};
+  const mobileCustomSemes: Record<string, LabelInfo<AdjectiveId>> = {};
+  const mobileNounIds: Record<string, NounId> = {};
   const mobileVisuals: Record<string, ChargeVisualInfo> = {};
   const options: MyOption[] = [];
   const semeVisuals: Record<string, SemeVisualInfo> = {};
-  const stripBlazons: Record<string, TextualInfo> = {};
   let defaultChargeId: string | null = null;
 
-  for (const item of mobileChargeData) {
-    const chargeData = item as ChargeData;
+  for (const chargeData of mobileChargeData) {
     const visualData = chargeData.visual;
 
     const visualInfo = await buildVisualInfo(chargeData.id, visualData);
     mobileVisuals[chargeData.id] = visualInfo;
     semeVisuals[chargeData.id] = computeSemeInfo(visualInfo, visualData.seme);
 
-    options.push(buildOption(chargeData));
+    mobileNounIds[chargeData.id] = chargeData.noun;
+    if (chargeData.seme) {
+      mobileCustomSemes[chargeData.id] =
+        chargeData.seme as LabelInfo<AdjectiveId>;
+    }
+    options.push(buildOption(chargeData.id, chargeData.noun));
 
     if (defaultChargeId == null || chargeData.default) {
       defaultChargeId = chargeData.id;
     }
-
-    mobileBlazons[chargeData.id] = chargeData.blazon;
   }
 
   if (defaultChargeId == null) {
     throw new Error("No default charge found");
   }
 
-  for (const blazon of stripBlazonData) {
-    stripBlazons[blazon.id] = blazon.blazon as TextualInfo;
-  }
-
   return {
     defaultChargeId,
     mobileVisuals,
-    mobileBlazons,
+    mobileNounIds,
+    mobileCustomSemes,
     options,
     semeVisuals,
-    stripBlazons,
   };
 }
 
@@ -86,13 +87,10 @@ async function buildVisualInfo(
   };
 }
 
-function buildOption(item: ChargeData): MyOption {
-  const label = item.blazon.one;
+function buildOption(id: string, nounId: NounId): MyOption {
+  const label = getNoun(nounId).one;
   const niceLabel = label.charAt(0).toUpperCase() + label.slice(1);
-  return {
-    id: item.id,
-    label: niceLabel,
-  };
+  return { id, label: niceLabel };
 }
 
 async function getVisualXml(
@@ -121,30 +119,41 @@ export async function getDefaultChargeId(): Promise<string> {
   return (await getRepo()).defaultChargeId;
 }
 
-export async function getChargeTextualInfo(
-  chargeId: string
-): Promise<ChargeTextualInfo> {
+export async function getChargeNoun(chargeId: string): Promise<FrenchNoun> {
   const repo = await getRepo();
-  const info = repo.mobileBlazons[chargeId];
-
-  if (!info) {
-    console.log("Invalid chargeId:" + chargeId);
-    return defaultTextual;
-  }
-
-  return info;
+  const nounId = repo.mobileNounIds[chargeId];
+  return getNoun(nounId);
 }
 
-export async function getStripTextualInfo(id: string): Promise<TextualInfo> {
+export async function getChargeSemeInfo(
+  chargeId: string
+): Promise<
+  | { type: "custom"; custom: LabelInfo<AdjectiveId> }
+  | { type: "use-noun"; noun: FrenchNoun }
+> {
   const repo = await getRepo();
-  const info = repo.stripBlazons[id];
-
-  if (!info) {
-    console.log("Invalid id:" + id);
-    return defaultTextual;
+  const custom = repo.mobileCustomSemes[chargeId];
+  if (custom) {
+    return {
+      type: "custom",
+      custom,
+    };
   }
 
-  return info;
+  const nounId = repo.mobileNounIds[chargeId];
+
+  if (!nounId) {
+    console.warn(`Invalid chargeId: ${chargeId}`);
+    return {
+      type: "use-noun",
+      noun: defaultNoun(),
+    };
+  }
+
+  return {
+    type: "use-noun",
+    noun: getNoun(nounId),
+  };
 }
 
 export async function getChargeVisualInfo(

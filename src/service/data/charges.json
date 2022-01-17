@@ -12,12 +12,7 @@
         "repetition": 5
       }
     },
-    "blazon": {
-      "one": "lion",
-      "plural": "lions",
-      "genre": "m",
-      "elision": false
-    }
+    "noun": "lion"
   },
   {
     "id": "moucheture",
@@ -32,45 +27,40 @@
         "repetition": 5
       }
     },
-    "blazon": {
-      "one": "moucheture",
-      "plural": "mouchetures",
-      "genre": "f",
-      "elision": false,
-      "seme": {
-        "type":"switch",
-        "cases": [
-          {
-            "colors": [
-              "argent",
-              "sable"
-            ],
-            "label": "d'hermine"
-          },
-          {
-            "colors": [
-              "sable",
-              "argent"
-            ],
-            "label": "de contre-hermine"
-          },
-          {
-            "colors": [
-              "sable",
-              "or"
-            ],
-            "label": "de péan"
-          },
-          {
-            "colors": [
-              "or",
-              "sable"
-            ],
-            "label": "d'erminois"
-          }
-        ],
-        "else": "herminé"
-      }
+    "noun": "moucheture",
+    "seme": {
+      "type": "switch",
+      "cases": [
+        {
+          "colors": [
+            "argent",
+            "sable"
+          ],
+          "value": "d_hermine"
+        },
+        {
+          "colors": [
+            "sable",
+            "argent"
+          ],
+          "value": "de_contre_hermine"
+        },
+        {
+          "colors": [
+            "sable",
+            "or"
+          ],
+          "value": "de_pean"
+        },
+        {
+          "colors": [
+            "or",
+            "sable"
+          ],
+          "value": "d_erminois"
+        }
+      ],
+      "else": "hermine"
     }
   },
   {
@@ -87,12 +77,7 @@
         "repetition": 5
       }
     },
-    "blazon": {
-      "one": "billette",
-      "plural": "billettes",
-      "genre": "f",
-      "elision": false
-    }
+    "noun": "billette"
   },
   {
     "id": "lys",
@@ -107,11 +92,6 @@
         "repetition": 5
       }
     },
-    "blazon": {
-      "one": "lys",
-      "plural": "lys",
-      "genre": "m",
-      "elision": false
-    }
+    "noun": "lys"
   }
 ]

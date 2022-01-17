@@ -1,7 +1,7 @@
 import { ChargeModel } from "@/model/charge";
 import { BorderModel, PlainFieldModel } from "@/model/field";
 import { chargeToLabel } from "./charge/ChargeTextGen";
-import { fillerToLabel } from "./FillerTextGen";
+import { fillerToLabel } from "./filler/FillerTextGen";
 
 export async function plainFieldToLabel(
   model: PlainFieldModel
@@ -10,7 +10,7 @@ export async function plainFieldToLabel(
     return "[?]";
   }
 
-  let label = await fillerToLabel(model.filler);
+  let label = await fillerToLabel(model.filler, true, false);
 
   if (model.charges.length > 0) {
     label += ` ${await _chargeList(model.charges)}`;
@@ -24,7 +24,7 @@ export async function plainFieldToLabel(
 }
 
 async function _border(model: BorderModel): Promise<string> {
-  const filler = await fillerToLabel(model.filler);
+  const filler = await fillerToLabel(model.filler, false, false);
   return `à la bordure ${filler}`;
 }
 
@@ -36,7 +36,9 @@ async function _chargeList(charges: ChargeModel[]): Promise<string> {
 }
 
 async function _singleCharge(charge: ChargeModel): Promise<string> {
-  const chargeLabel = await chargeToLabel(charge);
-  const filler = await fillerToLabel(charge.filler);
-  return `${chargeLabel} ${filler}`;
+  const nominalGroup = await chargeToLabel(charge);
+  const masculine = nominalGroup.masculine;
+  const plural = nominalGroup.plural;
+  const filler = await fillerToLabel(charge.filler, masculine, plural);
+  return `${nominalGroup.label} ${filler}`;
 }

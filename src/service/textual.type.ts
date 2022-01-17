@@ -1,19 +1,19 @@
-export type LabelInfo = SimpleLabelInfo | SwitchLabelInfo;
+export type LabelInfo<T> = SimpleCase<T> | ColorSwitch<T>;
 
-export interface LabelCaseByColor {
+export interface CaseByColor<T> {
   colors: string[];
-  label: string;
+  value: T;
 }
 
-export interface SimpleLabelInfo {
+export interface SimpleCase<T> {
   type: "simple";
-  label: string;
+  value: T;
 }
 
-export interface SwitchLabelInfo {
+export interface ColorSwitch<T> {
   type: "switch";
-  cases: LabelCaseByColor[];
-  else: string;
+  cases: CaseByColor<T>[];
+  else: T;
 }
 
 export interface PartitionTextualInfo {
@@ -21,11 +21,35 @@ export interface PartitionTextualInfo {
   slotCount: number;
 }
 
-export interface ChargeTextualInfo extends TextualInfo {
-  seme?: LabelInfo;
+export type AdjectiveId = string;
+export type NounId = string;
+
+export type FrenchAdjective =
+  | RegularVariableAdjective
+  | IrregularVariableAdjective
+  | InvariableAdjective;
+
+export interface InvariableAdjective {
+  type: "invariant";
+  invariant: string;
+}
+export interface RegularVariableAdjective {
+  type: "regular";
+  base: string;
 }
 
-export interface TextualInfo {
+export interface IrregularVariableAdjective {
+  type: "irregular";
+  masculine: {
+    one: string;
+    plural: string;
+  };
+  feminine: {
+    one: string;
+    plural: string;
+  };
+}
+export interface FrenchNoun {
   one: string;
   plural: string;
   genre: "m" | "f";

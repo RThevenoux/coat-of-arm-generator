@@ -1,6 +1,7 @@
 import { ChargeCross } from "@/model/charge";
+import { NominalGroup } from "./ChargeTextGen";
 
-export function crossToLabel(cross: ChargeCross): string {
+export function crossToLabel(cross: ChargeCross): NominalGroup {
   switch (cross.direction) {
     case "pal":
     case "fasce":
@@ -9,27 +10,31 @@ export function crossToLabel(cross: ChargeCross): string {
     case "bande":
       return _diagonal(cross);
     default:
-      return "cross:" + cross.direction;
+      return {
+        label: `[cross:${cross.direction}]`,
+        masculine: true,
+        plural: false,
+      };
   }
 }
 
-function _straight(cross: ChargeCross): string {
+function _straight(cross: ChargeCross): NominalGroup {
   switch (cross.size) {
     case "default":
-      return "à la croix";
+      return { label: "à la croix", masculine: false, plural: false };
     case "reduced":
-      return "à l'estrez";
+      return { label: "à l'estrez", masculine: true, plural: false };
     case "minimal":
-      return "au filet en croix";
+      return { label: "au filet en croix", masculine: true, plural: false };
   }
 }
 
-function _diagonal(cross: ChargeCross): string {
+function _diagonal(cross: ChargeCross): NominalGroup {
   switch (cross.size) {
     case "default":
-      return "au sautoir";
+      return { label: "au sautoir", masculine: true, plural: false };
     case "reduced":
     case "minimal":
-      return "au filet en sautoir";
+      return { label: "au filet en sautoir", masculine: true, plural: false };
   }
 }
