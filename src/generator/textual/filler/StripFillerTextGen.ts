@@ -1,26 +1,25 @@
 import { FillerStrip } from "@/model/filler";
 import { Direction } from "@/model/misc";
-import { getColorText } from "@/service/ColorService";
+import { getColorAdjective } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
 import { FrenchAdjective } from "@/service/textual.type";
-import { agreeAdjective, NominalGroup } from "../util";
+import { NominalGroupBuilder } from "../util";
 
-export function _strip(model: FillerStrip, nominalGroup: NominalGroup): string {
+export function addFillerStrip(
+  model: FillerStrip,
+  nominalGroup: NominalGroupBuilder
+): void {
   const stripAdjective = _stripAdjective(model.direction);
-  const agreedAdjective = agreeAdjective(
-    stripAdjective,
-    nominalGroup.masculine,
-    nominalGroup.plural
-  );
 
-  const color1 = getColorText(model.color1);
-  const color2 = getColorText(model.color2);
+  const color1 = getColorAdjective(model.color1);
+  const color2 = getColorAdjective(model.color2);
+  nominalGroup
+    .addAdjective(stripAdjective)
+    .addPatternAdjective("{0} et {1}", [color1, color2]);
 
-  if (model.count == 3) {
-    return `${agreedAdjective} ${color1} et ${color2}`;
-  } else {
+  if (model.count != 3) {
     const stripCount = model.count * 2;
-    return `${agreedAdjective} ${color1} et ${color2} de ${stripCount} pièces`;
+    nominalGroup.addText(`de ${stripCount} pièces`);
   }
 }
 

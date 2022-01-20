@@ -25,7 +25,7 @@ async function fieldToLabel(model: FieldModel): Promise<string> {
 async function partitionToLabel(model: MultiFieldModel): Promise<string> {
   const partitionInfo = getPartitionTextual(model.partitionType);
   if (!partitionInfo) {
-    return "unsupported partition: '" + model.partitionType + "'";
+    return `unsupported partition: '${model.partitionType}'`;
   }
 
   let formatted = partitionInfo.pattern;

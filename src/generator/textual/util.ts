@@ -1,45 +1,47 @@
 import { Direction } from "@/model/misc";
 import { FrenchAdjective, FrenchNoun } from "@/service/textual.type";
 
-export interface NominalGroup {
-  label: string;
-  masculine: boolean;
-  plural: boolean;
-}
-
 export class NominalGroupBuilder {
-  label: string;
-  readonly masculine: boolean;
-  readonly plural: boolean;
-
-  constructor(
+  static fromNoun(
     noun: FrenchNoun,
-    count: number,
+    count?: number,
     options?: {
       contractedPrepositionIfPlural?: boolean;
       forcePlural?: boolean;
     }
+  ): NominalGroupBuilder {
+    const safeCount = count ? count : 1;
+    const masculine = noun.genre == "m";
+    const plural = safeCount > 1 || options?.forcePlural == true;
+    const baseLabel = countableNounToLabel(noun, safeCount, options);
+    return new NominalGroupBuilder(baseLabel, masculine, plural);
+  }
+
+  label: string;
+  constructor(
+    readonly baseLabel: string,
+    readonly masculine: boolean,
+    readonly plural: boolean
   ) {
-    this.masculine = noun.genre == "m";
-    this.plural = count > 1 || options?.forcePlural == true;
-
-    this.label = countableNounToLabel(noun, count, options);
+    this.label = baseLabel;
   }
 
-  public addText(text: string): void {
+  public addText(text: string): NominalGroupBuilder {
     this.label = `${this.label} ${text}`;
+    return this;
   }
 
-  public addAdjective(adjective: FrenchAdjective): void {
+  public addAdjective(adjective: FrenchAdjective): NominalGroupBuilder {
     const text = agreeAdjective(adjective, this.masculine, this.plural);
     this.addText(text);
+    return this;
   }
 
   // Pattern exemple: "{0} et contre-{0}"
   public addPatternAdjective(
     pattern: string,
     adjectives: FrenchAdjective[]
-  ): void {
+  ): NominalGroupBuilder {
     let text = pattern;
     for (let i = 0; i < adjectives.length; i++) {
       const adjective = adjectives[i];
@@ -51,14 +53,7 @@ export class NominalGroupBuilder {
       text = text.replaceAll("{" + i + "}", agreedAdjective);
     }
     this.addText(text);
-  }
-
-  public build(): NominalGroup {
-    return {
-      label: this.label,
-      masculine: this.masculine,
-      plural: this.plural,
-    };
+    return this;
   }
 }
 

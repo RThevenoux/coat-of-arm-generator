@@ -23,6 +23,12 @@
     "genre": "f",
     "elision": false
   },
+  "bordure": {
+    "one": "bordure",
+    "plural": "bordures",
+    "genre": "f",
+    "elision": false
+  },
   "burelle": {
     "one": "burelle",
     "plural": "burelles",
@@ -35,11 +41,23 @@
     "genre": "f",
     "elision": false
   },
+  "croix": {
+    "one": "croix",
+    "plural": "croix",
+    "genre": "f",
+    "elision": false
+  },
   "divise": {
     "one": "divise",
     "plural": "divises",
     "genre": "f",
     "elision": false
+  },
+  "estrez": {
+    "one": "estrez",
+    "plural": "estrez",
+    "genre": "m",
+    "elision": true
   },
   "fasce": {
     "one": "fasce",
@@ -80,6 +98,12 @@
   "pal": {
     "one": "pal",
     "plural": "pals",
+    "genre": "m",
+    "elision": false
+  },
+  "sautoir": {
+    "one": "sautoir",
+    "plural": "sautoirs",
     "genre": "m",
     "elision": false
   },

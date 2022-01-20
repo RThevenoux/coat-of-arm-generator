@@ -3,6 +3,7 @@ import { ColorOption } from "./ColorOption";
 
 // Data
 import data from "./data/color.json";
+import { FrenchAdjective } from "./textual.type";
 
 const blazon: Record<string, string> = {};
 const colorOptions: ColorOption[] = [];
@@ -21,6 +22,9 @@ export function getColorOptions(): ColorOption[] {
   return colorOptions;
 }
 
-export function getColorText(colorId: ColorId): string {
-  return blazon[colorId];
+export function getColorAdjective(colorId: ColorId): FrenchAdjective {
+  return {
+    type: "invariant",
+    invariant: blazon[colorId],
+  };
 }

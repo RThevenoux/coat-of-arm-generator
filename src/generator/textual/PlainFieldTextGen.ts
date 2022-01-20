@@ -1,8 +1,9 @@
 import { ChargeModel } from "@/model/charge";
 import { BorderModel, PlainFieldModel } from "@/model/field";
 import { chargeToLabel } from "./charge/ChargeTextGen";
-import { NominalGroup } from "./util";
-import { fillerToLabel } from "./filler/FillerTextGen";
+import { NominalGroupBuilder } from "./util";
+import { addFiller } from "./filler/FillerTextGen";
+import { getNoun } from "@/service/FrenchService";
 
 export async function plainFieldToLabel(
   model: PlainFieldModel
@@ -11,45 +12,40 @@ export async function plainFieldToLabel(
     return "[?]";
   }
 
-  const nominalGroup: NominalGroup = {
-    label: "",
-    masculine: true,
-    plural: false,
-  };
-  const fillerLabel = await fillerToLabel(model.filler, nominalGroup);
+  const builder = new NominalGroupBuilder("", true, false);
 
-  let label = `${nominalGroup.label} ${fillerLabel}`;
+  await addFiller(model.filler, builder);
 
   if (model.charges.length > 0) {
-    label += ` ${await _chargeList(model.charges)}`;
+    builder.addText(await _chargeList(model.charges));
   }
 
   if (model.border) {
-    label += ` ${await _border(model.border)}`;
+    const border = await _border(model.border);
+    builder.addText(border.label);
   }
 
-  return label;
+  return builder.label;
 }
 
-async function _border(model: BorderModel): Promise<string> {
-  const nominalGroup: NominalGroup = {
-    label: "à la bordure",
-    masculine: false,
-    plural: false,
-  };
-  const filler = await fillerToLabel(model.filler, nominalGroup);
-  return `${nominalGroup.label} ${filler}`;
+async function _border(model: BorderModel): Promise<NominalGroupBuilder> {
+  const noun = getNoun("bordure");
+  const builder = NominalGroupBuilder.fromNoun(noun);
+  await addFiller(model.filler, builder);
+  return builder;
 }
 
 async function _chargeList(charges: ChargeModel[]): Promise<string> {
   const chargeLabels = await Promise.all(
     charges.map((item) => _singleCharge(item))
   );
-  return chargeLabels.join(", ");
+  return chargeLabels.map((builder) => builder.label).join(", ");
 }
 
-async function _singleCharge(charge: ChargeModel): Promise<string> {
-  const nominalGroup = await chargeToLabel(charge);
-  const filler = await fillerToLabel(charge.filler, nominalGroup);
-  return `${nominalGroup.label} ${filler}`;
+async function _singleCharge(
+  charge: ChargeModel
+): Promise<NominalGroupBuilder> {
+  const builder = await chargeToLabel(charge);
+  await addFiller(charge.filler, builder);
+  return builder;
 }

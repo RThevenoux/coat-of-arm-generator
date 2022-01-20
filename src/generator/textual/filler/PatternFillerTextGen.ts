@@ -1,47 +1,28 @@
 import { FillerPattern } from "@/model/filler";
-import { getColorText } from "@/service/ColorService";
+import { getColorAdjective } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
 import { getPatternTextualInfo } from "@/service/PatternService";
-import { agreeAdjective, directionToLabel, NominalGroup } from "../util";
+import { directionToLabel, NominalGroupBuilder } from "../util";
 import { _matchColors } from "./util";
 
-export function _pattern(
+export function addFillerPattern(
   model: FillerPattern,
-  nominalGroup: NominalGroup
-): string {
+  builder: NominalGroupBuilder
+): void {
   const labelInfo = getPatternTextualInfo(model.patternName);
 
   const result = _matchColors(labelInfo, model.color1, model.color2);
   const adjective = getAdjective(result.value);
-  const agreedAdjective = agreeAdjective(
-    adjective,
-    nominalGroup.masculine,
-    nominalGroup.plural
-  );
-  const adjectiveWithDirection = _addDirection(model.angle, agreedAdjective);
 
-  if (result.matchColors) {
-    return adjectiveWithDirection;
-  } else {
-    return _addColors(model, adjectiveWithDirection);
+  builder.addAdjective(adjective);
+  if (model.angle == "bande" || model.angle == "barre") {
+    builder.addText(directionToLabel(model.angle));
   }
-}
 
-function _addColors(model: FillerPattern, adjective: string): string {
-  const color1 = getColorText(model.color1);
-  const color2 = getColorText(model.color2);
-
-  return `${adjective} ${color1} et ${color2}`;
-}
-
-function _addDirection(
-  direction: "bande" | "barre" | "defaut" | undefined,
-  adjective: string
-): string {
-  if (direction == "bande" || direction == "barre") {
-    const directionLabel = directionToLabel(direction);
-    return `${adjective} ${directionLabel}`;
-  } else {
-    return adjective;
+  if (!result.matchColors) {
+    // colors must be specified
+    const color1 = getColorAdjective(model.color1);
+    const color2 = getColorAdjective(model.color2);
+    builder.addPatternAdjective("{0} et {1}", [color1, color2]);
   }
 }

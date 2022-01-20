@@ -1,56 +1,54 @@
 import { FillerSeme } from "@/model/filler";
 import { getChargeSemeInfo } from "@/service/ChargeService";
-import { getColorText } from "@/service/ColorService";
+import { getColorAdjective } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
-import { agreeAdjective, uncountableNounToLabel, NominalGroup } from "../util";
+import { FrenchNoun, LabelInfo } from "@/service/textual.type";
+import { uncountableNounToLabel, NominalGroupBuilder } from "../util";
 import { _matchColors } from "./util";
 
-export async function _seme(
+export async function addFillerSeme(
   model: FillerSeme,
-  nominalGroup: NominalGroup
-): Promise<string> {
+  builder: NominalGroupBuilder
+): Promise<void> {
   const semeInfo = await getChargeSemeInfo(model.chargeId);
-
   if (semeInfo.type == "custom") {
-    const result = _matchColors(
-      semeInfo.custom,
-      model.fieldColor,
-      model.chargeColor
-    );
-
-    const adjectiveId = result.value;
-    const adjective = getAdjective(adjectiveId);
-    const agreedAdjective = agreeAdjective(
-      adjective,
-      nominalGroup.masculine,
-      nominalGroup.plural
-    );
-
-    if (result.matchColors) {
-      return agreedAdjective;
-    } else {
-      return _addColors(agreedAdjective, model);
-    }
+    _custom(builder, model, semeInfo.custom);
   } else {
-    // use-noun
-    const adjective = getAdjective("seme");
-    const agreedAdjective = agreeAdjective(
-      adjective,
-      nominalGroup.masculine,
-      nominalGroup.plural
-    );
-
-    const noun = semeInfo.noun;
-    const completeAdjectiveGroup = `${agreedAdjective} ${uncountableNounToLabel(
-      noun
-    )}`;
-
-    return _addColors(completeAdjectiveGroup, model);
+    _useNoun(builder, model, semeInfo.noun);
   }
 }
 
-function _addColors(agreedAdjective: string, model: FillerSeme): string {
-  const color1 = getColorText(model.fieldColor);
-  const color2 = getColorText(model.chargeColor);
-  return `${color1} ${agreedAdjective} ${color2}`;
+function _custom(
+  builder: NominalGroupBuilder,
+  model: FillerSeme,
+  custom: LabelInfo<string>
+): void {
+  const result = _matchColors(custom, model.fieldColor, model.chargeColor);
+
+  const adjectiveId = result.value;
+  const adjective = getAdjective(adjectiveId);
+
+  if (result.matchColors) {
+    builder.addAdjective(adjective);
+  } else {
+    const color1 = getColorAdjective(model.fieldColor);
+    const color2 = getColorAdjective(model.chargeColor);
+    builder.addAdjective(color1).addAdjective(adjective).addAdjective(color2);
+  }
+}
+
+function _useNoun(
+  builder: NominalGroupBuilder,
+  model: FillerSeme,
+  noun: FrenchNoun
+): void {
+  const color1 = getColorAdjective(model.fieldColor);
+  const color2 = getColorAdjective(model.chargeColor);
+
+  const semeAdjective = getAdjective("seme");
+  builder
+    .addAdjective(color1)
+    .addAdjective(semeAdjective)
+    .addText(uncountableNounToLabel(noun))
+    .addAdjective(color2);
 }

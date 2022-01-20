@@ -3,9 +3,9 @@ import { ChargeStrip } from "@/model/charge";
 import { directionToLabel } from "../util";
 import { Direction } from "@/model/misc";
 import { getAdjective, getNoun } from "@/service/FrenchService";
-import { NominalGroup, NominalGroupBuilder } from "../util";
+import { NominalGroupBuilder } from "../util";
 
-export function stripToLabel(model: ChargeStrip): NominalGroup {
+export function stripToLabel(model: ChargeStrip): NominalGroupBuilder {
   const nounInfo = getNounInfo(model);
   const noun = getNoun(nounInfo.nounId);
 
@@ -15,7 +15,7 @@ export function stripToLabel(model: ChargeStrip): NominalGroup {
     forcePlural,
   };
 
-  const builder = new NominalGroupBuilder(noun, model.count, options);
+  const builder = NominalGroupBuilder.fromNoun(noun, model.count, options);
 
   if (nounInfo.direction) {
     builder.addText(directionToLabel(nounInfo.direction));
@@ -46,7 +46,7 @@ export function stripToLabel(model: ChargeStrip): NominalGroup {
         break;
     }
   }
-  return builder.build();
+  return builder;
 }
 
 function getNounInfo(strip: ChargeStrip): {

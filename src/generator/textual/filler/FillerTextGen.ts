@@ -1,30 +1,42 @@
 import { FillerModel } from "@/model/filler";
-import { getColorText } from "@/service/ColorService";
-import { _strip } from "./StripFillerTextGen";
-import { _seme } from "./SemeFillerTextGen";
-import { _pattern } from "./PatternFillerTextGen";
-import { NominalGroup } from "../util";
+import { getColorAdjective } from "@/service/ColorService";
+import { addFillerStrip } from "./StripFillerTextGen";
+import { addFillerSeme } from "./SemeFillerTextGen";
+import { addFillerPattern } from "./PatternFillerTextGen";
+import { NominalGroupBuilder } from "../util";
+import { ColorId } from "@/model/misc";
 
-export async function fillerToLabel(
+export async function addFiller(
   model: FillerModel,
-  nominalGroup: NominalGroup
-): Promise<string> {
+  builder: NominalGroupBuilder
+): Promise<void> {
   if (!model) {
     console.log("getFiller() : model is undefined");
-    return "[?]";
+    builder.addText("[?]");
+    return;
   }
+
   switch (model.type) {
     case "plein":
-      return getColorText(model.color);
+      _plain(model.color, builder);
+      return;
     case "pattern":
-      return _pattern(model, nominalGroup);
+      addFillerPattern(model, builder);
+      return;
     case "seme":
-      return _seme(model, nominalGroup);
+      await addFillerSeme(model, builder);
+      return;
     case "strip":
-      return _strip(model, nominalGroup);
-    case "invalid":
-      return "[no-filler]";
-    default:
-      return "[!filler-error]";
+      addFillerStrip(model, builder);
+      return;
   }
+
+  // if model.type do not match valid values
+  console.log("getFiller(): invalid filler type:" + model.type);
+  builder.addText("[?]");
+  return;
+}
+
+function _plain(colorId: ColorId, builder: NominalGroupBuilder): void {
+  builder.addAdjective(getColorAdjective(colorId));
 }

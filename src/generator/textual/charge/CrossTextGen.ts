@@ -1,7 +1,8 @@
 import { ChargeCross } from "@/model/charge";
-import { NominalGroup } from "../util";
+import { getNoun } from "@/service/FrenchService";
+import { NominalGroupBuilder } from "../util";
 
-export function crossToLabel(cross: ChargeCross): NominalGroup {
+export function crossToLabel(cross: ChargeCross): NominalGroupBuilder {
   if (cross.diagonal) {
     return _diagonal(cross);
   } else {
@@ -9,23 +10,33 @@ export function crossToLabel(cross: ChargeCross): NominalGroup {
   }
 }
 
-function _straight(cross: ChargeCross): NominalGroup {
+function _straight(cross: ChargeCross): NominalGroupBuilder {
   switch (cross.size) {
-    case "default":
-      return { label: "à la croix", masculine: false, plural: false };
-    case "reduced":
-      return { label: "à l'estrez", masculine: true, plural: false };
-    case "minimal":
-      return { label: "au filet en croix", masculine: true, plural: false };
+    case "default": {
+      const noun = getNoun("croix");
+      return NominalGroupBuilder.fromNoun(noun);
+    }
+    case "reduced": {
+      const noun = getNoun("estrez");
+      return NominalGroupBuilder.fromNoun(noun);
+    }
+    case "minimal": {
+      const noun = getNoun("filet");
+      return NominalGroupBuilder.fromNoun(noun).addText("en croix");
+    }
   }
 }
 
-function _diagonal(cross: ChargeCross): NominalGroup {
+function _diagonal(cross: ChargeCross): NominalGroupBuilder {
   switch (cross.size) {
-    case "default":
-      return { label: "au sautoir", masculine: true, plural: false };
+    case "default": {
+      const noun = getNoun("sautoir");
+      return NominalGroupBuilder.fromNoun(noun);
+    }
     case "reduced":
-    case "minimal":
-      return { label: "au filet en sautoir", masculine: true, plural: false };
+    case "minimal": {
+      const noun = getNoun("filet");
+      return NominalGroupBuilder.fromNoun(noun).addText("en sautoir");
+    }
   }
 }

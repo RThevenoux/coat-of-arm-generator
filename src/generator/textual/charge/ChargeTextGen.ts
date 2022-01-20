@@ -2,11 +2,11 @@ import { ChargeModel } from "@/model/charge";
 import { getChargeNoun } from "@/service/ChargeService";
 import { crossToLabel } from "./CrossTextGen";
 import { stripToLabel } from "./StripTextGen";
-import { NominalGroup, NominalGroupBuilder } from "../util";
+import { NominalGroupBuilder } from "../util";
 
 export async function chargeToLabel(
   charge: ChargeModel
-): Promise<NominalGroup> {
+): Promise<NominalGroupBuilder> {
   switch (charge.type) {
     case "strip":
       return stripToLabel(charge);
@@ -21,8 +21,7 @@ export async function chargeToLabel(
 async function getCountableChargeLabel(
   chargeId: string,
   count: number
-): Promise<NominalGroup> {
+): Promise<NominalGroupBuilder> {
   const noun = await getChargeNoun(chargeId);
-  const builder = new NominalGroupBuilder(noun, count);
-  return builder.build();
+  return NominalGroupBuilder.fromNoun(noun, count);
 }
