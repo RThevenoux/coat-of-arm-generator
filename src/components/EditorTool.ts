@@ -32,7 +32,7 @@ export async function initialChargeModel(): Promise<SingleChargePickerModel> {
       shifted: false,
     },
     cross: {
-      angle: "fasce",
+      diagonal: "false",
       size: "default",
       filler: await initialFiller(),
     },
@@ -155,7 +155,7 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
       return {
         type: "cross",
         count: 1,
-        direction: viewModel.cross.angle,
+        diagonal: viewModel.cross.diagonal == "true",
         filler: fillerToModel(viewModel.cross.filler),
         size: viewModel.cross.size,
       };

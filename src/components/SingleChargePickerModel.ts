@@ -1,5 +1,4 @@
 import { CrossSize } from "@/model/charge";
-import { Direction } from "@/model/misc";
 import { FillerEditorModel } from "./FillerEditorModel";
 import { StripEditorModel } from "./StripModel";
 
@@ -8,7 +7,7 @@ export interface SingleChargePickerModel {
   strip: StripEditorModel;
   cross: {
     filler: FillerEditorModel;
-    angle: Direction;
+    diagonal: "false" | "true";
     size: CrossSize;
   };
   symbol: {

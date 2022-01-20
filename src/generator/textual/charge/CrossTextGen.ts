@@ -2,19 +2,10 @@ import { ChargeCross } from "@/model/charge";
 import { NominalGroup } from "../util";
 
 export function crossToLabel(cross: ChargeCross): NominalGroup {
-  switch (cross.direction) {
-    case "pal":
-    case "fasce":
-      return _straight(cross);
-    case "barre":
-    case "bande":
-      return _diagonal(cross);
-    default:
-      return {
-        label: `[cross:${cross.direction}]`,
-        masculine: true,
-        plural: false,
-      };
+  if (cross.diagonal) {
+    return _diagonal(cross);
+  } else {
+    return _straight(cross);
   }
 }
 

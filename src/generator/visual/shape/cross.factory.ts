@@ -7,7 +7,7 @@ export function createCross(
   cross: ChargeCross,
   container: FieldShape
 ): SimpleShape {
-  if (cross.direction === "barre" || cross.direction === "bande") {
+  if (cross.diagonal) {
     return createDiagonalCross(cross.size, container);
   } else {
     return createStraigthCross(cross.size, container);

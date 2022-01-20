@@ -48,7 +48,7 @@ export type CrossSize = "default" | "reduced" | "minimal";
 export interface ChargeCross {
   type: "cross";
   count: 1;
-  direction: Direction;
+  diagonal: boolean;
   filler: FillerModel;
   size: CrossSize;
 }

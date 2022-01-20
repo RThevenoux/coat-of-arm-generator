@@ -14,9 +14,13 @@
       >
       </StripMainEditor>
       <div v-else-if="value.type === 'cross'" class="flex-container">
-        <select v-model="value.cross.angle" @change="update" key="cross-angle">
-          <option value="fasce">droite</option>
-          <option value="barre">sautoir</option>
+        <select
+          v-model="value.cross.diagonal"
+          @change="update"
+          key="cross-angle"
+        >
+          <option value="false">droite</option>
+          <option value="true">sautoir</option>
         </select>
         <select v-model="value.cross.size" @change="update" key="strip-size">
           <option value="default">standard</option>
