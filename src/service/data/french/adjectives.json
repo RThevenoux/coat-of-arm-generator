@@ -87,6 +87,10 @@
     "type": "regular",
     "base": "palé"
   },
+  "potence":{
+    "type": "regular",
+    "base":"potencé"
+  },
   "seme": {
     "type": "regular",
     "base": "semé"

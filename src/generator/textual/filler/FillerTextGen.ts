@@ -3,11 +3,11 @@ import { getColorText } from "@/service/ColorService";
 import { _strip } from "./StripFillerTextGen";
 import { _seme } from "./SemeFillerTextGen";
 import { _pattern } from "./PatternFillerTextGen";
+import { NominalGroup } from "../util";
 
 export async function fillerToLabel(
   model: FillerModel,
-  masculine: boolean,
-  plural: boolean
+  nominalGroup: NominalGroup
 ): Promise<string> {
   if (!model) {
     console.log("getFiller() : model is undefined");
@@ -17,11 +17,11 @@ export async function fillerToLabel(
     case "plein":
       return getColorText(model.color);
     case "pattern":
-      return _pattern(model, masculine, plural);
+      return _pattern(model, nominalGroup);
     case "seme":
-      return _seme(model, masculine, plural);
+      return _seme(model, nominalGroup);
     case "strip":
-      return _strip(model, masculine, plural);
+      return _strip(model, nominalGroup);
     case "invalid":
       return "[no-filler]";
     default:

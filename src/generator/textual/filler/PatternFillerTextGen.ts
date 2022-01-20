@@ -2,19 +2,22 @@ import { FillerPattern } from "@/model/filler";
 import { getColorText } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
 import { getPatternTextualInfo } from "@/service/PatternService";
-import { agreeAdjective, directionToLabel } from "../util";
+import { agreeAdjective, directionToLabel, NominalGroup } from "../util";
 import { _matchColors } from "./util";
 
 export function _pattern(
   model: FillerPattern,
-  masculine: boolean,
-  plural: boolean
+  nominalGroup: NominalGroup
 ): string {
   const labelInfo = getPatternTextualInfo(model.patternName);
 
   const result = _matchColors(labelInfo, model.color1, model.color2);
   const adjective = getAdjective(result.value);
-  const agreedAdjective = agreeAdjective(adjective, masculine, plural);
+  const agreedAdjective = agreeAdjective(
+    adjective,
+    nominalGroup.masculine,
+    nominalGroup.plural
+  );
   const adjectiveWithDirection = _addDirection(model.angle, agreedAdjective);
 
   if (result.matchColors) {

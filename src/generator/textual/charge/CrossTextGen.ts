@@ -1,5 +1,5 @@
 import { ChargeCross } from "@/model/charge";
-import { NominalGroup } from "./ChargeTextGen";
+import { NominalGroup } from "../util";
 
 export function crossToLabel(cross: ChargeCross): NominalGroup {
   switch (cross.direction) {

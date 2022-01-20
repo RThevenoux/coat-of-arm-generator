@@ -2,13 +2,12 @@ import { FillerSeme } from "@/model/filler";
 import { getChargeSemeInfo } from "@/service/ChargeService";
 import { getColorText } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
-import { agreeAdjective, uncountableNounToLabel } from "../util";
+import { agreeAdjective, uncountableNounToLabel, NominalGroup } from "../util";
 import { _matchColors } from "./util";
 
 export async function _seme(
   model: FillerSeme,
-  masculine: boolean,
-  plural: boolean
+  nominalGroup: NominalGroup
 ): Promise<string> {
   const semeInfo = await getChargeSemeInfo(model.chargeId);
 
@@ -21,7 +20,11 @@ export async function _seme(
 
     const adjectiveId = result.value;
     const adjective = getAdjective(adjectiveId);
-    const agreedAdjective = agreeAdjective(adjective, masculine, plural);
+    const agreedAdjective = agreeAdjective(
+      adjective,
+      nominalGroup.masculine,
+      nominalGroup.plural
+    );
 
     if (result.matchColors) {
       return agreedAdjective;
@@ -31,7 +34,11 @@ export async function _seme(
   } else {
     // use-noun
     const adjective = getAdjective("seme");
-    const agreedAdjective = agreeAdjective(adjective, masculine, plural);
+    const agreedAdjective = agreeAdjective(
+      adjective,
+      nominalGroup.masculine,
+      nominalGroup.plural
+    );
 
     const noun = semeInfo.noun;
     const completeAdjectiveGroup = `${agreedAdjective} ${uncountableNounToLabel(

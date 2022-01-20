@@ -3,15 +3,15 @@ import { Direction } from "@/model/misc";
 import { getColorText } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
 import { FrenchAdjective } from "@/service/textual.type";
-import { agreeAdjective } from "../util";
+import { agreeAdjective, NominalGroup } from "../util";
 
-export function _strip(
-  model: FillerStrip,
-  masculine: boolean,
-  plural: boolean
-): string {
+export function _strip(model: FillerStrip, nominalGroup: NominalGroup): string {
   const stripAdjective = _stripAdjective(model.direction);
-  const agreedAdjective = agreeAdjective(stripAdjective, masculine, plural);
+  const agreedAdjective = agreeAdjective(
+    stripAdjective,
+    nominalGroup.masculine,
+    nominalGroup.plural
+  );
 
   const color1 = getColorText(model.color1);
   const color2 = getColorText(model.color2);

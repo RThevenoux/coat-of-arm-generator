@@ -1,6 +1,67 @@
 import { Direction } from "@/model/misc";
 import { FrenchAdjective, FrenchNoun } from "@/service/textual.type";
 
+export interface NominalGroup {
+  label: string;
+  masculine: boolean;
+  plural: boolean;
+}
+
+export class NominalGroupBuilder {
+  label: string;
+  readonly masculine: boolean;
+  readonly plural: boolean;
+
+  constructor(
+    noun: FrenchNoun,
+    count: number,
+    options?: {
+      contractedPrepositionIfPlural?: boolean;
+      forcePlural?: boolean;
+    }
+  ) {
+    this.masculine = noun.genre == "m";
+    this.plural = count > 1 || options?.forcePlural == true;
+
+    this.label = countableNounToLabel(noun, count, options);
+  }
+
+  public addText(text: string): void {
+    this.label = `${this.label} ${text}`;
+  }
+
+  public addAdjective(adjective: FrenchAdjective): void {
+    const text = agreeAdjective(adjective, this.masculine, this.plural);
+    this.addText(text);
+  }
+
+  // Pattern exemple: "{0} et contre-{0}"
+  public addPatternAdjective(
+    pattern: string,
+    adjectives: FrenchAdjective[]
+  ): void {
+    let text = pattern;
+    for (let i = 0; i < adjectives.length; i++) {
+      const adjective = adjectives[i];
+      const agreedAdjective = agreeAdjective(
+        adjective,
+        this.masculine,
+        this.plural
+      );
+      text = text.replaceAll("{" + i + "}", agreedAdjective);
+    }
+    this.addText(text);
+  }
+
+  public build(): NominalGroup {
+    return {
+      label: this.label,
+      masculine: this.masculine,
+      plural: this.plural,
+    };
+  }
+}
+
 export function directionToLabel(direction: Direction): string {
   switch (direction) {
     case "bande":

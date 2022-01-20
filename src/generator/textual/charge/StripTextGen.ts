@@ -1,13 +1,9 @@
 import { getOutlineAdjective } from "@/service/OutlineService";
 import { ChargeStrip } from "@/model/charge";
-import {
-  agreeAdjective,
-  countableNounToLabel,
-  directionToLabel,
-} from "../util";
+import { directionToLabel } from "../util";
 import { Direction } from "@/model/misc";
-import { getNoun } from "@/service/FrenchService";
-import { NominalGroup } from "./ChargeTextGen";
+import { getAdjective, getNoun } from "@/service/FrenchService";
+import { NominalGroup, NominalGroupBuilder } from "../util";
 
 export function stripToLabel(model: ChargeStrip): NominalGroup {
   const nounInfo = getNounInfo(model);
@@ -18,42 +14,39 @@ export function stripToLabel(model: ChargeStrip): NominalGroup {
     contractedPrepositionIfPlural: true,
     forcePlural,
   };
-  const masculine = noun.genre == "m";
-  const plural = model.count > 1 || forcePlural;
 
-  let label = countableNounToLabel(noun, model.count, options);
+  const builder = new NominalGroupBuilder(noun, model.count, options);
+
   if (nounInfo.direction) {
-    label = `${label} ${directionToLabel(nounInfo.direction)}`;
+    builder.addText(directionToLabel(nounInfo.direction));
   }
 
   if (model.outline) {
     switch (model.outline.type) {
-      case "simple": {
-        const adjective = getOutlineAdjective(model.outline.outlineId);
-        const agreedAdjective = agreeAdjective(adjective, masculine, plural);
-
-        if (model.outline.shifted) {
-          label = `${label} ${agreedAdjective} et contre-${agreedAdjective}`;
-        } else {
-          label = `${label} ${agreedAdjective}`;
+      case "simple":
+        {
+          const adjective = getOutlineAdjective(model.outline.outlineId);
+          if (model.outline.shifted) {
+            builder.addPatternAdjective("{0} et contre-{0}", [adjective]);
+          } else {
+            builder.addAdjective(adjective);
+          }
         }
-        return { label, masculine, plural };
-      }
-      case "double": {
-        label = `${label} [double-outline]`;
-        return { label, masculine, plural };
-      }
-      case "gemelPotented": {
-        label = `${label} potencées et contre-potencées`;
-        return { label, masculine, plural };
-      }
-      case "straight":
-      default:
-        return { label, masculine, plural };
+        break;
+      case "double":
+        {
+          builder.addText("[double-outline]");
+        }
+        break;
+      case "gemelPotented":
+        {
+          const adjective = getAdjective("potence");
+          builder.addPatternAdjective("{0} et contre-{0}", [adjective]);
+        }
+        break;
     }
-  } else {
-    return { label: label, masculine, plural };
   }
+  return builder.build();
 }
 
 function getNounInfo(strip: ChargeStrip): {
