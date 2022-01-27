@@ -1,4 +1,5 @@
 import { Direction } from "@/model/misc";
+import { PositionId } from "@/service/PatternService";
 import { FrenchAdjective, FrenchNoun } from "@/service/textual.type";
 
 export class NominalGroupBuilder {
@@ -57,16 +58,31 @@ export class NominalGroupBuilder {
   }
 }
 
-export function directionToLabel(direction: Direction): string {
+export type DisplayId = Direction | "croix" | "sautoir";
+
+export function getDisplayAdjective(direction: DisplayId): FrenchAdjective {
   switch (direction) {
     case "bande":
-      return "en bande";
+      return { type: "invariant", invariant: "en bande" };
     case "barre":
-      return "en barre";
+      return { type: "invariant", invariant: "en barre" };
     case "fasce":
-      return "en fasce";
+      return { type: "invariant", invariant: "en fasce" };
     case "pal":
-      return "en pal";
+      return { type: "invariant", invariant: "en pal" };
+    case "croix":
+      return { type: "invariant", invariant: "en croix" };
+    case "sautoir":
+      return { type: "invariant", invariant: "en sautoir" };
+  }
+}
+
+export function getPositionAdjective(position: PositionId): FrenchAdjective {
+  switch (position) {
+    case "pointe":
+      return { type: "invariant", invariant: "en pointe" };
+    default:
+      return { type: "invariant", invariant: "en [?]" };
   }
 }
 

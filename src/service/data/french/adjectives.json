@@ -39,14 +39,6 @@
     "type": "invariant",
     "invariant": "de vair"
   },
-  "de_vair_pal": {
-    "type": "invariant",
-    "invariant": "de vair en pal"
-  },
-  "de_vair_pointe": {
-    "type": "invariant",
-    "invariant": "de vair en pointe"
-  },
   "d_erminois": {
     "type": "invariant",
     "invariant": "d'erminois"
@@ -102,28 +94,6 @@
   "vaire": {
     "type": "regular",
     "base": "vairé"
-  },
-  "vaire_pal": {
-    "type": "irregular",
-    "masculine": {
-      "one": "vairé en pal",
-      "plural": "vairés en pal"
-    },
-    "feminine": {
-      "one": "vairée en pal",
-      "plural": "vairées en pal"
-    }
-  },
-  "vaire_pointe": {
-    "type": "irregular",
-    "masculine": {
-      "one": "vairé en pointe",
-      "plural": "vairés en pointe"
-    },
-    "feminine": {
-      "one": "vairée en pointe",
-      "plural": "vairées en pointe"
-    }
   },
   "vivre": {
     "type": "regular",

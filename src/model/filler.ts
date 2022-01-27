@@ -32,5 +32,5 @@ export interface FillerPattern {
   patternName: string;
   color1: ColorId;
   color2: ColorId;
-  angle?: "defaut" | "bande" | "barre"; // for 'fusele' only
+  direction?: "bande" | "barre"; // for 'fusele' only
 }

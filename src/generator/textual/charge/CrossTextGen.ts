@@ -1,42 +1,28 @@
 import { ChargeCross } from "@/model/charge";
 import { getNoun } from "@/service/FrenchService";
-import { NominalGroupBuilder } from "../util";
+import { DisplayId, getDisplayAdjective, NominalGroupBuilder } from "../util";
 
 export function crossToLabel(cross: ChargeCross): NominalGroupBuilder {
-  if (cross.diagonal) {
-    return _diagonal(cross);
-  } else {
-    return _straight(cross);
+  const data = _getData(cross);
+  const builder = NominalGroupBuilder.fromNoun(getNoun(data.noun));
+  if (data.display) {
+    const display = getDisplayAdjective(data.display);
+    builder.addAdjective(display);
   }
+  return builder;
 }
 
-function _straight(cross: ChargeCross): NominalGroupBuilder {
+function _getData(cross: ChargeCross): { noun: string; display?: DisplayId } {
   switch (cross.size) {
-    case "default": {
-      const noun = getNoun("croix");
-      return NominalGroupBuilder.fromNoun(noun);
-    }
+    case "default":
+      return { noun: cross.diagonal ? "sautoir" : "croix" };
     case "reduced": {
-      const noun = getNoun("estrez");
-      return NominalGroupBuilder.fromNoun(noun);
+      if (!cross.diagonal) {
+        return { noun: "estrez" };
+      }
     }
-    case "minimal": {
-      const noun = getNoun("filet");
-      return NominalGroupBuilder.fromNoun(noun).addText("en croix");
-    }
-  }
-}
-
-function _diagonal(cross: ChargeCross): NominalGroupBuilder {
-  switch (cross.size) {
-    case "default": {
-      const noun = getNoun("sautoir");
-      return NominalGroupBuilder.fromNoun(noun);
-    }
-    case "reduced":
-    case "minimal": {
-      const noun = getNoun("filet");
-      return NominalGroupBuilder.fromNoun(noun).addText("en sautoir");
-    }
+    // falls through minimal if cross.diagonal = true
+    case "minimal":
+      return { noun: "filet", display: cross.diagonal ? "sautoir" : "croix" };
   }
 }

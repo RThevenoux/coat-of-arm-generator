@@ -3,18 +3,26 @@ import { PatternVisualInfo } from "./visual.type";
 
 // Data
 import data from "./data/patterns.json";
+import { DisplayId } from "@/generator/textual/util";
 
 const visual: Record<string, PatternVisualInfo> = {};
-const labelInfo: Record<string, LabelInfo<AdjectiveId>> = {};
+const labelInfo: Record<string, LabelInfo<PatternCompoundAdjective>> = {};
+
+export type PositionId = string;
+export interface PatternCompoundAdjective {
+  adjective: AdjectiveId;
+  display?: DisplayId;
+  position?: PositionId;
+}
 
 for (const item of data) {
   visual[item.id] = item.visual as PatternVisualInfo;
-  labelInfo[item.id] = item.blazon as LabelInfo<AdjectiveId>;
+  labelInfo[item.id] = item.blazon as LabelInfo<PatternCompoundAdjective>;
 }
 
 export function getPatternTextualInfo(
   patternId: string
-): LabelInfo<AdjectiveId> {
+): LabelInfo<PatternCompoundAdjective> {
   return labelInfo[patternId];
 }
 

@@ -1,6 +1,6 @@
 import { getOutlineAdjective } from "@/service/OutlineService";
 import { ChargeStrip } from "@/model/charge";
-import { directionToLabel } from "../util";
+import { getDisplayAdjective } from "../util";
 import { Direction } from "@/model/misc";
 import { getAdjective, getNoun } from "@/service/FrenchService";
 import { NominalGroupBuilder } from "../util";
@@ -18,7 +18,7 @@ export function stripToLabel(model: ChargeStrip): NominalGroupBuilder {
   const builder = NominalGroupBuilder.fromNoun(noun, model.count, options);
 
   if (nounInfo.direction) {
-    builder.addText(directionToLabel(nounInfo.direction));
+    builder.addAdjective(getDisplayAdjective(nounInfo.direction));
   }
 
   if (model.outline) {

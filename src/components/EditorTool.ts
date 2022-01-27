@@ -60,7 +60,7 @@ async function initialFiller(): Promise<FillerEditorModel> {
     type: "none",
     color1: "azur",
     color2: "or",
-    patternAngle: "bande",
+    patternDirection: "bande",
     patternName: "echiquete",
     semeChargeId: await getDefaultChargeId(),
     stripAngle: "pal",
@@ -127,8 +127,11 @@ function fillerToModel(viewModel: FillerEditorModel): FillerModel {
         color1: viewModel.color1,
         color2: viewModel.color2,
       };
-      if (viewModel.patternName == "fusele") {
-        model.angle = viewModel.patternAngle;
+      if (
+        viewModel.patternName == "fusele" &&
+        viewModel.patternDirection != "default"
+      ) {
+        model.direction = viewModel.patternDirection;
       }
       return model;
     }

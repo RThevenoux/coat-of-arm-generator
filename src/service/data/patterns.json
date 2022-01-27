@@ -3,7 +3,9 @@
     "id": "echiquete",
     "blazon": {
       "type": "simple",
-      "value": "echiquete"
+      "value": {
+        "adjective": "echiquete"
+      }
     },
     "visual": {
       "patternWidth": 10,
@@ -16,7 +18,9 @@
     "id": "losange",
     "blazon": {
       "type": "simple",
-      "value": "losange"
+      "value": {
+        "adjective": "losange"
+      }
     },
     "visual": {
       "patternWidth": 10,
@@ -29,7 +33,9 @@
     "id": "fusele",
     "blazon": {
       "type": "simple",
-      "value": "fusele"
+      "value": {
+        "adjective": "fusele"
+      }
     },
     "visual": {
       "patternWidth": 20,
@@ -42,7 +48,9 @@
     "id": "triangle",
     "blazon": {
       "type": "simple",
-      "value": "triangle"
+      "value": {
+        "adjective": "triangle"
+      }
     },
     "visual": {
       "patternWidth": 60,
@@ -77,10 +85,14 @@
             "argent",
             "azur"
           ],
-          "value": "de_vair"
+          "value": {
+            "adjective": "de_vair"
+          }
         }
       ],
-      "else": "vaire"
+      "else": {
+        "adjective": "vaire"
+      }
     },
     "visual": {
       "patternWidth": 4,
@@ -115,10 +127,16 @@
             "argent",
             "azur"
           ],
-          "value": "de_vair_pal"
+          "value": {
+            "adjective": "de_vair",
+            "display": "pal"
+          }
         }
       ],
-      "else": "vaire_pal"
+      "else": {
+        "adjective": "vaire",
+        "display": "pal"
+      }
     },
     "visual": {
       "patternWidth": 4,
@@ -146,10 +164,16 @@
             "argent",
             "azur"
           ],
-          "value": "de_vair_pointe"
+          "value": {
+            "adjective": "de_vair",
+            "position": "pointe"
+          }
         }
       ],
-      "else": "vaire_pointe"
+      "else": {
+        "adjective": "vaire",
+        "position": "pointe"
+      }
     },
     "visual": {
       "patternWidth": 4,
@@ -194,10 +218,14 @@
             "argent",
             "azur"
           ],
-          "value": "de_contre_vair"
+          "value": {
+            "adjective": "de_contre_vair"
+          }
         }
       ],
-      "else": "contre_vaire"
+      "else": {
+        "adjective": "contre_vaire"
+      }
     },
     "visual": {
       "patternWidth": 4,

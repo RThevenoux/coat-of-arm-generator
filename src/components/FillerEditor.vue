@@ -62,8 +62,8 @@
               @change="update"
             />
             <label :for="uuid + '-fusele'">Fuselé</label>
-            <select v-model="value.patternAngle" @change="update">
-              <option value="defaut">défaut</option>
+            <select v-model="value.patternDirection" @change="update">
+              <option value="default">défaut</option>
               <option value="bande">en bande</option>
               <option value="barre">en barre</option>
             </select>

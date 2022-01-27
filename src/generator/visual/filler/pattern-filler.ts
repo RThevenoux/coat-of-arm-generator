@@ -36,18 +36,16 @@ export function createPatternFiller(
 
 /* Rotation is only used by "fusele" */
 function _getPatternRotation(description: FillerPattern): number | undefined {
-  if (!description.angle) {
+  if (!description.direction) {
     return undefined;
   }
-  switch (description.angle) {
+  switch (description.direction) {
     case "bande":
       return -45;
     case "barre":
       return 45;
-    case "defaut":
-      return undefined;
     default:
-      console.log("Invalid angle" + description.angle);
+      console.log("Invalid angle" + description.direction);
       return undefined;
   }
 }

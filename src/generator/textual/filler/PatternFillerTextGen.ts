@@ -2,7 +2,11 @@ import { FillerPattern } from "@/model/filler";
 import { getColorAdjective } from "@/service/ColorService";
 import { getAdjective } from "@/service/FrenchService";
 import { getPatternTextualInfo } from "@/service/PatternService";
-import { directionToLabel, NominalGroupBuilder } from "../util";
+import {
+  getDisplayAdjective,
+  getPositionAdjective,
+  NominalGroupBuilder,
+} from "../util";
 import { _matchColors } from "./util";
 
 export function addFillerPattern(
@@ -12,11 +16,17 @@ export function addFillerPattern(
   const labelInfo = getPatternTextualInfo(model.patternName);
 
   const result = _matchColors(labelInfo, model.color1, model.color2);
-  const adjective = getAdjective(result.value);
+  const adjective = getAdjective(result.value.adjective);
 
   builder.addAdjective(adjective);
-  if (model.angle == "bande" || model.angle == "barre") {
-    builder.addText(directionToLabel(model.angle));
+  if (model.direction) {
+    builder.addAdjective(getDisplayAdjective(model.direction));
+  }
+  if (result.value.display) {
+    builder.addAdjective(getDisplayAdjective(result.value.display));
+  }
+  if (result.value.position) {
+    builder.addAdjective(getPositionAdjective(result.value.position));
   }
 
   if (!result.matchColors) {
