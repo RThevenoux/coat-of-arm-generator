@@ -6,6 +6,7 @@ import { OutlineVisualInfo } from "./visual.type";
 // Data
 import data from "./data/outline.json";
 import { defaultAdjective, getAdjective } from "./FrenchService";
+import { PositionId } from "./PatternService";
 
 const visuals: Record<string, OutlineVisualInfo> = {};
 const adjectives: Record<string, AdjectiveId> = {};
@@ -31,7 +32,7 @@ export function getDefaultOutlineId(): OutlineId {
   return defaultOutlineId as unknown as OutlineId;
 }
 
-export function getOutlineAdjective(outlineId: OutlineId): FrenchAdjective {
+export function getOutlineAdjective(outlineId: OutlineId, position?: PositionId): FrenchAdjective {
   const id = adjectives[outlineId];
   if (!id) {
     console.log(`No adjective associate with oultine: ${outlineId}`);

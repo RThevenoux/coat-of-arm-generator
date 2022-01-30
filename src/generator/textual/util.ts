@@ -81,8 +81,14 @@ export function getPositionAdjective(position: PositionId): FrenchAdjective {
   switch (position) {
     case "pointe":
       return { type: "invariant", invariant: "en pointe" };
+    case "chef":
+      return { type: "invariant", invariant: "en chef" };
+    case "dextre":
+      return { type: "invariant", invariant: "à dextre" };
+    case "senestre":
+      return { type: "invariant", invariant: "à senestre" };
     default:
-      return { type: "invariant", invariant: "en [?]" };
+      return { type: "invariant", invariant: "à [?]" };
   }
 }
 

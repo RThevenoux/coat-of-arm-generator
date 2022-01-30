@@ -8,7 +8,7 @@ import { DisplayId } from "@/generator/textual/util";
 const visual: Record<string, PatternVisualInfo> = {};
 const labelInfo: Record<string, LabelInfo<PatternCompoundAdjective>> = {};
 
-export type PositionId = string;
+export type PositionId = "chef" | "pointe" | "senestre" | "dextre";
 export interface PatternCompoundAdjective {
   adjective: AdjectiveId;
   display?: DisplayId;
