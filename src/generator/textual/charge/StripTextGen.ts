@@ -1,4 +1,7 @@
-import { getOutlineAdjective } from "@/service/OutlineService";
+import {
+  getPositionnedOutlineAdjective,
+  getSimpleOutlineAdjective,
+} from "@/service/OutlineService";
 import {
   ChargeStrip,
   DoubleStripOutline,
@@ -52,7 +55,7 @@ function addSimpleOutline(
   builder: NominalGroupBuilder,
   outline: SimpleStripOutline
 ): void {
-  const adjective = getOutlineAdjective(outline.outlineId);
+  const adjective = getSimpleOutlineAdjective(outline.outlineId);
   if (outline.shifted) {
     builder.addPatternAdjective("{0} et contre-{0}", [adjective]);
   } else {
@@ -68,21 +71,29 @@ function addDoubleOutline(
   if (outline.outlineId1) {
     const position = getOutline1Position(direction);
 
-    const outlineAdjective = getOutlineAdjective(outline.outlineId1, position);
-    builder.addAdjective(outlineAdjective);
-
-    const positionAdjective = getPositionAdjective(position);
-    builder.addAdjective(positionAdjective);
+    const outlineAdjective = getPositionnedOutlineAdjective(
+      outline.outlineId1,
+      position
+    );
+    builder.addAdjective(outlineAdjective.adjective);
+    if (outlineAdjective.addPosition) {
+      const positionAdjective = getPositionAdjective(position);
+      builder.addAdjective(positionAdjective);
+    }
   }
 
   if (outline.outlineId2) {
     const position = getOutline2Position(direction);
 
-    const outlineAdjective = getOutlineAdjective(outline.outlineId2, position);
-    builder.addAdjective(outlineAdjective);
-
-    const positionAdjective = getPositionAdjective(position);
-    builder.addAdjective(positionAdjective);
+    const outlineAdjective = getPositionnedOutlineAdjective(
+      outline.outlineId2,
+      position
+    );
+    builder.addAdjective(outlineAdjective.adjective);
+    if (outlineAdjective.addPosition) {
+      const positionAdjective = getPositionAdjective(position);
+      builder.addAdjective(positionAdjective);
+    }
   }
 }
 

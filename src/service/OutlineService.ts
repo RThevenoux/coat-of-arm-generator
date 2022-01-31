@@ -8,8 +8,16 @@ import data from "./data/outline.json";
 import { defaultAdjective, getAdjective } from "./FrenchService";
 import { PositionId } from "./PatternService";
 
+type OutlineAdjectives = {
+  default: AdjectiveId;
+  chef?: AdjectiveId;
+  pointe?: AdjectiveId;
+  senestre?: AdjectiveId;
+  dextre?: AdjectiveId;
+};
+
 const visuals: Record<string, OutlineVisualInfo> = {};
-const adjectives: Record<string, AdjectiveId> = {};
+const adjectives: Record<string, OutlineAdjectives> = {};
 const options: MyOption[] = [];
 
 let defaultOutlineId: string | undefined = undefined;
@@ -32,13 +40,33 @@ export function getDefaultOutlineId(): OutlineId {
   return defaultOutlineId as unknown as OutlineId;
 }
 
-export function getOutlineAdjective(outlineId: OutlineId, position?: PositionId): FrenchAdjective {
-  const id = adjectives[outlineId];
-  if (!id) {
+export function getSimpleOutlineAdjective(
+  outlineId: OutlineId
+): FrenchAdjective {
+  const adjectiveDef = adjectives[outlineId];
+  if (!adjectiveDef) {
     console.log(`No adjective associate with oultine: ${outlineId}`);
     return defaultAdjective();
+  }
+
+  return getAdjective(adjectiveDef.default);
+}
+
+export function getPositionnedOutlineAdjective(
+  outlineId: OutlineId,
+  position: PositionId
+): { adjective: FrenchAdjective; addPosition: boolean } {
+  const adjectiveDef = adjectives[outlineId];
+  if (!adjectiveDef) {
+    console.log(`No adjective associate with oultine: ${outlineId}`);
+    return { adjective: defaultAdjective(), addPosition: true };
+  }
+
+  const customAdjectiveId = adjectiveDef[position];
+  if (!customAdjectiveId) {
+    return { adjective: getAdjective(adjectiveDef.default), addPosition: true };
   } else {
-    return getAdjective(id);
+    return { adjective: getAdjective(customAdjectiveId), addPosition: false };
   }
 }
 

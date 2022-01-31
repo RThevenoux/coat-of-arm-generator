@@ -7,6 +7,14 @@
     "type": "regular",
     "base": "barré"
   },
+  "bastille": {
+    "type": "regular",
+    "base": "bastillé"
+  },
+  "bretesse": {
+    "type": "regular",
+    "base": "bretessé"
+  },
   "cannele": {
     "type": "regular",
     "base": "cannelé"

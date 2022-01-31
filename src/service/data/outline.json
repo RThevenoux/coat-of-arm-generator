@@ -8,7 +8,11 @@
       "scale": 0.25,
       "reverseShifted": false
     },
-    "adjective": "crenele"
+    "adjective": {
+      "default": "bretesse",
+      "pointe": "bastille",
+      "chef": "crenele"
+    }
   },
   {
     "id": "vivre",
@@ -18,7 +22,9 @@
       "scale": 0.5,
       "reverseShifted": true
     },
-    "adjective": "vivre"
+    "adjective": {
+      "default": "vivre"
+    }
   },
   {
     "id": "dentelé",
@@ -28,7 +34,9 @@
       "scale": 0.125,
       "reverseShifted": true
     },
-    "adjective": "dentele"
+    "adjective": {
+      "default": "dentele"
+    }
   },
   {
     "id": "onde",
@@ -38,7 +46,9 @@
       "scale": 0.001,
       "reverseShifted": true
     },
-    "adjective": "onde"
+    "adjective": {
+      "default": "onde"
+    }
   },
   {
     "id": "cannelé",
@@ -48,7 +58,9 @@
       "scale": 0.25,
       "reverseShifted": false
     },
-    "adjective": "cannele"
+    "adjective": {
+      "default": "cannele"
+    }
   },
   {
     "id": "engrele",
@@ -58,6 +70,8 @@
       "scale": 0.25,
       "reverseShifted": false
     },
-    "adjective": "engrele"
+    "adjective": {
+      "default": "engrele"
+    }
   }
 ]
