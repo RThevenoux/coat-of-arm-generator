@@ -69,7 +69,7 @@ export default class FieldEditor extends Vue {
   uuid = uuidv4();
 
   private options = getPartitionOptions();
-  private selectedOption = this.value.partitionType;
+  private selectedOption = this.value?.partitionType || "plain";
 
   async updatePartitions(): Promise<void> {
     if (this.selectedOption === "plain") {
