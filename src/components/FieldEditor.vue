@@ -62,6 +62,7 @@ import { v4 as uuidv4 } from "uuid";
     FillerPicker,
     MultiChargePicker,
   },
+  name: "FieldEditor",
 })
 export default class FieldEditor extends Vue {
   @Prop() value!: FieldEditorModel;

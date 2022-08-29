@@ -5,7 +5,7 @@
     </template>
     <template v-if="editorModel !== 'loading'">
       <div class="column50">
-        <h1>Coat of Arm Generator</h1>
+        <h1>Coat of Arms Generator</h1>
         <div>
           <h2>Definition</h2>
           <RootEditor v-model="editorModel" @input="updateModel"></RootEditor>
