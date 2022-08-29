@@ -8,11 +8,21 @@
   {
     "id": "square",
     "label": "Bannière",
-    "path": "M 0,0 L 0,0 0,500 L 500,500 L 500,0 z"
+    "path": "M 0,0 L 0,500 L 500,500 L 500,0 z"
+  },
+  {
+    "id": "rectangle-2-3",
+    "label": "Bannière 2:3",
+    "path": "M 0,0 L 600,0 L 600,400 L 0,400 z"
+  },
+  {
+    "id": "rectangle-1-2",
+    "label": "Bannière 1:2",
+    "path": "M 0,0 L 0,250 L 500,250 L 500,0 z"
   },
   {
     "id": "losange",
     "label": "Losange",
-    "path": "M 300,0 L 300,0 0,300 L 300,600 L 600,300 z"
+    "path": "M 300,0 L 0,300 L 300,600 L 600,300 z"
   }
 ]
