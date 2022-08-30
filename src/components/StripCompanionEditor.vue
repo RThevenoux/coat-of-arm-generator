@@ -1,11 +1,5 @@
 <template>
   <div class="flex-container">
-    <select v-model="value.angle" @change="update" key="angle">
-      <option value="fasce">en fasce</option>
-      <option value="barre">en barre</option>
-      <option value="pal">en pal</option>
-      <option value="bande">en bande</option>
-    </select>
     <select v-model="value.size" @change="update" key="size">
       <option value="default">standard</option>
       <option value="reduced">réduit</option>
@@ -32,15 +26,15 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import FillerPicker from "./FillerPicker.vue";
-import { StripEditorModel } from "./StripModel";
+import { StripEditorCoreModel } from "./StripModel";
 
 @Component({
   components: {
     FillerPicker,
   },
 })
-export default class StripMainEditor extends Vue {
-  @Prop() value!: StripEditorModel;
+export default class StripCompanionEditor extends Vue {
+  @Prop() value!: StripEditorCoreModel;
 
   update(): void {
     if (

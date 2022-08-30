@@ -1,11 +1,14 @@
 <template>
   <div>
     <div class="flex-container">
+      <!-- Selector -->
       <select v-model="value.type" @change="update">
         <option value="strip">Bandeau</option>
         <option value="cross">Croix</option>
         <option value="symbol">Symbole</option>
       </select>
+
+      <!-- Strip Main (details below) -->
       <StripMainEditor
         v-if="value.type === 'strip'"
         v-model="value.strip"
@@ -13,6 +16,8 @@
         @switchDetails="switchStripDetails"
       >
       </StripMainEditor>
+
+      <!-- Cross -->
       <div v-else-if="value.type === 'cross'" class="flex-container">
         <select
           v-model="value.cross.diagonal"
@@ -33,6 +38,8 @@
           key="cross-filler"
         ></FillerPicker>
       </div>
+
+      <!-- Symbol -->
       <div v-else-if="value.type === 'symbol'" class="flex-container">
         <select
           v-model="value.symbol.chargeId"
@@ -61,12 +68,35 @@
         ></FillerPicker>
       </div>
     </div>
-    <StripDetailsEditor
-      v-if="value.type === 'strip' && showStripDetails"
-      v-model="value.strip"
-      @input="update"
-    >
-    </StripDetailsEditor>
+
+    <template v-if="value.type === 'strip'">
+      <!-- Strip Details ('main' above) -->
+      <StripDetailsEditor
+        v-if="showStripDetails"
+        v-model="value.strip"
+        @input="update"
+      >
+      </StripDetailsEditor>
+
+      <!-- Strip companion -->
+      <div class="flex-container">
+        <input type="checkbox" v-model="value.strip.companion" />
+        <label>Accompagné</label>
+        <StripCompanionEditor
+          v-if="value.strip.companion"
+          v-model="value.strip.companionModel"
+          @input="update"
+          @switchDetails="switchStripCompanionDetails"
+        >
+        </StripCompanionEditor>
+      </div>
+      <StripDetailsEditor
+        v-if="value.strip.companion && showStripComponionDetails"
+        v-model="value.strip.companionModel"
+        @input="update"
+      >
+      </StripDetailsEditor>
+    </template>
   </div>
 </template>
 
@@ -77,6 +107,7 @@ import { getChargeOptions } from "../service/ChargeService";
 import FillerPicker from "./FillerPicker.vue";
 import StripDetailsEditor from "./StripDetailsEditor.vue";
 import StripMainEditor from "./StripMainEditor.vue";
+import StripCompanionEditor from "./StripCompanionEditor.vue";
 import { MyOption } from "../service/MyOptions.type";
 import { v4 as uuidv4 } from "uuid";
 
@@ -85,6 +116,7 @@ import { v4 as uuidv4 } from "uuid";
     FillerPicker,
     StripMainEditor,
     StripDetailsEditor,
+    StripCompanionEditor,
   },
 })
 export default class SingleChargePicker extends Vue {
@@ -93,6 +125,7 @@ export default class SingleChargePicker extends Vue {
   chargeOptions: MyOption[] = [];
   uuid = uuidv4();
   showStripDetails = false;
+  showStripComponionDetails = false;
 
   async created(): Promise<void> {
     this.chargeOptions = await getChargeOptions();
@@ -100,6 +133,10 @@ export default class SingleChargePicker extends Vue {
 
   switchStripDetails(): void {
     this.showStripDetails = !this.showStripDetails;
+  }
+
+  switchStripCompanionDetails(): void {
+    this.showStripComponionDetails = !this.showStripComponionDetails;
   }
 
   update(): void {

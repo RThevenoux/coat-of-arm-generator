@@ -7,7 +7,7 @@ import { FieldEditorModel, PlainFieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
 import { STRAIGHT_OPTION_ID } from "./OutlineTool";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
-import { StripEditorModel } from "./StripModel";
+import { StripEditorCoreModel, StripEditorModel } from "./StripModel";
 
 export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
   return {
@@ -17,20 +17,32 @@ export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
   };
 }
 
+export async function initialStripModel(): Promise<StripEditorModel> {
+  return {
+    ...await initialStripCoreModel(),
+    angle: "pal",
+    companion: false,
+    companionModel: await initialStripCoreModel(),
+  };
+}
+
+export async function initialStripCoreModel(): Promise<StripEditorCoreModel> {
+  return {
+    count: 1,
+    size: "default",
+    filler: await initialFiller(),
+    outlineType: "straight",
+    simpleOutline: getDefaultOutlineId(),
+    doubleOutline1: STRAIGHT_OPTION_ID,
+    doubleOutline2: STRAIGHT_OPTION_ID,
+    shifted: false,
+  }
+}
+
 export async function initialChargeModel(): Promise<SingleChargePickerModel> {
   return {
     type: "strip",
-    strip: {
-      angle: "pal",
-      count: 1,
-      size: "default",
-      filler: await initialFiller(),
-      outlineType: "straight",
-      simpleOutline: getDefaultOutlineId(),
-      doubleOutline1: STRAIGHT_OPTION_ID,
-      doubleOutline2: STRAIGHT_OPTION_ID,
-      shifted: false,
-    },
+    strip: await initialStripModel(),
     cross: {
       diagonal: "false",
       size: "default",
