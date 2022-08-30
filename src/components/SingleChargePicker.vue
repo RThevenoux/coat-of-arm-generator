@@ -80,8 +80,14 @@
 
       <!-- Strip companion -->
       <div class="flex-container">
-        <input type="checkbox" v-model="value.strip.companion" />
-        <label>Accompagné</label>
+        <input
+          type="checkbox"
+          v-model="value.strip.companion"
+          @change="update"
+          :id="uuid + '-companion-checkbox'"
+        />
+        <label :for="uuid + '-companion-checkbox'">Accompagné</label>
+
         <StripCompanionEditor
           v-if="value.strip.companion"
           v-model="value.strip.companionModel"
@@ -105,9 +111,9 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
 import { getChargeOptions } from "../service/ChargeService";
 import FillerPicker from "./FillerPicker.vue";
-import StripDetailsEditor from "./StripDetailsEditor.vue";
-import StripMainEditor from "./StripMainEditor.vue";
-import StripCompanionEditor from "./StripCompanionEditor.vue";
+import StripDetailsEditor from "./strip/StripDetailsEditor.vue";
+import StripMainEditor from "./strip/StripMainEditor.vue";
+import StripCompanionEditor from "./strip/StripCompanionEditor.vue";
 import { MyOption } from "../service/MyOptions.type";
 import { v4 as uuidv4 } from "uuid";
 

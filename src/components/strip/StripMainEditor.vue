@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import FillerPicker from "./FillerPicker.vue";
+import FillerPicker from "../FillerPicker.vue";
 import { StripEditorModel } from "./StripModel";
 
 @Component({

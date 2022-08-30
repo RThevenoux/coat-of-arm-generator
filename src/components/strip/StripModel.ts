@@ -1,12 +1,12 @@
 import { OutlineId, StripSize } from "@/model/charge";
 import { Direction } from "@/model/misc";
-import { FillerEditorModel } from "./FillerEditorModel";
+import { FillerEditorModel } from "../FillerEditorModel";
 
 export type StripEditorModel = StripEditorCoreModel & {
   angle: Direction;
-  companion:boolean;
-  companionModel: StripEditorCoreModel | undefined;
-}
+  companion: boolean;
+  companionModel: StripEditorCoreModel;
+};
 
 export interface StripEditorCoreModel {
   count: number;

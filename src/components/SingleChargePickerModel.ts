@@ -1,6 +1,6 @@
 import { CrossSize } from "@/model/charge";
 import { FillerEditorModel } from "./FillerEditorModel";
-import { StripEditorModel } from "./StripModel";
+import { StripEditorModel } from "./strip/StripModel";
 
 export interface SingleChargePickerModel {
   type: "strip" | "cross" | "symbol";

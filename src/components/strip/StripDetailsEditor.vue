@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import OutlinePicker from "./OutlinePicker.vue";
+import OutlinePicker from "../OutlinePicker.vue";
 import { v4 as uuidv4 } from "uuid";
 import { StripEditorModel } from "./StripModel";
 

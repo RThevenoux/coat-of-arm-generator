@@ -1,13 +1,11 @@
-import { ChargeModel, StripOutline } from "@/model/charge";
+import { ChargeModel } from "@/model/charge";
 import { FieldModel, PlainFieldModel } from "@/model/field";
 import { FillerModel, FillerPattern } from "@/model/filler";
 import { getDefaultChargeId } from "@/service/ChargeService";
-import { getDefaultOutlineId } from "@/service/OutlineService";
 import { FieldEditorModel, PlainFieldEditorModel } from "./FieldEditorModel";
 import { FillerEditorModel } from "./FillerEditorModel";
-import { STRAIGHT_OPTION_ID } from "./OutlineTool";
 import { SingleChargePickerModel } from "./SingleChargePickerModel";
-import { StripEditorCoreModel, StripEditorModel } from "./StripModel";
+import { initialStripModel, stripToModel } from "./strip/StripTool";
 
 export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
   return {
@@ -15,28 +13,6 @@ export async function initialFieldEditorValue(): Promise<FieldEditorModel> {
     partitionType: "plain",
     partitions: [],
   };
-}
-
-export async function initialStripModel(): Promise<StripEditorModel> {
-  return {
-    ...await initialStripCoreModel(),
-    angle: "pal",
-    companion: false,
-    companionModel: await initialStripCoreModel(),
-  };
-}
-
-export async function initialStripCoreModel(): Promise<StripEditorCoreModel> {
-  return {
-    count: 1,
-    size: "default",
-    filler: await initialFiller(),
-    outlineType: "straight",
-    simpleOutline: getDefaultOutlineId(),
-    doubleOutline1: STRAIGHT_OPTION_ID,
-    doubleOutline2: STRAIGHT_OPTION_ID,
-    shifted: false,
-  }
 }
 
 export async function initialChargeModel(): Promise<SingleChargePickerModel> {
@@ -67,7 +43,7 @@ async function initialPlain(): Promise<PlainFieldEditorModel> {
   };
 }
 
-async function initialFiller(): Promise<FillerEditorModel> {
+export async function initialFiller(): Promise<FillerEditorModel> {
   return {
     type: "none",
     color1: "azur",
@@ -110,7 +86,7 @@ function plainFieldToModel(viewModel: PlainFieldEditorModel): PlainFieldModel {
   };
 }
 
-function fillerToModel(viewModel: FillerEditorModel): FillerModel {
+export function fillerToModel(viewModel: FillerEditorModel): FillerModel {
   switch (viewModel.type) {
     case "plein":
       return {
@@ -158,14 +134,7 @@ function fillerToModel(viewModel: FillerEditorModel): FillerModel {
 function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
   switch (viewModel.type) {
     case "strip":
-      return {
-        type: "strip",
-        direction: viewModel.strip.angle,
-        count: viewModel.strip.count,
-        filler: fillerToModel(viewModel.strip.filler),
-        size: viewModel.strip.size,
-        outline: stripOutlineToModel(viewModel.strip),
-      };
+      return stripToModel(viewModel.strip);
     case "cross":
       return {
         type: "cross",
@@ -181,44 +150,5 @@ function chargeToModel(viewModel: SingleChargePickerModel): ChargeModel {
         chargeId: viewModel.symbol.chargeId,
         filler: fillerToModel(viewModel.symbol.filler),
       };
-  }
-}
-
-function stripOutlineToModel(model: StripEditorModel): StripOutline {
-  switch (model.outlineType) {
-    case "simple":
-      return {
-        type: "simple",
-        outlineId: model.simpleOutline,
-        shifted: model.shifted,
-      };
-    case "double":
-      if (model.doubleOutline1 == model.doubleOutline2) {
-        if (model.doubleOutline1 == STRAIGHT_OPTION_ID) {
-          return { type: "straight" };
-        } else {
-          return {
-            type: "simple",
-            outlineId: model.doubleOutline1,
-            shifted: false,
-          };
-        }
-      }
-      return {
-        type: "double",
-        outlineId1:
-          model.doubleOutline1 != STRAIGHT_OPTION_ID
-            ? model.doubleOutline1
-            : undefined,
-        outlineId2:
-          model.doubleOutline2 != STRAIGHT_OPTION_ID
-            ? model.doubleOutline2
-            : undefined,
-      };
-    case "gemel-potented":
-      return { type: "gemelPotented" };
-    case "straight":
-    default:
-      return { type: "straight" };
   }
 }
