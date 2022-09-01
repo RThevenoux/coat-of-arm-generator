@@ -1,6 +1,11 @@
 import { StripEditorCoreModel, StripEditorModel } from "./StripModel";
 import { getDefaultOutlineId } from "@/service/OutlineService";
-import { ChargeStrip, ChargeStripCore, StripOutline } from "@/model/charge";
+import {
+  ChargeStrip,
+  ChargeStripCore,
+  StripOutline,
+  StripSize,
+} from "@/model/charge";
 import { STRAIGHT_OPTION_ID } from "../OutlineTool";
 import { fillerToModel, initialFiller } from "../EditorTool";
 
@@ -8,15 +13,19 @@ export async function initialStripModel(): Promise<StripEditorModel> {
   return {
     ...(await initialStripCoreModel()),
     angle: "pal",
-    companion: false,
-    companionModel: await initialStripCoreModel(),
+    count: 1,
+    companion: {
+      ...(await initialStripCoreModel("reduced")),
+      present: false,
+    },
   };
 }
 
-export async function initialStripCoreModel(): Promise<StripEditorCoreModel> {
+export async function initialStripCoreModel(
+  size?: StripSize
+): Promise<StripEditorCoreModel> {
   return {
-    count: 1,
-    size: "default",
+    size: size || "default",
     filler: await initialFiller(),
     outlineType: "straight",
     simpleOutline: getDefaultOutlineId(),
@@ -66,12 +75,11 @@ function stripOutlineToModel(model: StripEditorCoreModel): StripOutline {
 }
 
 export function stripToModel(strip: StripEditorModel): ChargeStrip {
-  const companion: ChargeStripCore | undefined = strip.companion
+  const companion: ChargeStripCore | undefined = strip.companion.present
     ? {
-        count: strip.companionModel.count,
-        filler: fillerToModel(strip.companionModel.filler),
-        size: strip.companionModel.size,
-        outline: stripOutlineToModel(strip.companionModel),
+        filler: fillerToModel(strip.companion.filler),
+        size: strip.companion.size,
+        outline: stripOutlineToModel(strip.companion),
       }
     : undefined;
 

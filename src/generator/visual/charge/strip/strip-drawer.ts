@@ -18,11 +18,6 @@ export async function drawStripCharge(
 ): Promise<void> {
   const item = convertToStripItem(model, container);
   const strips = await drawStripItem(builder, item);
-  if (model.companion) {
-    console.log(" --> Should draw companion...");
-  } else {
-    console.log(" --> No companion");
-  }
   clip(builder, strips.node, container);
 }
 

@@ -82,23 +82,23 @@
       <div class="flex-container">
         <input
           type="checkbox"
-          v-model="value.strip.companion"
+          v-model="value.strip.companion.present"
           @change="update"
           :id="uuid + '-companion-checkbox'"
         />
         <label :for="uuid + '-companion-checkbox'">Accompagné</label>
 
         <StripCompanionEditor
-          v-if="value.strip.companion"
-          v-model="value.strip.companionModel"
+          v-if="value.strip.companion.present"
+          v-model="value.strip.companion"
           @input="update"
           @switchDetails="switchStripCompanionDetails"
         >
         </StripCompanionEditor>
       </div>
       <StripDetailsEditor
-        v-if="value.strip.companion && showStripComponionDetails"
-        v-model="value.strip.companionModel"
+        v-if="value.strip.companion.present && showStripComponionDetails"
+        v-model="value.strip.companion"
         @input="update"
       >
       </StripDetailsEditor>

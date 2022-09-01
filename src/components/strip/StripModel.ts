@@ -4,12 +4,11 @@ import { FillerEditorModel } from "../FillerEditorModel";
 
 export type StripEditorModel = StripEditorCoreModel & {
   angle: Direction;
-  companion: boolean;
-  companionModel: StripEditorCoreModel;
+  count: number;
+  companion: { present: boolean } & StripEditorCoreModel;
 };
 
 export interface StripEditorCoreModel {
-  count: number;
   size: StripSize;
   filler: FillerEditorModel;
   outlineType: "straight" | "simple" | "double" | "gemel-potented";

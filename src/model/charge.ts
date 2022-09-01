@@ -36,11 +36,11 @@ export interface GemelPotentedStripOutline {
 export type ChargeStrip = ChargeStripCore & {
   type: "strip";
   direction: Direction;
+  count: number;
   companion: ChargeStripCore | undefined;
 };
 
 export interface ChargeStripCore {
-  count: number;
   filler: FillerModel;
   size: StripSize;
   outline: StripOutline;
