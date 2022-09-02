@@ -1,14 +1,11 @@
 import { ChargeStripCore } from "@/model/charge";
 import { FillerModel } from "@/model/filler";
 import { getGemelPotentedVisualInfo } from "@/service/OutlineService";
-import { StripData, StripOutlineData } from "../../shape/strip.type";
-import { point } from "../../tool/point";
-import { SimpleShape } from "../../type";
+import { StripOutlineData } from "../../shape/strip.type";
 import { StripCompositionBuilder } from "./StripCompositionBuilder";
+import { StripHelper } from "./StripHelper";
 import { getStripOutlineData, straightOutline } from "./stripOutline.helper";
-import { StripRotationHelper } from "./StripRotationHelper";
-import { createSingleStrip } from "./stripSingle.factory";
-import { StripComposition, StripItem } from "./type";
+import { StripItem } from "./type";
 
 export function getStripByGroup(model: ChargeStripCore): number {
   switch (model.size) {
@@ -27,20 +24,13 @@ export function createGroup(
   model: ChargeStripCore,
   x0: number,
   groupWidth: number,
-  rotation: StripRotationHelper,
-  container: SimpleShape
+  helper: StripHelper
 ): StripItem {
   const stripByGroup = getStripByGroup(model);
   if (stripByGroup == 2 && model.outline.type == "gemelPotented") {
-    return createGemelPotentedGroup(
-      x0,
-      groupWidth,
-      model.filler,
-      rotation,
-      container
-    );
+    return createGemelPotentedGroup(x0, groupWidth, model.filler, helper);
   } else {
-    return createSimpleGroup(model, x0, groupWidth, rotation, container);
+    return createSimpleGroup(model, x0, groupWidth, helper);
   }
 }
 
@@ -48,29 +38,23 @@ function createSimpleGroup(
   model: ChargeStripCore,
   x0: number,
   groupWidth: number,
-  rotation: StripRotationHelper,
-  container: SimpleShape
-): StripComposition {
-  const outline = getStripOutlineData(model.outline);
+  helper: StripHelper
+): StripItem {
   const stripByGroup = getStripByGroup(model);
-
-  const filler = model.filler;
-  const bounds = rotation.rotatedBounds;
-
   const stripWidth = groupWidth / (2 * stripByGroup - 1);
-  const strip = {
-    width: stripWidth,
-    length: bounds.height,
-    root: container.root,
-    filler,
-    outline,
-  };
+
+  const outline = getStripOutlineData(model.outline);
+  const filler = model.filler;
 
   const builder = new StripCompositionBuilder();
   for (let stripIndex = 0; stripIndex < stripByGroup; stripIndex++) {
     const xPosition = x0 + stripWidth * 2 * stripIndex;
-    const position = point(xPosition, bounds.y);
-    const singleStrip = createSingleStrip(position, strip, rotation);
+    const singleStrip = helper.createSingleStrip(
+      xPosition,
+      stripWidth,
+      filler,
+      outline
+    );
     builder.add(singleStrip);
   }
 
@@ -81,12 +65,9 @@ function createGemelPotentedGroup(
   x0: number,
   groupWidth: number,
   filler: FillerModel,
-  rotation: StripRotationHelper,
-  container: SimpleShape
-): StripComposition {
+  helper: StripHelper
+): StripItem {
   const builder = new StripCompositionBuilder();
-
-  const bounds = rotation.rotatedBounds;
 
   const stripWidth = groupWidth / 7;
 
@@ -95,15 +76,7 @@ function createGemelPotentedGroup(
     outline2: straightOutline(),
     outline2Shifted: false,
   };
-  const stripAData: StripData = {
-    width: stripWidth,
-    length: bounds.height,
-    root: container.root,
-    filler,
-    outline: outlineA,
-  };
-  const positionA = point(x0, bounds.y);
-  const stripA = createSingleStrip(positionA, stripAData, rotation);
+  const stripA = helper.createSingleStrip(x0, stripWidth, filler, outlineA);
   builder.add(stripA);
 
   const outlineB: StripOutlineData = {
@@ -111,15 +84,12 @@ function createGemelPotentedGroup(
     outline2: getGemelPotentedVisualInfo(),
     outline2Shifted: true,
   };
-  const stripBData: StripData = {
-    width: stripWidth,
-    length: bounds.height,
-    root: container.root,
+  const stripB = helper.createSingleStrip(
+    x0 + stripWidth * 6,
+    stripWidth,
     filler,
-    outline: outlineB,
-  };
-  const positionB = point(x0 + stripWidth * 6, bounds.y);
-  const stripB = createSingleStrip(positionB, stripBData, rotation);
+    outlineB
+  );
   builder.add(stripB);
 
   return builder.build();

@@ -1,6 +1,6 @@
 import paper from "paper";
 import { StripRotationHelper } from "./StripRotationHelper";
-import { origin } from "../../tool/point";
+import { origin, point } from "../../tool/point";
 import { BoundsBuilder } from "../BoundsBuilder";
 import { StripClones, StripItem } from "./type";
 
@@ -19,7 +19,9 @@ export class StripClonesBuilder {
     );
   }
 
-  public addClone(position: paper.Point): void {
+  public addClone(x: number): void {
+    const bounds = this.rotation.rotatedBounds;
+    const position = point(bounds.x + x, bounds.y);
     const boundsClone = this.patternBoundsPath.clone();
     boundsClone.translate(position);
 

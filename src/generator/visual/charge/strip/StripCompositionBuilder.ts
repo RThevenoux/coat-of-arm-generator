@@ -1,5 +1,5 @@
 import { BoundsBuilder } from "../BoundsBuilder";
-import { StripComposition, StripItem } from "./type";
+import { StripItem } from "./type";
 
 export class StripCompositionBuilder {
   items: StripItem[] = [];
@@ -10,7 +10,11 @@ export class StripCompositionBuilder {
     this.items.push(item);
   }
 
-  public build(): StripComposition {
+  public build(): StripItem {
+    if (this.items.length === 1) {
+      return this.items[0];
+    }
+
     return {
       type: "stripComposition",
       stripItems: this.items,
