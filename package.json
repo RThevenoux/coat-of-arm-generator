@@ -11,7 +11,7 @@
     "bezier-js": "^6.1.0",
     "core-js": "^3.6.5",
     "paper": "^0.12.15",
-    "uuid": "^8.3.2",
+    "uuid": "^14.0.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
